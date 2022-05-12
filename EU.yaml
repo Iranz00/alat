@@ -3,7 +3,7 @@ socks-port: 7891
 redir-port: 7892
 mixed-port: 7893
 tproxy-port: 7895
-ipv6: true
+ipv6: false
 mode: rule
 log-level: silent
 allow-lan: true
@@ -16,20 +16,20 @@ profile:
   store-fake-ip: true
 dns:
   enable: true
-  ipv6: true
+  ipv6: false
   use-host: true
   enhanced-mode: fake-ip
   listen: 127.0.0.1:7874
   nameserver:
     - 94.140.14.14
-    - 94.140.14.14
+    - 94.140.15.15
   fallback:
-    - 94.140.14.14
-    - 94.140.14.14
-    - https://dns.google/dns-query
+    - https://dns.adguard.com/dns-query
+    - https://dns-family.adguard.com/dns-query
+    - https://dns-unfiltered.adguard.com/dns-query
   default-nameserver:
     - 94.140.14.14
-    - 94.140.14.14
+    - 94.140.15.15
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - "*.lan"
@@ -124,54 +124,109 @@ dns:
     - "*.ffxiv.com"
     - "*.mcdn.bilivideo.cn"
     - +.media.dssott.com
-
 proxies:
+  - {name: SG M247 Trojan VPN, server: sg7-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 83a05fd0-af82-11ec-82cd-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG M247 Trojan VPN 50, server: sg7-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 8d9d8760-af82-11ec-a68b-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG M247 Trojan VPN 9, server: sg7-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 974b3660-af82-11ec-a019-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: aa9e9b40-af82-11ec-8f9d-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan 15, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: b421bfc0-af82-11ec-a712-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan 20, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: c02f7970-af82-11ec-9bbc-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG-HE 1 Trojan VPN, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: ccb61e40-af82-11ec-880c-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG-HE 1 Trojan VPN 81, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: d6a16cb0-af82-11ec-9db6-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG-HE 1 Trojan VPN 3, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: e4b7d070-af82-11ec-9997-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Kreatif Jakarta Trojan, server: idtj-ikd.bonds.id, port: 443, udp: true, type: trojan, password: f0e88890-9642-11ec-bbca-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Herza Jakarta Trojan, server: her.myserverhome.xyz, port: 443, udp: true, type: trojan, password: eef46d87-ae46-d801-e0d4-6c87ae46d801, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan, server: id-biznet.bypass.id, port: 443, udp: true, type: trojan, password: d0f76f80-6934-11ec-a206-1577c1651679, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan A, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 93e31ba0-c165-11ec-a7cc-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan C, server: id-biznet.bypass.id, port: 443, udp: true, type: trojan, password: d0f76f80-6934-11ec-a206-1577c1651679, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan 63, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 93e31ba0-c165-11ec-a7cc-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 64, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: a2bff5c0-c165-11ec-827c-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 97, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: ab60a9c0-c165-11ec-80b0-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 90, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: bd9f3d00-c165-11ec-954f-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan B, server: id5-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 1939d420-bf3a-11ec-827e-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan 91, server: id5-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 1939d420-bf3a-11ec-827e-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-GoDaddy Trojan VPN, server: sg-sr-114.mitoption.com, port: 443, udp: true, type: trojan, password: e5d46365e25e31d94279c2bcf93390a2, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-GoDaddy Trojan VPN A, server: sg-sr-116.mitoption.com, port: 443, udp: true, type: trojan, password: e5d46365e25e31d94279c2bcf93390a2, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: SG-HE 1 Trojan VPN, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: cbb5d820-c165-11ec-b0a6-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG-HE 1 Trojan VPN A, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: cbb5d820-c165-11ec-b0a6-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN 37, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: db3047e0-c165-11ec-af42-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN 76, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: eda7e160-c165-11ec-92e8-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN 19, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: f9a25ba0-c165-11ec-bfe6-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
-
 proxy-groups:
   - name: PROXY
     type: select
     proxies:
-      - INDONESIA
-      - SINGAPORE
-  - name: FACEBOOK
-    type: select
+      - ID HERZA
+      - ID KREATIF
+      - ID BIZNET A
+      - ID BIZNET B
+      - SG GODADDY
+      - SG HE
+      - SG M247
+      - BEST-PING
+  - name: BEST-PING
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 5
     proxies:
-      - REJECT
-      - DIRECT
-      - PROXY
-  - name: INSTAGRAM
-    type: select
+      - ID HERZA
+      - ID KREATIF
+      - ID BIZNET A
+      - ID BIZNET B
+      - SG GODADDY
+      - SG HE
+      - SG M247
+  - name: SG M247
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     proxies:
-      - REJECT
-      - DIRECT
-      - PROXY
-  - name: TIKTOK
-    type: select
+      - SG M247 Trojan VPN
+      - SG M247 Trojan VPN 50
+      - SG M247 Trojan VPN 9
+  - name: ID HERZA
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     proxies:
-      - REJECT
-      - DIRECT
-      - PROXY
-  - name: WHATSAPP
-    type: select
+      - ID-Herza Jakarta Trojan
+  - name: ID KREATIF
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     proxies:
-      - REJECT
-      - DIRECT
-      - PROXY
-  - name: SINGAPORE
+      - ID-Kreatif Jakarta Trojan
+  - name: ID BIZNET A
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - ID-Biznet Jakarta Trojan
+      - ID-Biznet Jakarta Trojan 63
+      - ID-Biznet Jakarta Trojan 64
+      - ID-Biznet Jakarta Trojan 97
+  - name: ID BIZNET B
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - ID-Biznet Jakarta Trojan 90
+      - ID-Biznet Jakarta Trojan 91
+      - ID-Biznet Jakarta Trojan 15
+      - ID-Biznet Jakarta Trojan 20
+  - name: SG HE
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - SG-HE 1 Trojan VPN
+      - SG-HE 1 Trojan VPN A
+      - SG-HE 1 Trojan VPN 81
+      - SG-HE 1 Trojan VPN 3
+  - name: SG GODADDY
     type: load-balance
     strategy: consistent-hashing
     url: http://www.gstatic.com/generate_204
@@ -179,61 +234,5 @@ proxy-groups:
     proxies:
       - SG-GoDaddy Trojan VPN
       - SG-GoDaddy Trojan VPN A
-      - SG-HE 1 Trojan VPN
-      - SG-HE 1 Trojan VPN 37
-      - SG-HE 1 Trojan VPN 76
-      - SG-HE 1 Trojan VPN 19
-  - name: INDONESIA
-    type: load-balance
-    strategy: consistent-hashing
-    url: http://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - ID-Kreatif Jakarta Trojan
-      - ID-Herza Jakarta Trojan
-      - ID-Biznet Jakarta Trojan
-      - ID-Biznet Jakarta Trojan A
-      - ID-Biznet Jakarta Trojan 64
-      - ID-Biznet Jakarta Trojan 97
-      - ID-Biznet Jakarta Trojan 90
-      - ID-Biznet Jakarta Trojan B
-      
-rule-providers:
-  rule_reject:
-    type: file
-    behavior: domain
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
-    path: "./provider/rule_reject.yaml"
-    interval: 86400
-  Facebook:
-    type: file
-    behavior: classical
-    path: "./provider/Facebook.yaml"
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Facebook/Facebook.yaml
-    interval: 86400
-  Instagram:
-    type: file
-    behavior: classical
-    path: "./provider/Instagram.yaml"
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Instagram/Instagram.yaml
-    interval: 86400
-  TikTok:
-    type: file
-    behavior: classical
-    path: "./provider/TikTok.yaml"
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
-    interval: 86400
-  Whatsapp:
-    type: file
-    behavior: classical
-    path: "./provider/Whatsapp.yaml"
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Whatsapp/Whatsapp.yaml
-    interval: 86400
-    
 rules:
-- RULE-SET,rule_reject,REJECT
-- RULE-SET,Facebook,FACEBOOK
-- RULE-SET,Instagram,INSTAGRAM
-- RULE-SET,TikTok,TIKTOK
-- RULE-SET,Whatsapp,WHATSAPP
-- MATCH,PROXY
+  - MATCH,PROXY
