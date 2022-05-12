@@ -127,15 +127,15 @@ dns:
 
 proxies:
   - {name: ID-Kreatif Jakarta Trojan, server: idtj-ikd.bonds.id, port: 443, udp: true, type: trojan, password: f0e88890-9642-11ec-bbca-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan, server: id-biznet.bypass.id, port: 443, udp: true, type: trojan, password: d0f76f80-6934-11ec-a206-1577c1651679, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Herza Jakarta Trojan, server: her.myserverhome.xyz, port: 443, udp: true, type: trojan, password: eef46d87-ae46-d801-e0d4-6c87ae46d801, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 93e31ba0-c165-11ec-a7cc-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan, server: id-biznet.bypass.id, port: 443, udp: true, type: trojan, password: d0f76f80-6934-11ec-a206-1577c1651679, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan A, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 93e31ba0-c165-11ec-a7cc-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 64, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: a2bff5c0-c165-11ec-827c-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 97, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: ab60a9c0-c165-11ec-80b0-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: ID-Biznet Jakarta Trojan 90, server: id2-trojan.bonds.id, port: 443, udp: true, type: trojan, password: bd9f3d00-c165-11ec-954f-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: ID-Biznet Jakarta Trojan A, server: id5-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 1939d420-bf3a-11ec-827e-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: ID-Biznet Jakarta Trojan B, server: id5-trojan.bonds.id, port: 443, udp: true, type: trojan, password: 1939d420-bf3a-11ec-827e-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-GoDaddy Trojan VPN, server: sg-sr-114.mitoption.com, port: 443, udp: true, type: trojan, password: e5d46365e25e31d94279c2bcf93390a2, sni: api2-t3.musical.ly, skip-cert-verify: true}
-  - {name: SG-GoDaddy Trojan VPN, server: sg-sr-116.mitoption.com, port: 443, udp: true, type: trojan, password: e5d46365e25e31d94279c2bcf93390a2, sni: api2-t3.musical.ly, skip-cert-verify: true}
+  - {name: SG-GoDaddy Trojan VPN A, server: sg-sr-116.mitoption.com, port: 443, udp: true, type: trojan, password: e5d46365e25e31d94279c2bcf93390a2, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: cbb5d820-c165-11ec-b0a6-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN 37, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: db3047e0-c165-11ec-af42-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
   - {name: SG-HE 1 Trojan VPN 76, server: sg1-trojan.bonds.id, port: 443, udp: true, type: trojan, password: eda7e160-c165-11ec-92e8-1239d0255272, sni: api2-t3.musical.ly, skip-cert-verify: true}
@@ -177,6 +177,8 @@ proxy-groups:
     url: http://www.gstatic.com/generate_204
     interval: 300
     proxies:
+      - SG-GoDaddy Trojan VPN
+      - SG-GoDaddy Trojan VPN A
       - SG-HE 1 Trojan VPN
       - SG-HE 1 Trojan VPN 37
       - SG-HE 1 Trojan VPN 76
@@ -187,10 +189,14 @@ proxy-groups:
     url: http://www.gstatic.com/generate_204
     interval: 300
     proxies:
+      - ID-Kreatif Jakarta Trojan
+      - ID-Herza Jakarta Trojan
       - ID-Biznet Jakarta Trojan
+      - ID-Biznet Jakarta Trojan A
       - ID-Biznet Jakarta Trojan 64
       - ID-Biznet Jakarta Trojan 97
       - ID-Biznet Jakarta Trojan 90
+      - ID-Biznet Jakarta Trojan B
       
 rule-providers:
   rule_reject:
