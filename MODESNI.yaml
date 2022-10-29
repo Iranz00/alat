@@ -1,0 +1,871 @@
+proxies:
+  - name: ID 🇮🇩 Atha | Natanvpn
+    server: 41.216.177.169
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Atha | Natanvpn
+    server: 45.12.80.134
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Herza | Natanvpn
+    server: 103.168.146.180
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 IKD | Natanvpn
+    server: 103.167.34.93
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Uninet | Natanvpn
+    server: 202.145.0.108
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Natanvpn
+    server: 38.9.140.59
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Natanvpn
+    server: 38.9.140.147
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Sanggoro | Natanvpn
+    server: 43.252.237.244
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Sanggoro | Natanvpn
+    server: 202.73.27.203
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Cloudhost | Natanvpn
+    server: 103.139.192.101
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Cloudhost | Natanvpn
+    server: 103.179.56.28
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Contabo | Natanvpn
+    server: 154.26.128.78
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 DO | Natanvpn
+    server: 167.71.221.176
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 HE | Natanvpn
+    server: 103.253.24.91
+    port: 443
+    type: trojan
+    password: Fasihayieh18
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Vpnneo
+    server: 43.230.131.123
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Vpnneo
+    server: 43.229.254.35
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Vpnneo
+    server: 103.77.78.114
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Sanggoro | Vpnneo
+    server: 43.252.237.229
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: grpc
+    grpc-opts:
+        grpc-service-name: vpnNEO
+    udp: true
+  - name: ID 🇮🇩 Rackh | Vpnneo
+    server: 103.77.78.114
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Biznet | Vpnneo
+    server: 103.150.121.69
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 Cloudflare | Vpnneo
+    server: 103.150.192.48
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 Cloudflare | Vpnneo
+    server: 101.50.3.25
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: JP 🇯🇵 GoDaddy | Vpnneo
+    server: 184.168.123.32
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 HE | Vpnneo
+    server: 103.253.26.82
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 HE | Vpnneo
+    server: 103.253.26.249
+    type: vmess
+    port: 443
+    uuid: 46bfdb59-83c6-4710-877e-c809b5a90dff
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /vpnneo
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 HE | Howdy
+    server: 103.253.24.167
+    type: vless
+    port: 443
+    uuid: 94d2f0a0-4eff-11ed-8441-1577c1651679
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: grpc
+    grpc-opts:
+        grpc-service-name: null
+    udp: true
+  - name: SG 🇸🇬 HE | Howdy
+    server: 103.253.24.248
+    port: 443
+    type: trojan
+    password: 686d7760-5633-11ed-8bab-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Biznet | Howdy
+    server: 103.150.97.135
+    port: 443
+    type: trojan
+    password: cb4e0200-47d5-11ed-a537-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Herza | Howdy
+    server: 103.173.75.165
+    port: 443
+    type: trojan
+    password: 3a77b9d0-5633-11ed-b293-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 IKD | Howdy
+    server: 103.180.125.252
+    port: 443
+    type: trojan
+    password: 4b8bb160-47d5-11ed-abd4-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 OVH | Howdy
+    server: 51.79.220.79
+    port: 443
+    type: trojan
+    password: 6a2c48d0-47d2-11ed-a350-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Atha | Howdy
+    server: 194.233.151.107
+    port: 443
+    type: trojan
+    password: 1226dc00-47d1-11ed-b938-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Contabo | Howdy
+    server: 194.233.79.194
+    port: 443
+    type: trojan
+    password: 4af5d930-5633-11ed-8257-1239d0255272
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Contabo | Globalssh
+    server: 194.233.88.110
+    port: 443
+    type: trojan
+    password: 123456
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Contabo | Globalssh
+    server: 194.233.88.109
+    port: 443
+    type: trojan
+    password: 123456
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 OVH | Globalssh
+    server: 139.99.102.115
+    port: 443
+    type: trojan
+    password: 123456
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Linkgo | Wakvpn
+    server: 103.187.106.9
+    port: 443
+    type: trojan
+    password: 7f512873-af85-4f00-8588-26a3ca9f8dd8
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: ws
+    ws-opts:
+        path: /trojan-ws
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Cloudhost | Tokovpn
+    server: 103.146.203.93
+    type: vmess
+    port: 443
+    uuid: c43d1e62-d33e-4146-b317-3c69ba96c427
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /v2ray
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 IKD    | Helpervpn
+    server: 103.167.34.172
+    type: vmess
+    port: 443
+    uuid: 24311cb2-a934-41fc-b293-a185880a72fa
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /v2ray
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Helpervpn
+    server: 43.230.131.77
+    port: 443
+    type: trojan
+    password: idc117okt
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Rajasa | Jagoanssh
+    server: 103.227.254.114
+    port: 443
+    type: trojan
+    password: vvip-kangmus19
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Jagoanssh
+    server: 103.227.254.114
+    port: 443
+    type: trojan
+    password: vvip-Zahratun
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 Nusanet | Jagoanssh
+    server: 38.9.140.66
+    port: 443
+    type: trojan
+    password: vvip-periantara
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Centerhop | Jagoanssh
+    server: 103.83.157.14
+    port: 443
+    type: trojan
+    password: jagoanssh-hshdb
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 DO | Vpnstunnel
+    server: 167.71.210.246
+    port: 443
+    type: trojan
+    password: idkmine
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: ws
+    ws-opts:
+        path: /netztrojan
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 DO | Vpnstunnel
+    server: 188.166.187.58
+    type: vmess
+    port: 443
+    uuid: b0c9ddea-3ea6-4108-91cb-566c369d20c7
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /netzvmess
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: SG 🇸🇬 Oracle
+    server: 168.138.171.65
+    type: vmess
+    port: 443
+    uuid: 4af6fd9a-e8b4-46f2-da3a-207f4577656c
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 Oracle
+    server: 152.69.217.225
+    port: 443
+    type: trojan
+    password: chen4753317
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 DO
+    server: 159.223.89.239
+    port: 443
+    type: trojan
+    password: bb5b1337-fa9e-4e00-b8c6-1110e626171d
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 DO
+    server: 159.223.78.169
+    port: 443
+    type: trojan
+    password: f6c7f42c-6608-4512-991e-c8f1b627e6f5
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 DO
+    server: ss-sg-do.51fq.info
+    port: 443
+    type: trojan
+    password: rWKTDNDOlyxsob1K
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: ID 🇮🇩 GoogleCP
+    server: ss-id.51fq.info
+    type: vless
+    port: 443
+    uuid: 5d7ad6b4-640b-490d-810a-c3dd90a31f0a
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: SG 🇸🇬 GoogleCP
+    server: ss-sg.51fq.info
+    type: vless
+    port: 443
+    uuid: 1a0c667e-ac9d-40bc-a9ce-7493accd982c
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: JP 🇯🇵 GoogleCP
+    server: ss-db.51fq.info
+    type: vless
+    port: 443
+    uuid: 9eea6d39-315d-4a48-ae57-eaeba24cf99b
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: HK 🇭🇰 GoogleCP
+    server: ss-hk.51fq.info
+    type: vless
+    port: 443
+    uuid: 5a1f53bf-9696-4b01-8705-0b31d8fe578e
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: TW 🇹🇼 GoogleCP
+    server: ss-tw.51fq.info
+    type: vless
+    port: 443
+    uuid: 5441a0ea-7d39-447f-8049-0b78381e9cfa
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: IN 🇮🇳 GoogleCP
+    server: ss-in.51fq.info
+    port: 443
+    type: trojan
+    password: h7wt29etBXYODtro
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: IN 🇮🇳 GoogleCP
+    server: ss-us-w.51fq.info
+    type: vless
+    port: 443
+    uuid: d0608435-4c5a-419a-9376-25b660eeb9f4
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: HK 🇭🇰 Azure
+    server: ss-ea-maz.51fq.info
+    type: vless
+    port: 443
+    uuid: 97d4745a-bea1-49a1-b69e-bb8695bc3b8b
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: KR 🇰🇷 Azure
+    server: ss-kr-maz.51fq.info
+    type: vless
+    port: 443
+    uuid: dfc0ad32-0101-4ef3-9109-0e537d6b9e58
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: tcp
+    udp: true
+  - name: JP 🇯🇵 AWS
+    server: 52.197.243.20
+    type: vless
+    port: 443
+    uuid: fb8c8e67-0eff-f524-968c-01b4afe20453
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /appws
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: KR 🇰🇷 AWS
+    server: 13.125.170.193
+    type: vless
+    port: 443
+    uuid: fb8c8e67-0eff-f524-968c-01b4afe20453
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /appws
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: JP 🇯🇵 VULT
+    server: 45.76.192.126
+    type: vless
+    port: 443
+    uuid: bdc1da10-b74c-41d4-8f57-3c2e1185db50
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /bdc1da10-b74c-41d4-8f57-3c2e1185db50
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: JP 🇯🇵 Oracle
+    server: 141.147.161.173
+    port: 443
+    type: trojan
+    password: Carlosx0514!
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: JP 🇯🇵 Oracle
+    server: 138.2.45.106
+    port: 443
+    type: trojan
+    password: chen4753317
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: JP 🇯🇵 Oracle
+    server: 155.248.176.211
+    type: vmess
+    port: 443
+    uuid: 84e46faf-7d89-43af-8bd9-01b41fc1ddce
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /0cc651aee76c7/
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: KR 🇰🇷 rixCloud
+    server: 161.129.34.102
+    type: vmess
+    port: 443
+    uuid: ec736482-173e-3eff-9114-b49df8056e7d
+    alterId: 2
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: KR 🇰🇷 Oracle
+    server: 144.24.72.126
+    port: 443
+    type: trojan
+    password: 7118b5f4-0ea4-4c11-be7f-11471cb91e4a
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: KR 🇰🇷 Oracle
+    server: 138.2.113.248
+    port: 443
+    type: trojan
+    password: 9c822f05-cfdc-479a-9534-60f3d4127435
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: KR 🇰🇷 Oracle
+    server: 146.56.189.146
+    port: 443
+    type: trojan
+    password: f2117e99-9b6e-47fd-b0a9-634a0b15b998
+    skip-cert-verify: true
+    sni: null
+    network: tcp
+    udp: true
+  - name: KR 🇰🇷 Oracle
+    server: 138.2.113.84
+    port: 443
+    type: trojan
+    password: b291d129-ee55-4801-a9b8-b5316e5c37b7
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: IN 🇮🇳 Oracle
+    server: 152.67.162.166
+    port: 443
+    type: trojan
+    password: e05c749b-7c6b-41b8-9c71-9dcf685edf4a
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: IN 🇮🇳 Oracle
+    server: 152.67.160.174
+    port: 443
+    type: trojan
+    password: 54080134-2cba-4535-8599-95650bd9aa54
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: US 🇺🇲 Oracle
+    server: 192.9.143.133
+    port: 443
+    type: trojan
+    password: chen4753317
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: US 🇺🇲 Oracle
+    server: 129.153.168.154
+    port: 443
+    type: trojan
+    password: chen4753317
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: US 🇺🇲 Oracle
+    server: 158.101.21.144
+    type: vless
+    port: 443
+    uuid: 572d8be9-6f70-4891-adf8-01b24093db7e
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /qxtsws
+        headers:
+            Host: teams.live.com
+    udp: true
+  - name: DE 🇩🇪 Oracle
+    server: 132.145.251.170
+    port: 443
+    type: trojan
+    password: chen4753317
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: US 🇺🇲 Performive
+    server: 107.181.161.163
+    port: 443
+    type: trojan
+    password: d1478689-439c-4590-b7ce-36e786a02dc3
+    skip-cert-verify: true
+    sni: teams.live.com
+    network: tcp
+    udp: true
+  - name: MY 🇲🇾 KAOPU
+    server: 38.54.96.15
+    type: vmess
+    port: 443
+    uuid: a888c896-901b-3db7-b202-4c541175abcd
+    alterId: 0
+    cipher: auto
+    tls: true
+    skip-cert-verify: true
+    servername: teams.live.com
+    network: ws
+    ws-opts:
+        path: /v2ray
+        headers:
+            Host: teams.live.com
+    udp: true
