@@ -43,13 +43,13 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 <body>
 <div class="container">
     <h1>🔮 KALKULATOR MISTIK PRO</h1>
-    <div class="subtitle">Hitung multiple rumus mistik dengan pattern detection - Minimal 4 Data Berturut-turut</div>
+    <div class="subtitle">Hitung multiple rumus mistik dengan pattern detection - Sistem 2 Tahap</div>
     
     <div class="input-section">
         <div class="section-title">📥 INPUT DATA & RUMUS (Semua dalam satu kolom)</div>
         
         <div class="data-input">
-            <textarea id="inputData" placeholder="Masukkan data dan rumus dalam format:&#10;7013 = &#10;8741 = &#10;5337 = &#10;...&#10;6874 = 94 . 91 . 49 ai&#10;0489 = 83 . 35 . 49 ai&#10;...&#10;======&#10;A6ix+K8mb.(mb)&#10;A9–C10.(ty)&#10;C8ix+E2ml.(ml)">6874 = 94 . 91 . 49 ai
+            <textarea id="inputData" placeholder="Masukkan data dan rumus dalam format:&#10;6874 = 94 . 91 . 49 ai&#10;0489 = 83 . 35 . 49 ai&#10;...&#10;======&#10;A6ix+K8mb.(mb)&#10;A9–C10.(ty)&#10;C8ix+E2ml.(ml)">6874 = 94 . 91 . 49 ai
 0489 = 83 . 35 . 49 ai
 2843 = 72 . 57 . 27 ai
 3752 = 49 . 24 . 94 ai
@@ -102,13 +102,12 @@ C8ix+E2ml.(ml)</textarea>
     </div>
 
     <div class="explanation">
-        <h3>📝 KRITERIA PATTERN DETECTION:</h3>
+        <h3>📝 SISTEM 2 TAHAP:</h3>
         <ul>
-            <li><strong>Minimal 4 data berturut-turut</strong> dengan hasil lengkap untuk setiap rumus</li>
-            <li><strong>Pattern harus konsisten</strong> (modus jelas dari data riil)</li>
-            <li><strong>Tidak ada pattern default, random, atau acak</strong></li>
-            <li><strong>Jika kurang dari 4 data</strong> → hasil dikosongkan</li>
-            <li><strong>Output dapat disalin:</strong> Klik dan copy hasil perhitungan</li>
+            <li><strong>TAHAP 1:</strong> Hitung base result dengan program lama (1 digit)</li>
+            <li><strong>TAHAP 2:</strong> Transformasi dengan pattern "naik X" ke multi-digit</li>
+            <li><strong>Minimal 4 data berturut-turut</strong> untuk menentukan pattern</li>
+            <li><strong>Tidak ada pattern default/random</strong> - kosongkan jika tidak cukup data</li>
         </ul>
     </div>
 </div>
@@ -151,6 +150,9 @@ function calculateAdvanced() {
     try {
         // Parse data input dan extract formulas
         const { parsedData, formulas } = parseCompleteInput(inputData);
+        
+        // Hitung BASE RESULT dengan program lama untuk semua data
+        calculateBaseResults(parsedData, formulas);
         
         // Analisis pattern dari data yang ada
         detectPatterns(parsedData, formulas);
@@ -213,7 +215,8 @@ function parseCompleteInput(inputData) {
                     number: number,
                     results: results,
                     label: label,
-                    components: extractComponents(number)
+                    components: extractComponents(number),
+                    baseResults: [] // Akan diisi dengan hasil program lama
                 });
             }
         } else {
@@ -245,64 +248,156 @@ function extractComponents(number) {
     return { as, cop, kepala, ekor, jumlah };
 }
 
-function detectPatterns(parsedData, formulas) {
-    detectedPatterns = [];
-    const formulaCount = formulas.length;
+// TAHAP 1: Hitung BASE RESULT dengan program lama
+function calculateBaseResults(parsedData, formulas) {
+    // Reverse data untuk program lama (data terbaru di index 0)
+    const reversedData = [...parsedData].reverse();
     
-    // Untuk setiap formula, cari patternnya
-    for (let formulaIndex = 0; formulaIndex < formulaCount; formulaIndex++) {
-        const pattern = analyzePatternForFormula(parsedData, formulas[formulaIndex], formulaIndex);
-        detectedPatterns.push(pattern);
+    formulas.forEach((formula, formulaIndex) => {
+        // Untuk setiap data, hitung base result dengan program lama
+        reversedData.forEach((data, dataIndex) => {
+            try {
+                const baseResult = calculateSingleAI(formula, dataIndex, reversedData);
+                if (!data.baseResults) data.baseResults = [];
+                data.baseResults[formulaIndex] = baseResult;
+            } catch (error) {
+                console.error(`Error calculating base for ${data.number} with ${formula}:`, error);
+                if (!data.baseResults) data.baseResults = [];
+                data.baseResults[formulaIndex] = '';
+            }
+        });
+    });
+    
+    console.log('Base results calculated:', parsedData);
+}
+
+// PROGRAM LAMA - Calculate Single AI
+function calculateSingleAI(formula, currentDayIndex, dataHistory) {
+    let workingFormula = formula;
+    
+    // Process final conversion like .(ml)
+    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+    if (finalConversion) {
+        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
     }
     
-    // Tampilkan hasil analisis pattern
+    // Process components
+    const components = workingFormula.split('+');
+    let total = 0;
+    
+    components.forEach(component => {
+        const value = processComponent(component.trim(), currentDayIndex, dataHistory);
+        total += value;
+    });
+    
+    // Apply final conversion if exists
+    if (finalConversion) {
+        const table = finalConversion[1].toUpperCase();
+        const converted = convertMistik(total.toString(), table);
+        total = parseInt(converted);
+    }
+    
+    const finalResult = reduceToSingleDigit(total);
+    return finalResult;
+}
+
+function processComponent(component, currentDayIndex, dataHistory) {
+    // Examples: K1mb, J1m9, A2, C3, etc.
+    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    if (!match) {
+        throw new Error(`Format komponen tidak valid: ${component}`);
+    }
+    
+    const type = match[1]; // A, K, C, E, J
+    const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa
+    const conversion = match[3]; // mb, m9, ml, etc.
+    
+    // Hitung index data yang benar
+    const targetDayIndex = currentDayIndex + (dayOffset - 1);
+    
+    if (targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data tidak tersedia untuk ${component}`);
+    }
+    
+    const data = dataHistory[targetDayIndex];
+    let value;
+    
+    switch(type) {
+        case 'A': value = parseInt(data.components.as); break;
+        case 'K': value = parseInt(data.components.kepala); break;
+        case 'C': value = parseInt(data.components.cop); break;
+        case 'E': value = parseInt(data.components.ekor); break;
+        case 'J': value = data.components.jumlah; break;
+        default: throw new Error(`Tipe tidak dikenal: ${type}`);
+    }
+    
+    // Apply conversion if exists
+    if (conversion) {
+        const table = conversion.toUpperCase();
+        value = parseInt(convertMistik(value.toString(), table));
+    }
+    
+    return value;
+}
+
+function convertMistik(number, table) {
+    if (!mistikTables[table]) {
+        throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
+    }
+    
+    const digit = reduceToSingleDigit(parseInt(number)).toString();
+    
+    if (mistikTables[table][digit] === undefined) {
+        throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
+    }
+    
+    return mistikTables[table][digit];
+}
+
+// TAHAP 2: Analisis Pattern
+function detectPatterns(parsedData, formulas) {
+    detectedPatterns = [];
+    
+    formulas.forEach((formula, formulaIndex) => {
+        const pattern = analyzePatternForFormula(parsedData, formula, formulaIndex);
+        detectedPatterns.push(pattern);
+    });
+    
     displayPatternAnalysis();
 }
 
 function analyzePatternForFormula(parsedData, formula, formulaIndex) {
-    // 1. Cari data yang punya hasil untuk rumus ini (BERTURUT-TURUT)
-    const validData = [];
-    let consecutiveCount = 0;
+    // Cari data yang punya hasil FINAL (bukan base result) untuk rumus ini
+    const validData = parsedData.filter(item => 
+        item.results.length > formulaIndex && 
+        item.results[formulaIndex] && 
+        item.results[formulaIndex] !== ''
+    );
     
-    // Cari data berturut-turut yang memiliki hasil untuk rumus ini
-    for (let i = 0; i < parsedData.length; i++) {
-        const item = parsedData[i];
-        if (item.results.length > formulaIndex && item.results[formulaIndex] && item.results[formulaIndex] !== '') {
-            validData.push(item);
-            consecutiveCount++;
-        } else {
-            // Jika bertemu data tanpa hasil, reset consecutive count
-            if (consecutiveCount > 0) {
-                break; // Hanya gunakan data berturut-turut
-            }
-        }
-    }
+    console.log(`Rumus ${formula}: ${validData.length} data dengan hasil final`);
     
-    console.log(`Rumus ${formula}: ${validData.length} data berturut-turut`);
-    
-    // 2. WAJIB minimal 4 data berturut-turut dengan hasil lengkap
+    // WAJIB minimal 4 data dengan hasil final
     if (validData.length < 4) {
         return {
             formula: formula,
             naikSequence: [],
             digitLength: 0,
             isValid: false,
-            reason: `Hanya ${validData.length} data berturut-turut (minimal 4 required)`,
+            reason: `Hanya ${validData.length} data dengan hasil final (minimal 4 required)`,
             validDataCount: validData.length
         };
     }
     
-    // 3. Analisis pattern hanya jika memenuhi kriteria
     const pattern = {
         formula: formula,
         naikSequence: [],
         digitLength: validData[0].results[formulaIndex].length,
         isValid: true,
-        reason: `${validData.length} data berturut-turut - Pattern valid`,
+        reason: `${validData.length} data dengan hasil final - Pattern valid`,
         validDataCount: validData.length
     };
     
-    // 4. Untuk setiap digit position, cari pattern
+    // Untuk setiap digit position, cari pattern "naik X"
     for (let digitIndex = 0; digitIndex < pattern.digitLength; digitIndex++) {
         const naikValues = [];
         
@@ -315,7 +410,7 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
             naikValues.push(naikValue);
         }
         
-        // Cek konsistensi pattern - minimal 75% data memiliki nilai yang sama
+        // Cek konsistensi pattern
         const consistentNaik = findConsistentValue(naikValues);
         const consistency = calculateConsistency(naikValues, consistentNaik);
         
@@ -363,53 +458,46 @@ function calculateMissingData(parsedData, formulas) {
         item.results.some((r, idx) => !r && idx < formulas.length)
     );
     
-    for (let data of incompleteData) {
+    incompleteData.forEach(data => {
         // Pastikan array results cukup panjang
         while (data.results.length < formulas.length) {
             data.results.push('');
         }
         
         // Hitung hasil untuk setiap formula yang belum ada
-        for (let i = 0; i < formulas.length; i++) {
+        formulas.forEach((formula, i) => {
             if (!data.results[i] || data.results[i] === '') {
-                const calculatedResult = calculateWithPattern(data, formulas[i], detectedPatterns[i], results);
+                const calculatedResult = calculateWithPattern(data, formula, detectedPatterns[i]);
                 data.results[i] = calculatedResult;
             }
-        }
-    }
+        });
+    });
     
     return results;
 }
 
-function calculateWithPattern(data, formula, pattern, allData) {
-    // JIKA PATTERN TIDAK ADA atau TIDAK VALID - KOSONGKAN
+function calculateWithPattern(data, formula, pattern) {
+    // JIKA PATTERN TIDAK VALID - KOSONGKAN
     if (!pattern || !pattern.isValid) {
         return "";
     }
     
     try {
-        // Cari data terakhir yang memiliki hasil untuk rumus ini
-        const lastValidData = allData
-            .filter(item => 
-                item.results.length > allData.indexOf(data) && 
-                item.results[allData.indexOf(data)] && 
-                item.results[allData.indexOf(data)] !== ''
-            )
-            .pop();
+        // Dapatkan BASE RESULT dari program lama
+        const formulaIndex = detectedPatterns.findIndex(p => p.formula === formula);
+        const baseResult = data.baseResults[formulaIndex];
         
-        if (!lastValidData) {
+        if (!baseResult && baseResult !== 0) {
             return "";
         }
         
-        const lastResult = lastValidData.results[allData.indexOf(data)];
+        // Transformasi dengan pattern "naik X"
         let finalResult = "";
+        let currentDigit = parseInt(baseResult);
         
-        // Hitung berdasarkan pattern dari hasil terakhir
         for (let i = 0; i < pattern.digitLength; i++) {
-            const lastDigit = parseInt(lastResult[i]);
-            const naikValue = pattern.naikSequence[i];
-            const newDigit = naikSiklik(lastDigit, naikValue);
-            finalResult += newDigit.toString();
+            currentDigit = naikSiklik(currentDigit, pattern.naikSequence[i]);
+            finalResult += currentDigit.toString();
         }
         
         return finalResult;
@@ -417,27 +505,6 @@ function calculateWithPattern(data, formula, pattern, allData) {
         console.error('Error in calculateWithPattern:', error);
         return "";
     }
-}
-
-function calculateSingleFormula(data, formula) {
-    // Placeholder untuk perhitungan base
-    const components = data.components;
-    
-    let result = 0;
-    
-    if (formula.includes('A') && formula.includes('K')) {
-        result = (parseInt(components.as) + parseInt(components.kepala)) % 10;
-    } else if (formula.includes('A') && formula.includes('C')) {
-        result = (parseInt(components.as) + parseInt(components.cop)) % 10;
-    } else if (formula.includes('K') && formula.includes('E')) {
-        result = (parseInt(components.kepala) + parseInt(components.ekor)) % 10;
-    } else if (formula.includes('C') && formula.includes('E')) {
-        result = (parseInt(components.cop) + parseInt(components.ekor)) % 10;
-    } else {
-        result = parseInt(components.jumlah);
-    }
-    
-    return result;
 }
 
 function displayPatternAnalysis() {
@@ -463,10 +530,6 @@ function displayPatternAnalysis() {
         
         html += `</div>`;
     });
-    
-    if (validPatterns === 0) {
-        html = '<div style="text-align: center; color: #ff9800; padding: 20px;">⚠️ Tidak ada pattern yang valid ditemukan (minimal 4 data berturut-turut required)</div>';
-    }
     
     patternResults.innerHTML = html;
     patternAnalysis.style.display = 'block';
