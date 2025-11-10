@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generator Permutasi Angka</title>
+<title>Generator BBFS</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
@@ -29,19 +29,20 @@ button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
 .output-content { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; white-space:pre-wrap; max-height:500px; overflow-y:auto; line-height:1.3; font-size:12px; }
 .loading { display:none; text-align:center; color:#667eea; margin:10px 0; }
 .stats { display:flex; justify-content:space-between; margin-top:10px; font-size:12px; color:#666; }
+.group-title { color:#ff79c6; font-weight:bold; margin:10px 0 5px 0; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎰 GENERATOR PERMUTASI ANGKA</h1>
-    <div class="subtitle">Generate semua kemungkinan urutan angka (2-6 digit)</div>
+    <h1>🎰 GENERATOR BBFS OTOMATIS</h1>
+    <div class="subtitle">Generate semua kemungkinan urutan angka dengan pengelompokan digit</div>
     
     <div class="warning">
-        ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan 720 hasil. 7+ digit tidak disarankan!
+        ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
     </div>
     
     <div class="input-group">
-        <input type="text" id="inputAngka" placeholder="Masukkan angka 2-6 digit (contoh: 3567)" maxlength="6">
+        <input type="text" id="inputAngka" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
         <button class="btn-generate" onclick="generatePermutasi()" id="btnGenerate">🚀 GENERATE</button>
     </div>
     
@@ -59,7 +60,7 @@ button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
             <div class="output-title">HASIL PERMUTASI</div>
             <div class="output-count" id="countOutput">0 hasil</div>
         </div>
-        <div class="output-content" id="outputPermutasi">// Hasil akan muncul di sini</div>
+        <div class="output-content" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
         <div class="stats">
             <div id="timeInfo">Waktu: -</div>
             <div id="memoryInfo">Karakter: 0</div>
@@ -100,20 +101,20 @@ function generatePermutasi() {
     setTimeout(() => {
         const startTime = performance.now();
         
-        // Generate semua permutasi
-        const permutations = generateAllPermutations(input);
-        const uniquePermutations = [...new Set(permutations)]; // Hapus duplikat jika ada angka sama
+        // Generate semua permutasi untuk setiap kombinasi digit
+        const groupedResults = generateGroupedPermutations(input);
         
         const endTime = performance.now();
         const processingTime = (endTime - startTime).toFixed(2);
         
-        // Format output dengan * sebagai pemisah
-        const output = uniquePermutations.join('*') + '*';
+        // Format output dengan pengelompokan
+        const output = formatGroupedOutput(groupedResults);
         const charCount = output.length;
+        const totalResults = calculateTotalResults(groupedResults);
         
         // Tampilkan hasil
         document.getElementById('outputPermutasi').textContent = output;
-        document.getElementById('countOutput').textContent = `${uniquePermutations.length} hasil`;
+        document.getElementById('countOutput').textContent = `${totalResults} hasil`;
         document.getElementById('timeInfo').textContent = `Waktu: ${processingTime}ms`;
         document.getElementById('memoryInfo').textContent = `Karakter: ${charCount.toLocaleString()}`;
         
@@ -121,14 +122,62 @@ function generatePermutasi() {
         btnGenerate.disabled = false;
         loading.style.display = 'none';
         
-        showInfo(`Berhasil generate ${uniquePermutations.length} permutasi unik dari ${digitCount} digit angka!`, 'success');
+        showInfo(`Berhasil generate ${totalResults} permutasi dalam ${Object.keys(groupedResults).length} kelompok!`, 'success');
     }, 10);
+}
+
+function generateGroupedPermutations(input) {
+    const groups = {};
+    const inputDigits = input.split('');
+    
+    // Generate kombinasi untuk setiap panjang digit
+    for (let length = inputDigits.length; length >= 2; length--) {
+        const groupKey = length + 'DIGIT';
+        groups[groupKey] = new Set();
+        
+        // Generate semua kombinasi dengan panjang tertentu
+        const combinations = generateCombinations(inputDigits, length);
+        
+        // Untuk setiap kombinasi, generate semua permutasi
+        combinations.forEach(combination => {
+            const permutations = generateAllPermutations(combination.join(''));
+            permutations.forEach(perm => {
+                groups[groupKey].add(perm);
+            });
+        });
+    }
+    
+    // Convert Set ke Array dan sort
+    Object.keys(groups).forEach(group => {
+        groups[group] = Array.from(groups[group]).sort();
+    });
+    
+    return groups;
+}
+
+function generateCombinations(arr, length) {
+    const results = [];
+    
+    function combine(start, current) {
+        if (current.length === length) {
+            results.push([...current]);
+            return;
+        }
+        
+        for (let i = start; i < arr.length; i++) {
+            current.push(arr[i]);
+            combine(i + 1, current);
+            current.pop();
+        }
+    }
+    
+    combine(0, []);
+    return results;
 }
 
 function generateAllPermutations(str) {
     const results = [];
     
-    // Fungsi recursive untuk generate permutasi
     function permute(arr, memo = []) {
         if (arr.length === 0) {
             results.push(memo.join(''));
@@ -141,11 +190,34 @@ function generateAllPermutations(str) {
         }
     }
     
-    // Convert string ke array karakter
     const arr = str.split('');
     permute(arr);
-    
     return results;
+}
+
+function formatGroupedOutput(groupedResults) {
+    let output = '';
+    
+    // Urutkan kelompok dari digit tertinggi ke terendah
+    const sortedGroups = Object.keys(groupedResults)
+        .sort((a, b) => parseInt(b) - parseInt(a));
+    
+    sortedGroups.forEach(group => {
+        if (groupedResults[group].length > 0) {
+            output += `${group}\n`;
+            output += `${groupedResults[group].join('*')}*\n`;
+        }
+    });
+    
+    return output;
+}
+
+function calculateTotalResults(groupedResults) {
+    let total = 0;
+    Object.values(groupedResults).forEach(group => {
+        total += group.length;
+    });
+    return total;
 }
 
 function copyOutput() {
@@ -161,7 +233,7 @@ function copyOutput() {
 
 function clearAll() {
     document.getElementById('inputAngka').value = '';
-    document.getElementById('outputPermutasi').textContent = '// Hasil akan muncul di sini';
+    document.getElementById('outputPermutasi').textContent = '// Hasil akan muncul di sini dengan format kelompok digit';
     document.getElementById('countOutput').textContent = '0 hasil';
     document.getElementById('timeInfo').textContent = 'Waktu: -';
     document.getElementById('memoryInfo').textContent = 'Karakter: 0';
