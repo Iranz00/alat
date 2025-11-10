@@ -38,7 +38,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 </head>
 <body>
 <div class="container">
-    <h1>🔮 KALKULATOR MISTIK</h1>
+    <h1>🔮 KALKULATOR KEY</h1>
     <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap</div>
     
     <div class="grid-container">
@@ -92,11 +92,12 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
             <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
-// 8445 = 2 ai
-// 2429 = 7 ai
+// 7013 = 	
+// 8741 = 	
+// 5337 = 	
 // ...
 // ======
-// K1mb+J1m9.(ml)
+// A1+K9
             </div>
         </div>
     </div>
@@ -213,8 +214,7 @@ function parseInputData(inputData) {
     dataHistory = [];
     const lines = inputData.split('\n').filter(line => line.trim());
     
-    // PERBAIKAN: Data terbaru harus di index 0
-    // Reverse array agar data terbaru di awal
+    // Data terbaru harus di index 0
     const reversedLines = [...lines].reverse();
     
     reversedLines.forEach(line => {
@@ -244,17 +244,51 @@ function parseInputData(inputData) {
 function calculateAIForAll(formula) {
     const results = [];
     
+    // Cari hari maksimum yang dibutuhkan dalam rumus
+    const maxDayNeeded = findMaxDayInFormula(formula);
+    console.log(`Hari maksimum yang dibutuhkan: ${maxDayNeeded}`);
+    
     // Untuk setiap angka dalam dataHistory, hitung AI-nya
-    // Data terbaru (index 0) adalah hari ini, index 1 adalah kemarin, dst.
+    // Hanya hitung untuk data yang memiliki cukup riwayat
     for (let i = 0; i < dataHistory.length; i++) {
-        const aiResult = calculateSingleAI(formula, i);
-        results.push({
-            number: dataHistory[i].number,
-            ai: aiResult
-        });
+        // Cek apakah data ini memiliki cukup riwayat untuk rumus
+        if (i + maxDayNeeded <= dataHistory.length) {
+            const aiResult = calculateSingleAI(formula, i);
+            results.push({
+                number: dataHistory[i].number,
+                ai: aiResult,
+                canCalculate: true
+            });
+        } else {
+            // Data tidak memiliki cukup riwayat
+            results.push({
+                number: dataHistory[i].number,
+                ai: '',
+                canCalculate: false
+            });
+        }
     }
     
     return results;
+}
+
+function findMaxDayInFormula(formula) {
+    let maxDay = 1; // Minimal hari 1 (hari ini)
+    
+    // Cari semua komponen dalam rumus
+    const components = formula.split('+');
+    
+    components.forEach(component => {
+        const match = component.match(/^([AKCEJ])(\d+)/);
+        if (match) {
+            const day = parseInt(match[2]);
+            if (day > maxDay) {
+                maxDay = day;
+            }
+        }
+    });
+    
+    return maxDay;
 }
 
 function calculateSingleAI(formula, currentDayIndex) {
@@ -306,13 +340,13 @@ function processComponent(component, currentDayIndex, debugSteps) {
     const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa
     const conversion = match[3]; // mb, m9, ml, etc.
     
-    // PERBAIKAN: Hitung index data yang benar
-    // currentDayIndex = index data yang sedang dihitung AI-nya (0 = hari ini)
+    // Hitung index data yang benar
+    // currentDayIndex = index data yang sedang dihitung (0 = hari ini)
     // dayOffset = berapa hari mundur dari data yang sedang dihitung
     const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
     if (targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data hari ke-${dayOffset} tidak tersedia untuk perhitungan ${dataHistory[currentDayIndex]?.number}. Hanya tersedia ${dataHistory.length} data.`);
+        throw new Error(`Data tidak tersedia untuk ${component}`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -367,9 +401,16 @@ function displayResult(results, formula) {
     const output = document.getElementById('resultOutput');
     let outputText = '';
     
-    // Format output seperti yang diminta (dari terbaru ke terlama)
-    results.forEach(result => {
-        outputText += `${result.number} = ${result.ai} ai\n`;
+    // Format output seperti yang diminta
+    // Data terlama dulu, lalu data terbaru
+    const reversedResults = [...results].reverse();
+    
+    reversedResults.forEach(result => {
+        if (result.canCalculate) {
+            outputText += `${result.number} = ${result.ai} ai\n`;
+        } else {
+            outputText += `${result.number} = \t\n`;
+        }
     });
     
     outputText += '======\n';
@@ -383,11 +424,12 @@ function clearAll() {
     document.getElementById('inputFormula').value = 'A1+K9';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
-// 8445 = 2 ai
-// 2429 = 7 ai
+// 7013 = 	
+// 8741 = 	
+// 5337 = 	
 // ...
 // ======
-// K1mb+J1m9.(ml)`;
+// A1+K9`;
     document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG';
     document.getElementById('inputInfo').textContent = '0 angka terdeteksi';
     document.getElementById('debugInfo').style.display = 'none';
