@@ -23,7 +23,7 @@ button { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; f
 .btn-clear { background:#f44336;color:white; }
 button:hover { opacity:0.9; transform:translateY(-2px); }
 .info { background:#e3f2fd; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; }
-.result-box { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; min-height:100px; }
+.result-box { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; min-height:100px; white-space:pre-wrap; line-height:1.4; }
 .tables-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:20px; }
 .table-container { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; }
 .table-title { font-weight:bold; margin-bottom:8px; color:#333; text-align:center; }
@@ -32,6 +32,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 .explanation h3 { color:#856404; margin-bottom:10px; }
 .explanation ul { color:#856404; padding-left:20px; }
 .explanation li { margin-bottom:5px; }
+.input-info { text-align:center; color:#666; font-size:12px; margin-bottom:10px; }
 </style>
 </head>
 <body>
@@ -44,7 +45,8 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
             <div class="section-title">📥 INPUT DATA</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data hasil (contoh:&#10;8445 = 2 ai&#10;2429 = 7 ai&#10;5879 = 8 ai&#10;9158 = 6 ai&#10;5364 = 0 ai&#10;2190 = 8 ai&#10;3358 = 6 ai)"></textarea>
+                <textarea id="inputData" placeholder="Masukkan angka saja (contoh:&#10;8445&#10;2429&#10;5879&#10;9158&#10;5364&#10;2190&#10;3358)"></textarea>
+                <div class="input-info" id="inputInfo">0 angka terdeteksi</div>
             </div>
             
             <div class="formula-input">
@@ -62,7 +64,13 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
         <div class="output-section">
             <div class="section-title">📤 HASIL PERHITUNGAN</div>
             <div class="result-box" id="resultOutput">
-                // Hasil perhitungan akan muncul di sini
+// Hasil perhitungan akan muncul di sini
+// Format:
+// 8445 = 2 ai
+// 2429 = 7 ai
+// ...
+// ======
+// K1mb+J1m9.(ml)
             </div>
         </div>
     </div>
@@ -149,14 +157,14 @@ function calculateFormula() {
     }
     
     try {
-        // Parse data input
+        // Parse data input (hanya angka)
         parseInputData(inputData);
         
-        // Process formula
-        const result = processFormula(formula);
+        // Calculate AI untuk setiap angka
+        const results = calculateAIForAll(formula);
         
-        // Display result
-        displayResult(formula, result);
+        // Display result dalam format yang diminta
+        displayResult(results, formula);
         showInfo('Perhitungan berhasil!', 'success');
         
     } catch (error) {
@@ -170,11 +178,8 @@ function parseInputData(inputData) {
     const lines = inputData.split('\n').filter(line => line.trim());
     
     lines.forEach(line => {
-        const match = line.match(/(\d+)\s*=\s*(\d+)\s*ai/);
-        if (match) {
-            const number = match[1];
-            const result = match[2];
-            
+        const number = line.trim();
+        if (number.match(/^\d+$/)) {
             // Extract components
             const as = number.slice(0, 2);
             const kop = number.slice(1, 3);
@@ -183,7 +188,6 @@ function parseInputData(inputData) {
             
             dataHistory.unshift({
                 number: number,
-                result: result,
                 as: as,
                 kop: kop,
                 kepala: kepala,
@@ -196,16 +200,28 @@ function parseInputData(inputData) {
     console.log('Parsed data:', dataHistory);
 }
 
-function processFormula(formula) {
-    let workingFormula = formula;
-    let stepByStep = [];
+function calculateAIForAll(formula) {
+    const results = [];
     
-    // Process conversions like .(ml)
+    // Untuk setiap angka dalam dataHistory, hitung AI-nya
+    for (let i = 0; i < dataHistory.length; i++) {
+        const aiResult = calculateSingleAI(formula, i + 1);
+        results.push({
+            number: dataHistory[i].number,
+            ai: aiResult
+        });
+    }
+    
+    return results;
+}
+
+function calculateSingleAI(formula, day) {
+    let workingFormula = formula;
+    
+    // Process final conversion like .(ml)
     const finalConversion = workingFormula.match(/\.\((\w+)\)/);
     if (finalConversion) {
         workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
-        stepByStep.push(`Rumus: ${formula}`);
-        stepByStep.push(`Setelah remove .(${finalConversion[1]}): ${workingFormula}`);
     }
     
     // Process components
@@ -213,30 +229,20 @@ function processFormula(formula) {
     let total = 0;
     
     components.forEach(component => {
-        const value = processComponent(component.trim());
+        const value = processComponent(component.trim(), day);
         total += value;
-        stepByStep.push(`${component} = ${value}`);
     });
-    
-    stepByStep.push(`Total: ${total}`);
     
     // Apply final conversion if exists
     if (finalConversion) {
         const table = finalConversion[1].toUpperCase();
-        const converted = convertMistik(total.toString(), table);
-        stepByStep.push(`Konversi ${total} ke ${table}: ${converted}`);
-        total = parseInt(converted);
+        total = parseInt(convertMistik(total.toString(), table));
     }
     
-    stepByStep.push(`Hasil akhir: ${total}`);
-    
-    return {
-        value: total,
-        steps: stepByStep
-    };
+    return reduceToSingleDigit(total);
 }
 
-function processComponent(component) {
+function processComponent(component, day) {
     // Examples: K1mb, J1m9, A2, C3, etc.
     const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
     if (!match) {
@@ -244,14 +250,17 @@ function processComponent(component) {
     }
     
     const type = match[1]; // A, K, C, E, J
-    const day = parseInt(match[2]); // 1, 2, 3, ...
+    const componentDay = parseInt(match[2]); // 1, 2, 3, ...
     const conversion = match[3]; // mb, m9, ml, etc.
     
-    if (day > dataHistory.length) {
-        throw new Error(`Data hari ke-${day} tidak tersedia`);
+    if (componentDay > dataHistory.length) {
+        throw new Error(`Data hari ke-${componentDay} tidak tersedia`);
     }
     
-    const data = dataHistory[day - 1];
+    // Untuk perhitungan AI, kita menggunakan data dari hari yang ditentukan
+    const dataIndex = dataHistory.length - componentDay;
+    const data = dataHistory[dataIndex];
+    
     let value;
     
     switch(type) {
@@ -295,25 +304,33 @@ function reduceToSingleDigit(num) {
     return result;
 }
 
-function displayResult(formula, result) {
+function displayResult(results, formula) {
     const output = document.getElementById('resultOutput');
-    let html = `<strong>RUMUS: ${formula}</strong>\n\n`;
-    html += `<strong>STEP BY STEP:</strong>\n`;
+    let outputText = '';
     
-    result.steps.forEach(step => {
-        html += `${step}\n`;
+    // Format output seperti yang diminta
+    results.forEach(result => {
+        outputText += `${result.number} = ${result.ai} ai\n`;
     });
     
-    html += `\n<strong>HASIL AKHIR: ${result.value}</strong>`;
+    outputText += '======\n';
+    outputText += formula;
     
-    output.textContent = html;
+    output.textContent = outputText;
 }
 
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('inputFormula').value = 'K1mb+J1m9.(ml)';
-    document.getElementById('resultOutput').textContent = '// Hasil perhitungan akan muncul di sini';
+    document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
+// Format:
+// 8445 = 2 ai
+// 2429 = 7 ai
+// ...
+// ======
+// K1mb+J1m9.(ml)`;
     document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG';
+    document.getElementById('inputInfo').textContent = '0 angka terdeteksi';
     dataHistory = [];
 }
 
@@ -325,6 +342,19 @@ function showInfo(message, type) {
     infoDiv.style.color = type === 'error' ? '#c62828' :
                         type === 'success' ? '#2e7d32' : '#1565c0';
 }
+
+// Update info input real-time
+function updateInputInfo() {
+    const input = document.getElementById('inputData').value.trim();
+    const numbers = input.split('\n').filter(line => line.trim() && line.match(/^\d+$/));
+    document.getElementById('inputInfo').textContent = `${numbers.length} angka terdeteksi`;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Update input info real-time
+    document.getElementById('inputData').addEventListener('input', updateInputInfo);
+});
 
 // Support Enter key untuk calculate (Ctrl+Enter)
 document.getElementById('inputFormula').addEventListener('keydown', function(e) {
