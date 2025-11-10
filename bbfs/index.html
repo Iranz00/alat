@@ -13,6 +13,12 @@ h1 { text-align:center; color:#333; margin-bottom:10px; }
 .input-group { display:flex; gap:10px; margin-bottom:15px; align-items:center; }
 input { flex:1; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; }
 input:focus { border-color:#667eea; outline:none; }
+.digit-selection { background:#f8f9fa; padding:15px; border-radius:10px; margin-bottom:15px; border:2px solid #e9ecef; }
+.digit-selection h3 { margin-bottom:10px; color:#333; font-size:14px; text-align:center; }
+.checkbox-group { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
+.checkbox-item { display:flex; align-items:center; gap:5px; }
+.checkbox-item input[type="checkbox"] { width:16px; height:16px; }
+.checkbox-item label { font-size:14px; color:#333; cursor:pointer; }
 .warning { background:#fff3cd; color:#856404; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-size:14px; border:1px solid #ffeaa7; }
 .button-group { display:flex; gap:10px; margin-bottom:15px; }
 button { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
@@ -46,6 +52,13 @@ button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
         <button class="btn-generate" onclick="generatePermutasi()" id="btnGenerate">🚀 GENERATE</button>
     </div>
     
+    <div class="digit-selection">
+        <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
+        <div class="checkbox-group" id="digitCheckboxes">
+            <!-- Checkbox akan di-generate otomatis oleh JavaScript -->
+        </div>
+    </div>
+    
     <div class="loading" id="loading">⏳ Sedang memproses... Harap tunggu!</div>
     
     <div class="button-group">
@@ -53,7 +66,7 @@ button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
         <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
     </div>
     
-    <div class="info" id="info">Masukkan angka 2-6 digit dan klik GENERATE</div>
+    <div class="info" id="info">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
 
     <div class="output-container">
         <div class="output-header">
@@ -69,6 +82,9 @@ button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
 </div>
 
 <script>
+// Variabel global untuk menyimpan pilihan digit
+let selectedDigits = [];
+
 function generatePermutasi() {
     const input = document.getElementById('inputAngka').value.trim();
     const btnGenerate = document.getElementById('btnGenerate');
@@ -92,6 +108,12 @@ function generatePermutasi() {
         return;
     }
     
+    // Validasi pilihan digit
+    if (selectedDigits.length === 0) {
+        showInfo('Pilih minimal satu digit!', 'error');
+        return;
+    }
+    
     // Tampilkan loading
     btnGenerate.disabled = true;
     loading.style.display = 'block';
@@ -101,7 +123,7 @@ function generatePermutasi() {
     setTimeout(() => {
         const startTime = performance.now();
         
-        // Generate semua permutasi untuk setiap kombinasi digit
+        // Generate semua permutasi untuk setiap kombinasi digit yang dipilih
         const groupedResults = generateGroupedPermutations(input);
         
         const endTime = performance.now();
@@ -130,8 +152,8 @@ function generateGroupedPermutations(input) {
     const groups = {};
     const inputDigits = input.split('');
     
-    // Generate kombinasi untuk setiap panjang digit
-    for (let length = inputDigits.length; length >= 2; length--) {
+    // Generate kombinasi hanya untuk digit yang dipilih
+    selectedDigits.forEach(length => {
         const groupKey = length + 'DIGIT';
         groups[groupKey] = new Set();
         
@@ -145,7 +167,7 @@ function generateGroupedPermutations(input) {
                 groups[groupKey].add(perm);
             });
         });
-    }
+    });
     
     // Convert Set ke Array dan sort
     Object.keys(groups).forEach(group => {
@@ -237,6 +259,14 @@ function clearAll() {
     document.getElementById('countOutput').textContent = '0 hasil';
     document.getElementById('timeInfo').textContent = 'Waktu: -';
     document.getElementById('memoryInfo').textContent = 'Karakter: 0';
+    
+    // Reset semua checkbox
+    const checkboxes = document.querySelectorAll('#digitCheckboxes input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    selectedDigits = [];
+    
     showInfo('Semua data telah direset!', 'info');
 }
 
@@ -249,6 +279,59 @@ function showInfo(message, type) {
                         type === 'success' ? '#2e7d32' : '#1565c0';
 }
 
+// Fungsi untuk update checkbox berdasarkan input
+function updateDigitCheckboxes(digitCount) {
+    const checkboxContainer = document.getElementById('digitCheckboxes');
+    checkboxContainer.innerHTML = '';
+    selectedDigits = [];
+    
+    if (digitCount >= 2 && digitCount <= 6) {
+        // Buat checkbox untuk setiap digit dari 2 sampai digitCount
+        for (let i = 2; i <= digitCount; i++) {
+            const checkboxItem = document.createElement('div');
+            checkboxItem.className = 'checkbox-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `digit${i}`;
+            checkbox.value = i;
+            checkbox.checked = true; // Default checked
+            checkbox.addEventListener('change', handleDigitSelection);
+            
+            const label = document.createElement('label');
+            label.htmlFor = `digit${i}`;
+            label.textContent = `${i}D`;
+            
+            checkboxItem.appendChild(checkbox);
+            checkboxItem.appendChild(label);
+            checkboxContainer.appendChild(checkboxItem);
+            
+            // Tambahkan ke selectedDigits
+            selectedDigits.push(i);
+        }
+    }
+}
+
+// Fungsi untuk handle perubahan selection digit
+function handleDigitSelection(event) {
+    const digit = parseInt(event.target.value);
+    
+    if (event.target.checked) {
+        // Tambahkan digit jika belum ada
+        if (!selectedDigits.includes(digit)) {
+            selectedDigits.push(digit);
+        }
+    } else {
+        // Hapus digit dari selection
+        selectedDigits = selectedDigits.filter(d => d !== digit);
+    }
+    
+    // Sort selectedDigits
+    selectedDigits.sort((a, b) => a - b);
+    
+    console.log('Digit yang dipilih:', selectedDigits);
+}
+
 // Support Enter key untuk generate
 document.getElementById('inputAngka').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
@@ -256,7 +339,7 @@ document.getElementById('inputAngka').addEventListener('keypress', function(e) {
     }
 });
 
-// Validasi real-time
+// Validasi real-time dan update checkbox
 document.getElementById('inputAngka').addEventListener('input', function(e) {
     const value = e.target.value;
     const digitCount = value.length;
@@ -264,7 +347,45 @@ document.getElementById('inputAngka').addEventListener('input', function(e) {
     if (digitCount > 6) {
         showInfo('Maksimal 6 digit!', 'error');
         e.target.value = value.slice(0, 6);
+        return;
     }
+    
+    // Update checkbox berdasarkan jumlah digit
+    updateDigitCheckboxes(digitCount);
+});
+
+// Select all checkbox
+function selectAllDigits() {
+    const checkboxes = document.querySelectorAll('#digitCheckboxes input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    updateDigitSelectionFromCheckboxes();
+}
+
+// Deselect all checkbox
+function deselectAllDigits() {
+    const checkboxes = document.querySelectorAll('#digitCheckboxes input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    selectedDigits = [];
+}
+
+// Update selectedDigits dari checkbox state
+function updateDigitSelectionFromCheckboxes() {
+    selectedDigits = [];
+    const checkboxes = document.querySelectorAll('#digitCheckboxes input[type="checkbox"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedDigits.push(parseInt(checkbox.value));
+    });
+    selectedDigits.sort((a, b) => a - b);
+}
+
+// Inisialisasi
+document.addEventListener('DOMContentLoaded', function() {
+    // Default state
+    updateDigitCheckboxes(0);
 });
 </script>
 </body>
