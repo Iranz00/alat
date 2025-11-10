@@ -44,7 +44,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 <body>
 <div class="container">
     <h1>🔮 KALKULATOR MISTIK PRO</h1>
-    <div class="subtitle">Pattern Detection Akurat & Otomatis - Minimal 4 Data Berturut-turut</div>
+    <div class="subtitle">Pattern Detection Akurat - Abaikan Data Kosong di Awal</div>
     
     <div class="input-section">
         <div class="section-title">📥 INPUT DATA & RUMUS (Semua dalam satu kolom)</div>
@@ -64,7 +64,8 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 9158 = 61 . 24 . 49 ai
 5364 = 50 . 80 . 49 ai
 2190 = 38 . 57 . 50 ai
-3358 = 
+3358 = 05 . 02 . 05 ai
+1452 = 
 ======
 A6ix+K8mb.(mb)
 A9–C10.(ty)
@@ -99,17 +100,6 @@ C8ix+E2ml.(ml)</textarea>
 // A9–C10.(ty) 
 // C8ix+E2ml.(ml)
         </div>
-    </div>
-
-    <div class="explanation">
-        <h3>📝 SISTEM PATTERN DETECTION:</h3>
-        <ul>
-            <li><strong>Analisis Otomatis:</strong> Deteksi pattern "naik X" dari data yang ada</li>
-            <li><strong>Minimal 4 Data:</strong> Harus ada 4 data berturut-turut dengan hasil lengkap</li>
-            <li><strong>Konsistensi 100%:</strong> Pattern harus sama untuk semua data berturut-turut</li>
-            <li><strong>Validasi Ketat:</strong> Tidak ada pattern default/random</li>
-            <li><strong>Base Result:</strong> Menggunakan hasil program lama sebagai dasar perhitungan</li>
-        </ul>
     </div>
 </div>
 
@@ -338,7 +328,7 @@ function convertMistik(number, table) {
     return mistikTables[table][digit];
 }
 
-// TAHAP 2: Pattern Detection Akurat
+// TAHAP 2: Pattern Detection Akurat - FIXED!
 function detectPatterns(parsedData, formulas) {
     detectedPatterns = [];
     
@@ -351,37 +341,45 @@ function detectPatterns(parsedData, formulas) {
 }
 
 function analyzePatternForFormula(parsedData, formula, formulaIndex) {
-    // Cari data yang punya hasil FINAL untuk rumus ini (BERTURUT-TURUT)
-    const validData = [];
-    let consecutiveCount = 0;
-    let maxConsecutive = 0;
-    let currentSequence = [];
-    
-    // Cari sequence terpanjang yang berturut-turut
+    // FIX: Cari data pertama yang punya hasil untuk rumus ini (abaikan data kosong di awal)
+    let startIndex = -1;
     for (let i = 0; i < parsedData.length; i++) {
-        const item = parsedData[i];
-        if (item.results.length > formulaIndex && item.results[formulaIndex] && item.results[formulaIndex] !== '') {
-            consecutiveCount++;
-            currentSequence.push(item);
-        } else {
-            if (consecutiveCount > maxConsecutive) {
-                maxConsecutive = consecutiveCount;
-                validData.length = 0;
-                validData.push(...currentSequence);
-            }
-            consecutiveCount = 0;
-            currentSequence = [];
+        if (parsedData[i].results.length > formulaIndex && 
+            parsedData[i].results[formulaIndex] && 
+            parsedData[i].results[formulaIndex] !== '') {
+            startIndex = i;
+            break;
         }
     }
     
-    // Cek sequence terakhir
-    if (consecutiveCount > maxConsecutive) {
-        maxConsecutive = consecutiveCount;
-        validData.length = 0;
-        validData.push(...currentSequence);
+    // Jika tidak ada data yang punya hasil
+    if (startIndex === -1) {
+        return {
+            formula: formula,
+            naikSequence: [],
+            digitLength: 0,
+            isValid: false,
+            reason: `Tidak ada data dengan hasil final`,
+            validDataCount: 0,
+            consecutive: 0
+        };
     }
     
-    console.log(`Rumus ${formula}: ${validData.length} data berturut-turut`);
+    // FIX: Ambil semua data berturut-turut mulai dari data pertama yang punya hasil
+    const validData = [];
+    for (let i = startIndex; i < parsedData.length; i++) {
+        const item = parsedData[i];
+        if (item.results.length > formulaIndex && 
+            item.results[formulaIndex] && 
+            item.results[formulaIndex] !== '') {
+            validData.push(item);
+        } else {
+            // Stop jika menemui data tanpa hasil
+            break;
+        }
+    }
+    
+    console.log(`Rumus ${formula}: ${validData.length} data berturut-turut (mulai dari ${validData[0]?.number})`);
     
     // WAJIB minimal 4 data berturut-turut
     if (validData.length < 4) {
@@ -538,10 +536,6 @@ function displayPatternAnalysis() {
         
         html += `</div>`;
     });
-    
-    if (validPatterns === 0) {
-        html = '<div style="text-align: center; color: #ff9800; padding: 20px;">⚠️ Tidak ada pattern yang valid ditemukan (minimal 4 data berturut-turut required)</div>';
-    }
     
     patternResults.innerHTML = html;
     patternAnalysis.style.display = 'block';
