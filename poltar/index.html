@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENERATOR POLA TARUNG</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
+.container { max-width:1000px; margin:0 auto; background:white; border-radius:15px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+h1 { text-align:center; color:#333; margin-bottom:10px; }
+.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:20px; }
+.input-group { margin-bottom:15px; }
+textarea { width:100%; height:100px; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; resize:vertical; margin-bottom:10px; }
+textarea:focus { border-color:#667eea; outline:none; }
+.digit-selection { background:#f8f9fa; padding:15px; border-radius:10px; margin-bottom:15px; border:2px solid #e9ecef; }
+.digit-selection h3 { margin-bottom:10px; color:#333; font-size:14px; text-align:center; }
+.checkbox-group { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
+.checkbox-item { display:flex; align-items:center; gap:5px; }
+.checkbox-item input[type="checkbox"] { width:16px; height:16px; }
+.checkbox-item label { font-size:14px; color:#333; cursor:pointer; }
+.warning { background:#fff3cd; color:#856404; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-size:14px; border:1px solid #ffeaa7; }
+.button-group { display:flex; gap:10px; margin-bottom:15px; }
+button { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+.btn-generate { background:#4CAF50;color:white; }
+.btn-copy { background:#2196F3;color:white; }
+.btn-clear { background:#f44336;color:white; }
+button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
+button:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); }
+.info { background:#e3f2fd; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; }
+.output-container { border:2px solid #ddd; border-radius:10px; padding:15px; background:#f9f9f9; }
+.output-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.output-title { font-weight:bold; color:#333; }
+.output-count { background:#667eea; color:white; padding:4px 8px; border-radius:12px; font-size:12px; }
+.output-content { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; white-space:pre-wrap; max-height:500px; overflow-y:auto; line-height:1.3; font-size:11px; }
+.loading { display:none; text-align:center; color:#667eea; margin:10px 0; }
+.stats { display:flex; justify-content:space-between; margin-top:10px; font-size:12px; color:#666; }
+.group-title { color:#ff79c6; font-weight:bold; margin:10px 0 5px 0; }
+.input-info { text-align:center; color:#666; font-size:12px; margin-bottom:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🎯 GENERATOR POLA TARUNG</h1>
+    <div class="subtitle">Generate kombinasi pola tarung dari multiple input angka</div>
+    
+    <div class="warning">
+        ⚠️ <strong>PERHATIAN:</strong> Input banyak angka akan menghasilkan hasil yang sangat banyak!
+    </div>
+    
+    <div class="input-group">
+        <textarea id="inputAngka" placeholder="Masukkan angka dipisah koma (contoh: 0234,5789,1638,1535)"></textarea>
+        <div class="input-info" id="inputInfo">0 angka terdeteksi</div>
+    </div>
+    
+    <div class="digit-selection">
+        <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
+        <div class="checkbox-group" id="digitCheckboxes">
+            <div class="checkbox-item">
+                <input type="checkbox" id="digit4" value="4" checked>
+                <label for="digit4">4D</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="digit3" value="3" checked>
+                <label for="digit3">3D</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="digit2" value="2" checked>
+                <label for="digit2">2D</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">⏳ Sedang memproses... Harap tunggu!</div>
+    
+    <div class="button-group">
+        <button class="btn-generate" onclick="generatePolaTarung()" id="btnGenerate">🚀 GENERATE</button>
+        <button class="btn-copy" onclick="copyOutput()">📋 COPY OUTPUT</button>
+        <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
+    </div>
+    
+    <div class="info" id="info">Masukkan angka dipisah koma, pilih digit, lalu klik GENERATE</div>
+
+    <div class="output-container">
+        <div class="output-header">
+            <div class="output-title">HASIL POLA TARUNG</div>
+            <div class="output-count" id="countOutput">0 hasil</div>
+        </div>
+        <div class="output-content" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
+        <div class="stats">
+            <div id="timeInfo">Waktu: -</div>
+            <div id="memoryInfo">Karakter: 0</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Variabel global untuk menyimpan pilihan digit
+let selectedDigits = [4, 3, 2];
+
+function generatePolaTarung() {
+    const input = document.getElementById('inputAngka').value.trim();
+    const btnGenerate = document.getElementById('btnGenerate');
+    const loading = document.getElementById('loading');
+    
+    if (!input) {
+        showInfo('Masukkan angka terlebih dahulu!', 'error');
+        return;
+    }
+    
+    // Parse input
+    const numbers = input.split(',').map(num => num.trim()).filter(num => num.length > 0);
+    
+    if (numbers.length === 0) {
+        showInfo('Tidak ada angka valid yang ditemukan!', 'error');
+        return;
+    }
+    
+    // Validasi pilihan digit
+    if (selectedDigits.length === 0) {
+        showInfo('Pilih minimal satu digit!', 'error');
+        return;
+    }
+    
+    // Tampilkan loading
+    btnGenerate.disabled = true;
+    loading.style.display = 'block';
+    showInfo(`Memproses ${numbers.length} angka...`, 'info');
+    
+    // Gunakan setTimeout agar UI tidak freeze
+    setTimeout(() => {
+        const startTime = performance.now();
+        
+        // Generate pola tarung
+        const groupedResults = generatePolaTarungResults(numbers);
+        
+        const endTime = performance.now();
+        const processingTime = (endTime - startTime).toFixed(2);
+        
+        // Format output dengan pengelompokan
+        const output = formatGroupedOutput(groupedResults);
+        const charCount = output.length;
+        const totalResults = calculateTotalResults(groupedResults);
+        
+        // Tampilkan hasil
+        document.getElementById('outputPermutasi').textContent = output;
+        document.getElementById('countOutput').textContent = `${totalResults} hasil`;
+        document.getElementById('timeInfo').textContent = `Waktu: ${processingTime}ms`;
+        document.getElementById('memoryInfo').textContent = `Karakter: ${charCount.toLocaleString()}`;
+        
+        // Sembunyikan loading
+        btnGenerate.disabled = false;
+        loading.style.display = 'none';
+        
+        showInfo(`Berhasil generate ${totalResults} kombinasi dalam ${Object.keys(groupedResults).length} kelompok!`, 'success');
+    }, 10);
+}
+
+function generatePolaTarungResults(numbers) {
+    const groups = {};
+    
+    // Generate untuk setiap digit yang dipilih
+    selectedDigits.forEach(digit => {
+        const groupKey = digit + 'DIGIT';
+        groups[groupKey] = new Set();
+        
+        if (digit === 4) {
+            // Untuk 4D: Kombinasi posisi dari semua angka
+            generate4DCombinations(numbers, groups[groupKey]);
+        } else if (digit === 3) {
+            // Untuk 3D: Ambil 3 digit pertama dari hasil 4D
+            generate3DCombinations(numbers, groups[groupKey]);
+        } else if (digit === 2) {
+            // Untuk 2D: Ambil 2 digit pertama dari hasil 4D
+            generate2DCombinations(numbers, groups[groupKey]);
+        }
+    });
+    
+    // Convert Set ke Array dan sort
+    Object.keys(groups).forEach(group => {
+        groups[group] = Array.from(groups[group]).sort();
+    });
+    
+    return groups;
+}
+
+function generate4DCombinations(numbers, resultSet) {
+    // Asumsi: setiap angka memiliki 4 digit
+    // Kombinasi: digit1 dari angka1, digit2 dari angka2, digit3 dari angka3, digit4 dari angka4
+    const digitArrays = numbers.map(num => num.split(''));
+    
+    // Generate semua kombinasi posisi
+    for (let i = 0; i < digitArrays[0]?.length || 0; i++) {
+        for (let j = 0; j < digitArrays[1]?.length || 0; j++) {
+            for (let k = 0; k < digitArrays[2]?.length || 0; k++) {
+                for (let l = 0; l < digitArrays[3]?.length || 0; l++) {
+                    const combination = 
+                        (digitArrays[0][i] || '0') +
+                        (digitArrays[1][j] || '0') + 
+                        (digitArrays[2][k] || '0') +
+                        (digitArrays[3][l] || '0');
+                    resultSet.add(combination);
+                }
+            }
+        }
+    }
+}
+
+function generate3DCombinations(numbers, resultSet) {
+    const digitArrays = numbers.map(num => num.split(''));
+    
+    for (let i = 0; i < digitArrays[0]?.length || 0; i++) {
+        for (let j = 0; j < digitArrays[1]?.length || 0; j++) {
+            for (let k = 0; k < digitArrays[2]?.length || 0; k++) {
+                const combination = 
+                    (digitArrays[0][i] || '0') +
+                    (digitArrays[1][j] || '0') + 
+                    (digitArrays[2][k] || '0');
+                resultSet.add(combination);
+            }
+        }
+    }
+}
+
+function generate2DCombinations(numbers, resultSet) {
+    const digitArrays = numbers.map(num => num.split(''));
+    
+    for (let i = 0; i < digitArrays[0]?.length || 0; i++) {
+        for (let j = 0; j < digitArrays[1]?.length || 0; j++) {
+            const combination = 
+                (digitArrays[0][i] || '0') +
+                (digitArrays[1][j] || '0');
+            resultSet.add(combination);
+        }
+    }
+}
+
+function formatGroupedOutput(groupedResults) {
+    let output = '';
+    
+    // Urutkan kelompok dari digit tertinggi ke terendah
+    const sortedGroups = Object.keys(groupedResults)
+        .sort((a, b) => parseInt(b) - parseInt(a));
+    
+    sortedGroups.forEach(group => {
+        if (groupedResults[group].length > 0) {
+            output += `${group}\n`;
+            output += `${groupedResults[group].join('*')}*\n`;
+        }
+    });
+    
+    return output;
+}
+
+function calculateTotalResults(groupedResults) {
+    let total = 0;
+    Object.values(groupedResults).forEach(group => {
+        total += group.length;
+    });
+    return total;
+}
+
+function copyOutput() {
+    const outputElement = document.getElementById('outputPermutasi');
+    const textArea = document.createElement('textarea');
+    textArea.value = output
