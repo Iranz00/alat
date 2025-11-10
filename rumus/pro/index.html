@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Pattern Detection</title>
+<title>Kalkulator Mistik Pro</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
@@ -14,73 +14,142 @@ h1 { text-align:center; color:#333; margin-bottom:10px; }
 .input-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
 .section-title { color:#333; margin-bottom:20px; font-size:18px; font-weight:bold; }
 .data-input { margin-bottom:20px; }
-.data-input textarea { width:100%; height:300px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; line-height:1.5; }
+.data-input textarea { width:100%; height:400px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; line-height:1.5; }
 .data-input textarea:focus { border-color:#667eea; outline:none; }
 .button-group { display:flex; gap:15px; margin-bottom:20px; }
 button { flex:1; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
-.btn-analyze { background:#2196F3;color:white; }
+.btn-calculate { background:#4CAF50;color:white; }
 .btn-clear { background:#f44336;color:white; }
 button:hover { opacity:0.9; transform:translateY(-2px); }
 .info { background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; }
-
-.results-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; }
-.result-item { margin-bottom:20px; padding:15px; background:white; border-radius:8px; border:1px solid #e0e0e0; }
-.result-valid { border-left:4px solid #4CAF50; }
-.result-invalid { border-left:4px solid #ff9800; }
-.pattern-details { margin-top:10px; padding:10px; background:#f5f5f5; border-radius:5px; font-size:12px; }
-.progress { margin:10px 0; height:20px; background:#e0e0e0; border-radius:10px; overflow:hidden; }
+.input-info { text-align:center; color:#666; font-size:14px; margin-bottom:15px; }
+.progress { margin:10px 0; height:20px; background:#e0e0e0; border-radius:10px; overflow:hidden; display:none; }
 .progress-bar { height:100%; background:#4CAF50; transition:width 0.3s; }
+
+.output-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
+.result-box { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:8px; font-family:'Courier New',monospace; min-height:300px; white-space:pre-wrap; line-height:1.5; font-size:14px; overflow-x:auto; user-select:all; }
+
+.pattern-analysis { background:#e8f5e8; padding:20px; border-radius:8px; margin-bottom:20px; border:1px solid #c8e6c9; }
+.pattern-analysis h4 { color:#2e7d32; margin-bottom:15px; }
+.pattern-item { margin-bottom:15px; padding:10px; background:#f1f8e9; border-radius:5px; }
+.pattern-valid { border-left:4px solid #4CAF50; }
+.pattern-invalid { border-left:4px solid #ff9800; background:#fff3e0; }
+.pattern-details { margin-top:10px; padding:10px; background:#e8f5e8; border-radius:3px; font-size:12px; }
+
+.explanation { background:#fff3cd; padding:20px; border-radius:8px; margin-top:25px; border:1px solid #ffeaa7; }
+.explanation h3 { color:#856404; margin-bottom:15px; }
+.explanation ul { color:#856404; padding-left:20px; }
+.explanation li { margin-bottom:8px; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔍 ADVANCED PATTERN DETECTION</h1>
-    <div class="subtitle">Analisis Pattern Otomatis & Komprehensif</div>
+    <h1>🔮 KALKULATOR MISTIK PRO</h1>
+    <div class="subtitle">Advanced Pattern Detection - Multiple Analysis Methods</div>
     
     <div class="input-section">
-        <div class="section-title">📥 INPUT DATA</div>
+        <div class="section-title">📥 INPUT DATA & RUMUS</div>
         
         <div class="data-input">
-            <textarea id="inputData" placeholder="Masukkan data dalam format:&#10;angka = hasil&#10;6874 = 94&#10;0489 = 83&#10;2843 = 72&#10;...">6874 = 94
-0489 = 83
-2843 = 72
-3752 = 49
-8644 = 16
-2962 = 72
-6937 = 50
-0559 = 49
-8445 = 49
-2429 = 49
-5879 = 05
-9158 = 61
-5364 = 50
-2190 = 38
-3358 = 05</textarea>
+            <textarea id="inputData" placeholder="Masukkan data dan rumus dalam format:&#10;6874 = 94 . 91 . 49 ai&#10;0489 = 83 . 35 . 49 ai&#10;...&#10;======&#10;A6ix+K8mb.(mb)&#10;A9–C10.(ty)&#10;C8ix+E2ml.(ml)">6874 = 94 . 91 . 49 ai
+0489 = 83 . 35 . 49 ai
+2843 = 72 . 57 . 27 ai
+3752 = 49 . 24 . 94 ai
+8644 = 16 . 24 . 72 ai
+2962 = 72 . 35 . 27 ai
+6937 = 50 . 79 . 05 ai
+0559 = 49 . 35 . 49 ai
+8445 = 49 . 79 . 94 ai
+2429 = 49 . 91 . 27 ai
+5879 = 05 . 35 . 38 ai
+9158 = 61 . 24 . 49 ai
+5364 = 50 . 80 . 49 ai
+2190 = 38 . 57 . 50 ai
+3358 = 05 . 02 . 05 ai
+1452 = 
+======
+A6ix+K8mb.(mb)
+A9–C10.(ty)
+C8ix+E2ml.(ml)</textarea>
+            <div class="input-info" id="inputInfo">Data dan rumus terdeteksi</div>
+        </div>
+        
+        <div class="progress" id="progressBar">
+            <div class="progress-bar" id="progressFill" style="width:0%"></div>
         </div>
         
         <div class="button-group">
-            <button class="btn-analyze" onclick="analyzePattern()">🔍 ANALISIS PATTERN</button>
+            <button class="btn-calculate" onclick="calculateAdvanced()">🧮 ANALISIS & HITUNG</button>
             <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
         </div>
         
-        <div class="info" id="info">Masukkan data, lalu klik ANALISIS PATTERN</div>
-        <div class="progress" id="progressBar" style="display:none;">
-            <div class="progress-bar" id="progressFill" style="width:0%"></div>
+        <div class="info" id="info">Masukkan data dan rumus, lalu klik ANALISIS & HITUNG</div>
+        <div class="pattern-analysis" id="patternAnalysis" style="display:none;">
+            <h4>🔍 ANALISIS PATTERN DITEMUKAN:</h4>
+            <div id="patternResults"></div>
         </div>
     </div>
 
-    <div class="results-section" id="resultsSection" style="display:none;">
-        <div class="section-title">📊 HASIL ANALISIS</div>
-        <div id="resultsContainer"></div>
+    <div class="output-section">
+        <div class="section-title">📤 HASIL PERHITUNGAN</div>
+        <div class="result-box" id="resultOutput">
+// Hasil perhitungan akan muncul di sini
+// Format:
+// 6874 = 94 . 91 . 49 ai
+// 0489 = 83 . 35 . 49 ai  
+// 2843 = 72 . 57 . 27 ai
+// ...
+// ======
+// A6ix+K8mb.(mb) 
+// A9–C10.(ty) 
+// C8ix+E2ml.(ml)
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h3>📝 ADVANCED PATTERN DETECTION:</h3>
+        <ul>
+            <li><strong>6 Analysis Methods:</strong> Exact Match, Modus, Cycle 2/3/4, Alternating</li>
+            <li><strong>Smart Selection:</strong> Pilih method terbaik secara otomatis</li>
+            <li><strong>Confidence Scoring:</strong> Setiap pattern dinilai kepercayaannya</li>
+            <li><strong>Minimum 75% Confidence:</strong> Pattern hanya digunakan jika cukup reliable</li>
+            <li><strong>Multiple Fallback:</strong> Coba semua method yang mungkin</li>
+        </ul>
     </div>
 </div>
 
 <script>
-function analyzePattern() {
+// Tabel konversi mistik
+const mistikTables = {
+    'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
+    'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
+    'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
+    'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
+    'M0': {'0':'6', '1':'5', '2':'7', '3':'8', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
+    'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
+    'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
+    'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
+    'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
+    'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'}
+};
+
+let dataHistory = [];
+let detectedPatterns = [];
+
+// Fungsi naik dalam sistem siklik 0-9
+function naikSiklik(digit, steps) {
+    let result = parseInt(digit);
+    for (let i = 0; i < steps; i++) {
+        result = (result + 1) % 10;
+    }
+    return result;
+}
+
+function calculateAdvanced() {
     const inputData = document.getElementById('inputData').value.trim();
     
     if (!inputData) {
-        showInfo('Masukkan data terlebih dahulu!', 'error');
+        showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
         return;
     }
     
@@ -89,127 +158,356 @@ function analyzePattern() {
         document.getElementById('progressBar').style.display = 'block';
         updateProgress(0);
         
-        // Parse data
-        const parsedData = parseInputData(inputData);
+        // Parse data input dan extract formulas
+        const { parsedData, formulas } = parseCompleteInput(inputData);
+        updateProgress(10);
         
-        if (parsedData.length < 4) {
-            showInfo(`Minimal 4 data required. Hanya ${parsedData.length} data.`, 'error');
-            return;
-        }
+        // Hitung BASE RESULT dengan program lama untuk semua data
+        calculateBaseResults(parsedData, formulas);
+        updateProgress(30);
         
-        // Analisis pattern untuk setiap digit
-        setTimeout(() => {
-            const results = comprehensivePatternAnalysis(parsedData);
-            displayResults(results);
-            showInfo('Analisis pattern selesai!', 'success');
-        }, 100);
+        // Advanced Pattern Detection
+        detectPatternsAdvanced(parsedData, formulas);
+        updateProgress(80);
+        
+        // Calculate untuk data yang belum lengkap
+        const results = calculateMissingData(parsedData, formulas);
+        updateProgress(90);
+        
+        // Display result
+        displayAdvancedResult(results, formulas);
+        showInfo('Analisis pattern dan perhitungan berhasil!', 'success');
+        updateProgress(100);
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
+        console.error('Calculation error:', error);
     }
 }
 
-function parseInputData(inputData) {
+function parseCompleteInput(inputData) {
     const lines = inputData.split('\n').filter(line => line.trim());
     const parsedData = [];
+    let formulas = [];
+    let foundSeparator = false;
     
     for (let line of lines) {
-        const match = line.match(/^(\d+)\s*=\s*(\d+)\s*$/);
-        if (match) {
-            const number = match[1];
-            const result = match[2];
-            
-            parsedData.push({
-                number: number,
-                result: result,
-                digits: result.split('').map(d => parseInt(d))
-            });
+        if (line.trim() === '======') {
+            foundSeparator = true;
+            continue;
+        }
+        
+        if (!foundSeparator) {
+            const match = line.match(/^(\d+)\s*=\s*(.*?)\s*$/);
+            if (match) {
+                const number = match[1];
+                const resultsStr = match[2].trim();
+                
+                let results = [];
+                let label = 'ai';
+                
+                if (resultsStr && resultsStr !== '') {
+                    const parts = resultsStr.split(/\s+/);
+                    let tempResults = [];
+                    let tempLabel = '';
+                    
+                    for (let part of parts) {
+                        if (part === '.') continue;
+                        if (part.match(/^[a-z]+$/i)) {
+                            tempLabel = part;
+                        } else if (part.match(/^\d+$/)) {
+                            tempResults.push(part);
+                        }
+                    }
+                    
+                    results = tempResults;
+                    label = tempLabel || 'ai';
+                }
+                
+                parsedData.push({
+                    number: number,
+                    results: results,
+                    label: label,
+                    components: extractComponents(number),
+                    baseResults: []
+                });
+            }
+        } else {
+            if (line.trim() && !line.includes('======')) {
+                formulas.push(line.trim());
+            }
         }
     }
     
-    return parsedData;
+    if (!foundSeparator || formulas.length === 0) {
+        formulas = ['A6ix+K8mb.(mb)', 'A9–C10.(ty)', 'C8ix+E2ml.(ml)'];
+    }
+    
+    return { parsedData, formulas };
 }
 
-function comprehensivePatternAnalysis(parsedData) {
-    const digitLength = parsedData[0].digits.length;
-    const results = [];
+function extractComponents(number) {
+    const as = number[0];
+    const cop = number[1];
+    const kepala = number[2];
+    const ekor = number[3];
+    const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
     
-    updateProgress(10);
+    return { as, cop, kepala, ekor, jumlah };
+}
+
+// TAHAP 1: Hitung BASE RESULT dengan program lama
+function calculateBaseResults(parsedData, formulas) {
+    const reversedData = [...parsedData].reverse();
+    
+    formulas.forEach((formula, formulaIndex) => {
+        reversedData.forEach((data, dataIndex) => {
+            try {
+                const baseResult = calculateSingleAI(formula, dataIndex, reversedData);
+                if (!data.baseResults) data.baseResults = [];
+                data.baseResults[formulaIndex] = baseResult;
+            } catch (error) {
+                console.error(`Error calculating base for ${data.number} with ${formula}:`, error);
+                if (!data.baseResults) data.baseResults = [];
+                data.baseResults[formulaIndex] = '';
+            }
+        });
+    });
+}
+
+// PROGRAM LAMA - Calculate Single AI
+function calculateSingleAI(formula, currentDayIndex, dataHistory) {
+    let workingFormula = formula;
+    
+    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+    if (finalConversion) {
+        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+    }
+    
+    const components = workingFormula.split('+');
+    let total = 0;
+    
+    components.forEach(component => {
+        const value = processComponent(component.trim(), currentDayIndex, dataHistory);
+        total += value;
+    });
+    
+    if (finalConversion) {
+        const table = finalConversion[1].toUpperCase();
+        const converted = convertMistik(total.toString(), table);
+        total = parseInt(converted);
+    }
+    
+    const finalResult = reduceToSingleDigit(total);
+    return finalResult;
+}
+
+function processComponent(component, currentDayIndex, dataHistory) {
+    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    if (!match) {
+        throw new Error(`Format komponen tidak valid: ${component}`);
+    }
+    
+    const type = match[1];
+    const dayOffset = parseInt(match[2]);
+    const conversion = match[3];
+    
+    const targetDayIndex = currentDayIndex + (dayOffset - 1);
+    
+    if (targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data tidak tersedia untuk ${component}`);
+    }
+    
+    const data = dataHistory[targetDayIndex];
+    let value;
+    
+    switch(type) {
+        case 'A': value = parseInt(data.components.as); break;
+        case 'K': value = parseInt(data.components.kepala); break;
+        case 'C': value = parseInt(data.components.cop); break;
+        case 'E': value = parseInt(data.components.ekor); break;
+        case 'J': value = data.components.jumlah; break;
+        default: throw new Error(`Tipe tidak dikenal: ${type}`);
+    }
+    
+    if (conversion) {
+        const table = conversion.toUpperCase();
+        value = parseInt(convertMistik(value.toString(), table));
+    }
+    
+    return value;
+}
+
+function convertMistik(number, table) {
+    if (!mistikTables[table]) {
+        throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
+    }
+    
+    const digit = reduceToSingleDigit(parseInt(number)).toString();
+    
+    if (mistikTables[table][digit] === undefined) {
+        throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
+    }
+    
+    return mistikTables[table][digit];
+}
+
+// TAHAP 2: ADVANCED PATTERN DETECTION
+function detectPatternsAdvanced(parsedData, formulas) {
+    detectedPatterns = [];
+    
+    formulas.forEach((formula, formulaIndex) => {
+        const pattern = analyzePatternForFormulaAdvanced(parsedData, formula, formulaIndex);
+        detectedPatterns.push(pattern);
+    });
+    
+    displayPatternAnalysis();
+}
+
+function analyzePatternForFormulaAdvanced(parsedData, formula, formulaIndex) {
+    // Cari data pertama yang punya hasil untuk rumus ini
+    let startIndex = -1;
+    for (let i = 0; i < parsedData.length; i++) {
+        if (parsedData[i].results.length > formulaIndex && 
+            parsedData[i].results[formulaIndex] && 
+            parsedData[i].results[formulaIndex] !== '') {
+            startIndex = i;
+            break;
+        }
+    }
+    
+    if (startIndex === -1) {
+        return {
+            formula: formula,
+            naikSequence: [],
+            digitLength: 0,
+            isValid: false,
+            reason: `Tidak ada data dengan hasil final`,
+            validDataCount: 0,
+            consecutive: 0
+        };
+    }
+    
+    // Ambil semua data berturut-turut
+    const validData = [];
+    for (let i = startIndex; i < parsedData.length; i++) {
+        const item = parsedData[i];
+        if (item.results.length > formulaIndex && 
+            item.results[formulaIndex] && 
+            item.results[formulaIndex] !== '') {
+            validData.push(item);
+        } else {
+            break;
+        }
+    }
+    
+    console.log(`Rumus ${formula}: ${validData.length} data berturut-turut`);
+    
+    // Minimal 4 data berturut-turut
+    if (validData.length < 4) {
+        return {
+            formula: formula,
+            naikSequence: [],
+            digitLength: 0,
+            isValid: false,
+            reason: `Hanya ${validData.length} data berturut-turut (minimal 4 required)`,
+            validDataCount: validData.length,
+            consecutive: validData.length
+        };
+    }
+    
+    const digitLength = validData[0].results[formulaIndex].length;
+    const patternAnalysis = advancedPatternDetection(validData, formulaIndex, digitLength);
+    
+    return {
+        formula: formula,
+        naikSequence: patternAnalysis.recommendedPattern,
+        digitLength: digitLength,
+        isValid: patternAnalysis.isFullyConsistent,
+        reason: patternAnalysis.isFullyConsistent ? 
+            `${validData.length} data - Pattern: [${patternAnalysis.recommendedPattern.join(', ')}] (${patternAnalysis.confidence}% confidence)` :
+            `Pattern tidak konsisten - ${patternAnalysis.reason}`,
+        validDataCount: validData.length,
+        consecutive: validData.length,
+        analysisDetails: patternAnalysis.details
+    };
+}
+
+function advancedPatternDetection(validData, formulaIndex, digitLength) {
+    const digitAnalyses = [];
     
     // Analisis untuk setiap digit
     for (let digitIndex = 0; digitIndex < digitLength; digitIndex++) {
-        const analysis = analyzeDigitPattern(parsedData, digitIndex);
-        results.push(analysis);
-        updateProgress(10 + (digitIndex + 1) * 30);
-    }
-    
-    // Analisis pattern sequence
-    updateProgress(80);
-    const sequenceAnalysis = analyzeSequencePattern(parsedData);
-    results.push(sequenceAnalysis);
-    
-    updateProgress(100);
-    
-    return {
-        digitAnalyses: results.slice(0, digitLength),
-        sequenceAnalysis: results[digitLength],
-        summary: generateSummary(results.slice(0, digitLength))
-    };
-}
-
-function analyzeDigitPattern(parsedData, digitIndex) {
-    const naikValues = [];
-    const details = [];
-    
-    // Kumpulkan semua nilai "naik"
-    for (let i = 0; i < parsedData.length - 1; i++) {
-        const current = parsedData[i].digits[digitIndex];
-        const next = parsedData[i + 1].digits[digitIndex];
-        const naik = (next - current + 10) % 10;
+        const naikValues = [];
+        const details = [];
         
-        naikValues.push(naik);
-        details.push({
-            from: parsedData[i].number,
-            to: parsedData[i + 1].number,
-            current: current,
-            next: next,
-            naik: naik
+        // Kumpulkan semua nilai "naik"
+        for (let i = 0; i < validData.length - 1; i++) {
+            const currentDigit = parseInt(validData[i].results[formulaIndex][digitIndex]);
+            const nextDigit = parseInt(validData[i + 1].results[formulaIndex][digitIndex]);
+            const naikValue = (nextDigit - currentDigit + 10) % 10;
+            
+            naikValues.push(naikValue);
+            details.push({
+                from: validData[i].number,
+                to: validData[i + 1].number,
+                current: currentDigit,
+                next: nextDigit,
+                naik: naikValue
+            });
+        }
+        
+        // Multiple analysis methods
+        const analyses = [
+            analyzeExactMatch(naikValues),
+            analyzeModus(naikValues),
+            analyzeCyclePattern(naikValues, 2),
+            analyzeCyclePattern(naikValues, 3),
+            analyzeCyclePattern(naikValues, 4),
+            analyzeAlternatingPattern(naikValues)
+        ];
+        
+        // Pilih analysis terbaik
+        const bestAnalysis = analyses.reduce((best, current) => {
+            return current.confidence > best.confidence ? current : best;
+        });
+        
+        digitAnalyses.push({
+            digit: digitIndex,
+            naikValues: naikValues,
+            bestPattern: bestAnalysis,
+            allAnalyses: analyses,
+            details: details
         });
     }
     
-    // Multiple analysis methods
-    const analyses = [
-        analyzeExactMatch(naikValues),
-        analyzeModus(naikValues),
-        analyzeCyclePattern(naikValues, 2),
-        analyzeCyclePattern(naikValues, 3),
-        analyzeCyclePattern(naikValues, 4),
-        analyzeAlternatingPattern(naikValues)
-    ];
-    
-    // Pilih analysis terbaik
-    const bestAnalysis = analyses.reduce((best, current) => {
-        return current.confidence > best.confidence ? current : best;
-    });
+    // Generate summary
+    const validPatterns = digitAnalyses.filter(a => a.bestPattern.confidence >= 75);
+    const isFullyConsistent = validPatterns.length === digitLength;
+    const recommendedPattern = isFullyConsistent ? 
+        digitAnalyses.map(a => a.bestPattern.pattern) : null;
+    const confidence = isFullyConsistent ? 
+        Math.min(...digitAnalyses.map(a => a.bestPattern.confidence)) : 0;
     
     return {
-        digit: digitIndex + 1,
-        naikValues: naikValues,
-        details: details,
-        bestPattern: bestAnalysis,
-        allAnalyses: analyses
+        isFullyConsistent: isFullyConsistent,
+        recommendedPattern: recommendedPattern,
+        confidence: confidence,
+        reason: isFullyConsistent ? 
+            `Semua digit konsisten` :
+            `Hanya ${validPatterns.length}/${digitLength} digit yang konsisten`,
+        details: digitAnalyses
     };
 }
 
+// ANALYSIS METHODS
 function analyzeExactMatch(naikValues) {
     const allSame = naikValues.every(val => val === naikValues[0]);
     return {
         method: 'Exact Match',
         pattern: naikValues[0],
         confidence: allSame ? 100 : 0,
-        details: allSame ? 
-            `Semua nilai sama: ${naikValues[0]}` :
-            'Tidak semua nilai sama'
+        details: allSame ? `Semua nilai sama: ${naikValues[0]}` : 'Tidak konsisten'
     };
 }
 
@@ -232,7 +530,7 @@ function analyzeModus(naikValues) {
         method: 'Modus',
         pattern: bestValue,
         confidence: confidence,
-        details: `Nilai ${bestValue} muncul ${maxCount} dari ${naikValues.length} kali (${confidence.toFixed(1)}%)`
+        details: `Nilai ${bestValue} muncul ${maxCount}/${naikValues.length} (${confidence.toFixed(1)}%)`
     };
 }
 
@@ -242,7 +540,7 @@ function analyzeCyclePattern(naikValues, cycleLength) {
             method: `Cycle ${cycleLength}`,
             pattern: null,
             confidence: 0,
-            details: `Data tidak cukup untuk cycle ${cycleLength}`
+            details: `Data tidak cukup`
         };
     }
     
@@ -265,23 +563,16 @@ function analyzeCyclePattern(naikValues, cycleLength) {
     
     return {
         method: `Cycle ${cycleLength}`,
-        pattern: cycles.length > 0 ? cycles[0] : null,
+        pattern: cycles.length > 0 ? cycles[0][0] : null, // Ambil digit pertama
         confidence: confidence,
         details: cycles.length > 0 ? 
-            `Pattern berulang setiap ${cycleLength} data: [${cycles[0].join(', ')}] (${confidence.toFixed(1)}% match)` :
-            `Tidak ditemukan cycle ${cycleLength}`
+            `Cycle ${cycleLength}: [${cycles[0].join(', ')}] (${confidence.toFixed(1)}%)` :
+            `Tidak ada cycle ${cycleLength}`
     };
 }
 
 function analyzeAlternatingPattern(naikValues) {
-    if (naikValues.length < 4) {
-        return {
-            method: 'Alternating',
-            pattern: null,
-            confidence: 0,
-            details: 'Data tidak cukup untuk alternating pattern'
-        };
-    }
+    if (naikValues.length < 4) return { method: 'Alternating', pattern: null, confidence: 0, details: 'Data tidak cukup' };
     
     // Cek pattern A-B-A-B
     let abMatch = true;
@@ -295,121 +586,144 @@ function analyzeAlternatingPattern(naikValues) {
     if (abMatch) {
         return {
             method: 'Alternating',
-            pattern: [naikValues[0], naikValues[1]],
+            pattern: naikValues[0],
             confidence: 90,
-            details: `Pattern alternating: ${naikValues[0]}, ${naikValues[1]}`
+            details: `Alternating: ${naikValues[0]}, ${naikValues[1]}`
         };
     }
     
-    return {
-        method: 'Alternating',
-        pattern: null,
-        confidence: 0,
-        details: 'Tidak ditemukan alternating pattern'
-    };
+    return { method: 'Alternating', pattern: null, confidence: 0, details: 'Tidak ada alternating pattern' };
 }
 
-function analyzeSequencePattern(parsedData) {
-    // Analisis pattern untuk sequence lengkap
-    const sequences = [];
+function calculateMissingData(parsedData, formulas) {
+    const results = [...parsedData];
     
-    for (let i = 0; i < parsedData.length - 1; i++) {
-        const sequence = [];
-        for (let digit = 0; digit < parsedData[0].digits.length; digit++) {
-            const naik = (parsedData[i + 1].digits[digit] - parsedData[i].digits[digit] + 10) % 10;
-            sequence.push(naik);
+    const incompleteData = results.filter(item => 
+        item.results.length < formulas.length || 
+        item.results.some((r, idx) => !r && idx < formulas.length)
+    );
+    
+    incompleteData.forEach(data => {
+        while (data.results.length < formulas.length) {
+            data.results.push('');
         }
-        sequences.push(sequence);
-    }
-    
-    // Cari sequence pattern
-    const sequenceAnalysis = analyzeExactSequenceMatch(sequences);
-    
-    return {
-        type: 'Sequence Analysis',
-        sequences: sequences,
-        analysis: sequenceAnalysis
-    };
-}
-
-function analyzeExactSequenceMatch(sequences) {
-    const firstSequence = sequences[0];
-    const allSame = sequences.every(seq => JSON.stringify(seq) === JSON.stringify(firstSequence));
-    
-    return {
-        method: 'Exact Sequence Match',
-        pattern: allSame ? firstSequence : null,
-        confidence: allSame ? 100 : 0,
-        details: allSame ? 
-            `Semua sequence sama: [${firstSequence.join(', ')}]` :
-            'Sequence tidak konsisten'
-    };
-}
-
-function generateSummary(analyses) {
-    const validPatterns = analyses.filter(a => a.bestPattern.confidence >= 80);
-    const isFullyConsistent = validPatterns.length === analyses.length;
-    
-    return {
-        isFullyConsistent: isFullyConsistent,
-        validPatterns: validPatterns.length,
-        totalDigits: analyses.length,
-        recommendedPattern: isFullyConsistent ? 
-            analyses.map(a => a.bestPattern.pattern) : null,
-        confidence: isFullyConsistent ? 
-            Math.min(...analyses.map(a => a.bestPattern.confidence)) : 0
-    };
-}
-
-function displayResults(results) {
-    const container = document.getElementById('resultsContainer');
-    let html = '';
-    
-    // Summary
-    html += `<div class="result-item ${results.summary.isFullyConsistent ? 'result-valid' : 'result-invalid'}">`;
-    html += `<h3>📊 SUMMARY</h3>`;
-    html += `<div><strong>Status:</strong> ${results.summary.isFullyConsistent ? '✅ PATTERN KONSISTEN' : '⚠️ PATTERN TIDAK KONSISTEN'}</div>`;
-    html += `<div><strong>Pattern yang Valid:</strong> ${results.summary.validPatterns}/${results.summary.totalDigits} digit</div>`;
-    
-    if (results.summary.recommendedPattern) {
-        html += `<div><strong>Recommended Pattern:</strong> [${results.summary.recommendedPattern.join(', ')}]</div>`;
-        html += `<div><strong>Confidence:</strong> ${results.summary.confidence.toFixed(1)}%</div>`;
-    }
-    html += `</div>`;
-    
-    // Detail per digit
-    results.digitAnalyses.forEach(analysis => {
-        const isValid = analysis.bestPattern.confidence >= 80;
-        html += `<div class="result-item ${isValid ? 'result-valid' : 'result-invalid'}">`;
-        html += `<h3>Digit ${analysis.digit}</h3>`;
-        html += `<div><strong>Nilai Naik:</strong> [${analysis.naikValues.join(', ')}]</div>`;
-        html += `<div><strong>Best Pattern:</strong> ${analysis.bestPattern.pattern !== null ? analysis.bestPattern.pattern : 'Tidak ditemukan'}</div>`;
-        html += `<div><strong>Method:</strong> ${analysis.bestPattern.method}</div>`;
-        html += `<div><strong>Confidence:</strong> ${analysis.bestPattern.confidence.toFixed(1)}%</div>`;
         
-        html += `<div class="pattern-details">`;
-        html += `<strong>Detail Analisis:</strong><br>`;
-        analysis.details.slice(0, 5).forEach(detail => {
-            html += `${detail.from}→${detail.to}: ${detail.current}→${detail.next} (naik ${detail.naik})<br>`;
+        formulas.forEach((formula, i) => {
+            if (!data.results[i] || data.results[i] === '') {
+                const calculatedResult = calculateWithPattern(data, formula, detectedPatterns[i]);
+                data.results[i] = calculatedResult;
+            }
         });
-        if (analysis.details.length > 5) {
-            html += `... dan ${analysis.details.length - 5} data lainnya<br>`;
+    });
+    
+    return results;
+}
+
+function calculateWithPattern(data, formula, pattern) {
+    if (!pattern || !pattern.isValid) {
+        return "";
+    }
+    
+    try {
+        const formulaIndex = detectedPatterns.findIndex(p => p.formula === formula);
+        const baseResult = data.baseResults[formulaIndex];
+        
+        if (!baseResult && baseResult !== 0) {
+            return "";
         }
-        html += `</div>`;
+        
+        let finalResult = "";
+        let currentDigit = parseInt(baseResult);
+        
+        for (let i = 0; i < pattern.digitLength; i++) {
+            currentDigit = naikSiklik(currentDigit, pattern.naikSequence[i]);
+            finalResult += currentDigit.toString();
+        }
+        
+        return finalResult;
+    } catch (error) {
+        console.error('Error in calculateWithPattern:', error);
+        return "";
+    }
+}
+
+function displayPatternAnalysis() {
+    const patternAnalysis = document.getElementById('patternAnalysis');
+    const patternResults = document.getElementById('patternResults');
+    
+    let html = '';
+    let validPatterns = 0;
+    
+    detectedPatterns.forEach((pattern, index) => {
+        const statusClass = pattern.isValid ? 'pattern-valid' : 'pattern-invalid';
+        const statusIcon = pattern.isValid ? '✅' : '⚠️';
+        
+        html += `<div class="pattern-item ${statusClass}">`;
+        html += `<div><strong>${statusIcon} Rumus ${index + 1}:</strong> ${pattern.formula}</div>`;
+        html += `<div><strong>Status:</strong> ${pattern.reason}</div>`;
+        html += `<div><strong>Data Berturut-turut:</strong> ${pattern.consecutive}</div>`;
+        
+        if (pattern.isValid) {
+            html += `<div><strong>Pattern "naik X":</strong> [${pattern.naikSequence.join(', ')}]</div>`;
+            html += `<div><strong>Confidence:</strong> ${pattern.analysisDetails.confidence}%</div>`;
+            validPatterns++;
+            
+            // Tampilkan detail analisis
+            html += `<div class="pattern-details">`;
+            html += `<strong>Method:</strong> ${pattern.analysisDetails.details[0].bestPattern.method}<br>`;
+            pattern.analysisDetails.details.slice(0, 2).forEach(detail => {
+                html += `<strong>Digit ${detail.digit + 1}:</strong> ${detail.bestPattern.details}<br>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<div class="pattern-details">`;
+            html += `<strong>Analisis Detail:</strong><br>`;
+            pattern.analysisDetails.details.forEach(detail => {
+                const isValid = detail.bestPattern.confidence >= 75;
+                html += `<span style="color: ${isValid ? 'green' : 'red'}">`;
+                html += `Digit ${detail.digit + 1}: ${detail.bestPattern.method} (${detail.bestPattern.confidence.toFixed(1)}%)`;
+                html += `</span><br>`;
+            });
+            html += `</div>`;
+        }
         
         html += `</div>`;
     });
     
-    // Sequence analysis
-    html += `<div class="result-item ${results.sequenceAnalysis.analysis.confidence >= 80 ? 'result-valid' : 'result-invalid'}">`;
-    html += `<h3>Sequence Analysis</h3>`;
-    html += `<div><strong>Method:</strong> ${results.sequenceAnalysis.analysis.method}</div>`;
-    html += `<div><strong>Pattern:</strong> ${results.sequenceAnalysis.analysis.pattern ? '[' + results.sequenceAnalysis.analysis.pattern.join(', ') + ']' : 'Tidak ditemukan'}</div>`;
-    html += `<div><strong>Confidence:</strong> ${results.sequenceAnalysis.analysis.confidence.toFixed(1)}%</div>`;
-    html += `</div>`;
+    patternResults.innerHTML = html;
+    patternAnalysis.style.display = 'block';
+}
+
+function displayAdvancedResult(results, formulas) {
+    const output = document.getElementById('resultOutput');
+    let outputText = '';
     
-    container.innerHTML = html;
-    document.getElementById('resultsSection').style.display = 'block';
+    results.forEach(result => {
+        outputText += `${result.number} = `;
+        if (result.results.length > 0) {
+            const validResults = result.results.slice(0, formulas.length).filter(r => r !== '');
+            outputText += validResults.join(' . ');
+            if (result.label && validResults.length > 0) {
+                outputText += ` ${result.label}`;
+            }
+        }
+        outputText += '\n';
+    });
+    
+    outputText += '======\n';
+    formulas.forEach(formula => {
+        outputText += `${formula}\n`;
+    });
+    
+    output.textContent = outputText;
+}
+
+function reduceToSingleDigit(num) {
+    let result = num;
+    while (result > 9) {
+        result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return result;
 }
 
 function updateProgress(percent) {
@@ -426,16 +740,67 @@ function showInfo(message, type) {
 }
 
 function clearAll() {
-    document.getElementById('inputData').value = '';
-    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('inputData').value = `6874 = 94 . 91 . 49 ai
+0489 = 83 . 35 . 49 ai
+2843 = 72 . 57 . 27 ai
+3752 = 49 . 24 . 94 ai
+8644 = 16 . 24 . 72 ai
+2962 = 72 . 35 . 27 ai
+6937 = 50 . 79 . 05 ai
+0559 = 49 . 35 . 49 ai
+8445 = 49 . 79 . 94 ai
+2429 = 49 . 91 . 27 ai
+5879 = 05 . 35 . 38 ai
+9158 = 61 . 24 . 49 ai
+5364 = 50 . 80 . 49 ai
+2190 = 38 . 57 . 50 ai
+3358 = 05 . 02 . 05 ai
+1452 = 
+======
+A6ix+K8mb.(mb)
+A9–C10.(ty)
+C8ix+E2ml.(ml)`;
+    document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
+// Format:
+// 6874 = 94 . 91 . 49 ai
+// 0489 = 83 . 35 . 49 ai  
+// 2843 = 72 . 57 . 27 ai
+// ...
+// ======
+// A6ix+K8mb.(mb) 
+// A9–C10.(ty) 
+// C8ix+E2ml.(ml)`;
+    document.getElementById('info').textContent = 'Masukkan data dan rumus dalam satu kolom, lalu klik ANALISIS & HITUNG';
+    document.getElementById('inputInfo').textContent = 'Data dan rumus terdeteksi';
+    document.getElementById('patternAnalysis').style.display = 'none';
     document.getElementById('progressBar').style.display = 'none';
-    showInfo('Masukkan data, lalu klik ANALISIS PATTERN', 'info');
+    dataHistory = [];
+    detectedPatterns = [];
 }
 
 // Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('inputData').addEventListener('input', updateInputInfo);
+    updateInputInfo();
+});
+
+function updateInputInfo() {
+    const input = document.getElementById('inputData').value.trim();
+    const lines = input.split('\n').filter(line => line.trim());
+    const dataCount = lines.filter(line => line.match(/^\d+\s*=/)).length;
+    const hasFormulas = input.includes('======');
+    
+    let info = `${dataCount} data terdeteksi`;
+    if (hasFormulas) {
+        info += ' + rumus';
+    }
+    
+    document.getElementById('inputInfo').textContent = info;
+}
+
 document.getElementById('inputData').addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
-        analyzePattern();
+        calculateAdvanced();
     }
 });
 </script>
