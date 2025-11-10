@@ -14,10 +14,8 @@ h1 { text-align:center; color:#333; margin-bottom:10px; }
 .input-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
 .section-title { color:#333; margin-bottom:20px; font-size:18px; font-weight:bold; }
 .data-input { margin-bottom:20px; }
-.data-input textarea { width:100%; height:180px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; }
-.formula-input { margin-bottom:20px; }
-.formula-input textarea { width:100%; height:80px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; }
-.formula-input textarea:focus { border-color:#667eea; outline:none; }
+.data-input textarea { width:100%; height:400px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; line-height:1.5; }
+.data-input textarea:focus { border-color:#667eea; outline:none; }
 .button-group { display:flex; gap:15px; margin-bottom:20px; }
 button { flex:1; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
 .btn-calculate { background:#4CAF50;color:white; }
@@ -27,7 +25,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 .input-info { text-align:center; color:#666; font-size:14px; margin-bottom:15px; }
 
 .output-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
-.result-box { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:8px; font-family:'Courier New',monospace; min-height:200px; white-space:pre-wrap; line-height:1.5; font-size:14px; overflow-x:auto; user-select:all; -webkit-user-select:all; -moz-user-select:all; -ms-user-select:all; }
+.result-box { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:8px; font-family:'Courier New',monospace; min-height:300px; white-space:pre-wrap; line-height:1.5; font-size:14px; overflow-x:auto; user-select:all; -webkit-user-select:all; -moz-user-select:all; -ms-user-select:all; }
 
 .pattern-analysis { background:#e8f5e8; padding:20px; border-radius:8px; margin-bottom:20px; border:1px solid #c8e6c9; }
 .pattern-analysis h4 { color:#2e7d32; margin-bottom:15px; }
@@ -42,35 +40,42 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 <body>
 <div class="container">
     <h1>🔮 KALKULATOR MISTIK PRO</h1>
-    <div class="subtitle">Hitung multiple rumus mistik dengan pattern detection</div>
+    <div class="subtitle">Hitung multiple rumus mistik dengan pattern detection - All in One Input</div>
     
     <div class="input-section">
-        <div class="section-title">📥 INPUT DATA & RUMUS</div>
+        <div class="section-title">📥 INPUT DATA & RUMUS (Semua dalam satu kolom)</div>
         
         <div class="data-input">
-            <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874= 94 . 91 . 49 ai&#10;0489= 83 . 35 . 49 ai&#10;2843= 72 . 57 . 27 ai&#10;...">6874= 94 . 91 . 49 ai
-0489= 83 . 35 . 49 ai
-2843= 72 . 57 . 27 ai
-3752= 49 . 24 . 94 ai
-8644= 16 . 24 . 72 ai
-2962= 72 . 35 . 27 ai
-6937= 50 . 79 . 05 ai
-0559= 49 . 35 . 49 ai
-8445= 49 . 79 . 94 ai
-2429= 49 . 91 . 27 ai
-5879= 05 . 35 . 38 ai
-9158= 61 . 24 . 49 ai
-5364= 50 . 80 . 49 ai
-2190= 38 . 57 . 50 ai
-3358= 05 . 02 . 05 ai
-1452= </textarea>
-            <div class="input-info" id="inputInfo">16 data terdeteksi</div>
-        </div>
-        
-        <div class="formula-input">
-            <textarea id="inputFormula" placeholder="Masukkan rumus (satu rumus per baris):&#10;Contoh: &#10;A6ix+K8mb.(mb)&#10;A9–C10.(ty)&#10;C8ix+E2ml.(ml)">A6ix+K8mb.(mb)
+            <textarea id="inputData" placeholder="Masukkan data dan rumus dalam format:&#10;7013 = &#10;8741 = &#10;5337 = &#10;...&#10;6874 = 94 . 91 . 49 ai&#10;0489 = 83 . 35 . 49 ai&#10;...&#10;======&#10;A6ix+K8mb.(mb)&#10;A9–C10.(ty)&#10;C8ix+E2ml.(ml)">7013 = 
+8741 = 
+5337 = 
+7463 = 
+9359 = 
+8250 = 
+0376 = 
+9202 = 
+4063 = 
+6874 = 94 . 91 . 49 ai
+0489 = 83 . 35 . 49 ai
+2843 = 72 . 57 . 27 ai
+3752 = 49 . 24 . 94 ai
+8644 = 16 . 24 . 72 ai
+2962 = 72 . 35 . 27 ai
+6937 = 50 . 79 . 05 ai
+0559 = 49 . 35 . 49 ai
+8445 = 49 . 79 . 94 ai
+2429 = 49 . 91 . 27 ai
+5879 = 05 . 35 . 38 ai
+9158 = 61 . 24 . 49 ai
+5364 = 50 . 80 . 49 ai
+2190 = 38 . 57 . 50 ai
+3358 = 05 . 02 . 05 ai
+1452 = 
+======
+A6ix+K8mb.(mb)
 A9–C10.(ty)
 C8ix+E2ml.(ml)</textarea>
+            <div class="input-info" id="inputInfo">Data dan rumus terdeteksi</div>
         </div>
         
         <div class="button-group">
@@ -78,7 +83,7 @@ C8ix+E2ml.(ml)</textarea>
             <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
         </div>
         
-        <div class="info" id="info">Masukkan data dan rumus, lalu klik ANALISIS & HITUNG</div>
+        <div class="info" id="info">Masukkan data dan rumus dalam satu kolom, lalu klik ANALISIS & HITUNG</div>
         <div class="pattern-analysis" id="patternAnalysis" style="display:none;">
             <h4>🔍 ANALISIS PATTERN DITEMUKAN:</h4>
             <div id="patternResults"></div>
@@ -91,6 +96,10 @@ C8ix+E2ml.(ml)</textarea>
         <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
+// 7013 = 
+// 8741 = 
+// 5337 = 
+// ...
 // 6874 = 94 . 91 . 49 ai
 // 0489 = 83 . 35 . 49 ai  
 // 2843 = 72 . 57 . 27 ai
@@ -105,11 +114,11 @@ C8ix+E2ml.(ml)</textarea>
     <div class="explanation">
         <h3>📝 CARA PENGGUNAAN:</h3>
         <ul>
-            <li><strong>Format Data:</strong> [angka]= [hasil1] . [hasil2] . [hasil3] [label]</li>
-            <li><strong>Multiple Rumus:</strong> Satu rumus per baris</li>
+            <li><strong>Format Input:</strong> Masukkan semua data dan rumus dalam satu kolom</li>
+            <li><strong>Data:</strong> [angka]= [hasil1] . [hasil2] . [hasil3] [label]</li>
+            <li><strong>Pemisah:</strong> Gunakan "======" untuk memisahkan data dan rumus</li>
+            <li><strong>Rumus:</strong> Satu rumus per baris setelah "======"</li>
             <li><strong>Pattern Detection:</strong> Program akan analisis pattern "naik X" dari data yang ada</li>
-            <li><strong>Output Dinamis:</strong> Menyesuaikan jumlah rumus yang diberikan</li>
-            <li><strong>Label Fleksibel:</strong> Bisa ai, ct, k, e, j, c, a, dll.</li>
             <li><strong>Output dapat disalin:</strong> Klik dan copy hasil perhitungan</li>
         </ul>
     </div>
@@ -144,19 +153,15 @@ function naikSiklik(digit, steps) {
 
 function calculateAdvanced() {
     const inputData = document.getElementById('inputData').value.trim();
-    const formulasInput = document.getElementById('inputFormula').value.trim();
     
-    if (!inputData || !formulasInput) {
+    if (!inputData) {
         showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
         return;
     }
     
     try {
-        // Parse data input
-        const parsedData = parseAdvancedInputData(inputData);
-        
-        // Parse multiple formulas
-        const formulas = parseMultipleFormulas(formulasInput);
+        // Parse data input dan extract formulas
+        const { parsedData, formulas } = parseCompleteInput(inputData);
         
         // Analisis pattern dari data yang ada
         detectPatterns(parsedData, formulas);
@@ -174,49 +179,71 @@ function calculateAdvanced() {
     }
 }
 
-function parseAdvancedInputData(inputData) {
+function parseCompleteInput(inputData) {
     const lines = inputData.split('\n').filter(line => line.trim());
     const parsedData = [];
+    let formulas = [];
+    let foundSeparator = false;
     
-    lines.forEach(line => {
-        const match = line.match(/^(\d+)=\s*(.*?)\s*$/);
-        if (match) {
-            const number = match[1];
-            const resultsStr = match[2].trim();
-            
-            let results = [];
-            let label = 'ai'; // default
-            
-            if (resultsStr && resultsStr !== '') {
-                // Parse format: 94 . 91 . 49 ai
-                const parts = resultsStr.split(/\s+/);
-                let tempResults = [];
-                let tempLabel = '';
+    for (let line of lines) {
+        if (line.trim() === '======') {
+            foundSeparator = true;
+            continue;
+        }
+        
+        if (!foundSeparator) {
+            // Parse data lines
+            const match = line.match(/^(\d+)\s*=\s*(.*?)\s*$/);
+            if (match) {
+                const number = match[1];
+                const resultsStr = match[2].trim();
                 
-                for (let part of parts) {
-                    if (part === '.') continue;
-                    if (part.match(/^[a-z]+$/i)) {
-                        tempLabel = part;
-                    } else if (part.match(/^\d+$/)) {
-                        tempResults.push(part);
+                let results = [];
+                let label = 'ai'; // default
+                
+                if (resultsStr && resultsStr !== '') {
+                    // Parse format: 94 . 91 . 49 ai
+                    const parts = resultsStr.split(/\s+/);
+                    let tempResults = [];
+                    let tempLabel = '';
+                    
+                    for (let part of parts) {
+                        if (part === '.') continue;
+                        if (part.match(/^[a-z]+$/i)) {
+                            tempLabel = part;
+                        } else if (part.match(/^\d+$/)) {
+                            tempResults.push(part);
+                        }
                     }
+                    
+                    results = tempResults;
+                    label = tempLabel || 'ai';
                 }
                 
-                results = tempResults;
-                label = tempLabel || 'ai';
+                parsedData.push({
+                    number: number,
+                    results: results,
+                    label: label,
+                    components: extractComponents(number)
+                });
             }
-            
-            parsedData.push({
-                number: number,
-                results: results,
-                label: label,
-                components: extractComponents(number)
-            });
+        } else {
+            // Parse formula lines setelah separator
+            if (line.trim() && !line.includes('======')) {
+                formulas.push(line.trim());
+            }
         }
-    });
+    }
     
-    console.log('Parsed advanced data:', parsedData);
-    return parsedData;
+    // Jika tidak ada separator, gunakan default formulas
+    if (!foundSeparator || formulas.length === 0) {
+        formulas = ['A6ix+K8mb.(mb)', 'A9–C10.(ty)', 'C8ix+E2ml.(ml)'];
+    }
+    
+    console.log('Parsed data:', parsedData);
+    console.log('Parsed formulas:', formulas);
+    
+    return { parsedData, formulas };
 }
 
 function extractComponents(number) {
@@ -227,16 +254,6 @@ function extractComponents(number) {
     const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
     
     return { as, cop, kepala, ekor, jumlah };
-}
-
-function parseMultipleFormulas(formulasInput) {
-    // Split by new line - satu rumus per baris
-    const formulas = formulasInput.split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0);
-    
-    console.log('Parsed formulas:', formulas);
-    return formulas;
 }
 
 function detectPatterns(parsedData, formulas) {
@@ -272,7 +289,7 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
         if (validData.length > 0) {
             const sampleResult = validData[0].results[formulaIndex];
             pattern.digitLength = sampleResult.length;
-            // Default pattern untuk 2 digit
+            // Default pattern
             pattern.naikSequence = Array(pattern.digitLength).fill(1);
         } else {
             pattern.digitLength = 2;
@@ -299,7 +316,7 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
             // Hitung berapa "naik" dari current ke next
             let naikValue = (nextDigit - currentDigit + 10) % 10;
             if (naikValue === 0 && currentDigit !== nextDigit) {
-                naikValue = 10; // Jika hasil 0 tapi angka berbeda, berarti naik 10
+                naikValue = 10;
             }
             
             naikValues.push(naikValue);
@@ -382,10 +399,8 @@ function calculateWithPattern(data, formula, pattern) {
 
 function calculateSingleFormula(data, formula) {
     // Untuk demo sederhana, kita hitung berdasarkan komponen
-    // Ini adalah placeholder - perlu disesuaikan dengan logika program lama yang sesungguhnya
     const components = data.components;
     
-    // Hitung berdasarkan karakter dalam rumus
     let result = 0;
     
     if (formula.includes('A') && formula.includes('K')) {
@@ -397,7 +412,6 @@ function calculateSingleFormula(data, formula) {
     } else if (formula.includes('C') && formula.includes('E')) {
         result = (parseInt(components.cop) + parseInt(components.ekor)) % 10;
     } else {
-        // Default ke jumlah
         result = parseInt(components.jumlah);
     }
     
@@ -426,9 +440,8 @@ function displayAdvancedResult(results, formulas) {
     let outputText = '';
     
     results.forEach(result => {
-        outputText += `${result.number}= `;
+        outputText += `${result.number} = `;
         if (result.results.length > 0) {
-            // Hanya tampilkan hasil untuk rumus yang ada
             const validResults = result.results.slice(0, formulas.length).filter(r => r !== '');
             outputText += validResults.join(' . ');
             if (result.label) {
@@ -455,10 +468,41 @@ function reduceToSingleDigit(num) {
 }
 
 function clearAll() {
-    document.getElementById('inputData').value = '';
-    document.getElementById('inputFormula').value = 'A6ix+K8mb.(mb)\nA9–C10.(ty)\nC8ix+E2ml.(ml)';
+    document.getElementById('inputData').value = `7013 = 
+8741 = 
+5337 = 
+7463 = 
+9359 = 
+8250 = 
+0376 = 
+9202 = 
+4063 = 
+6874 = 94 . 91 . 49 ai
+0489 = 83 . 35 . 49 ai
+2843 = 72 . 57 . 27 ai
+3752 = 49 . 24 . 94 ai
+8644 = 16 . 24 . 72 ai
+2962 = 72 . 35 . 27 ai
+6937 = 50 . 79 . 05 ai
+0559 = 49 . 35 . 49 ai
+8445 = 49 . 79 . 94 ai
+2429 = 49 . 91 . 27 ai
+5879 = 05 . 35 . 38 ai
+9158 = 61 . 24 . 49 ai
+5364 = 50 . 80 . 49 ai
+2190 = 38 . 57 . 50 ai
+3358 = 05 . 02 . 05 ai
+1452 = 
+======
+A6ix+K8mb.(mb)
+A9–C10.(ty)
+C8ix+E2ml.(ml)`;
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
+// 7013 = 
+// 8741 = 
+// 5337 = 
+// ...
 // 6874 = 94 . 91 . 49 ai
 // 0489 = 83 . 35 . 49 ai  
 // 2843 = 72 . 57 . 27 ai
@@ -467,8 +511,8 @@ function clearAll() {
 // A6ix+K8mb.(mb) 
 // A9–C10.(ty) 
 // C8ix+E2ml.(ml)`;
-    document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik ANALISIS & HITUNG';
-    document.getElementById('inputInfo').textContent = '0 data terdeteksi';
+    document.getElementById('info').textContent = 'Masukkan data dan rumus dalam satu kolom, lalu klik ANALISIS & HITUNG';
+    document.getElementById('inputInfo').textContent = 'Data dan rumus terdeteksi';
     document.getElementById('debugInfo').style.display = 'none';
     document.getElementById('patternAnalysis').style.display = 'none';
     dataHistory = [];
@@ -488,7 +532,15 @@ function showInfo(message, type) {
 function updateInputInfo() {
     const input = document.getElementById('inputData').value.trim();
     const lines = input.split('\n').filter(line => line.trim());
-    document.getElementById('inputInfo').textContent = `${lines.length} data terdeteksi`;
+    const dataCount = lines.filter(line => line.match(/^\d+\s*=/)).length;
+    const hasFormulas = input.includes('======');
+    
+    let info = `${dataCount} data terdeteksi`;
+    if (hasFormulas) {
+        info += ' + rumus';
+    }
+    
+    document.getElementById('inputInfo').textContent = info;
 }
 
 // Event listeners
@@ -497,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateInputInfo();
 });
 
-document.getElementById('inputFormula').addEventListener('keydown', function(e) {
+document.getElementById('inputData').addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
         calculateAdvanced();
     }
