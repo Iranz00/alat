@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Mistik</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
+.container { max-width:1200px; margin:0 auto; background:white; border-radius:15px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+h1 { text-align:center; color:#333; margin-bottom:10px; }
+.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:20px; }
+.grid-container { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+.input-section, .output-section { background:#f8f9fa; padding:20px; border-radius:10px; border:2px solid #e9ecef; }
+.section-title { color:#333; margin-bottom:15px; font-size:16px; font-weight:bold; }
+.data-input textarea { width:100%; height:120px; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; margin-bottom:10px; }
+.formula-input { margin-bottom:15px; }
+.formula-input input { width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; }
+.formula-input input:focus { border-color:#667eea; outline:none; }
+.button-group { display:flex; gap:10px; margin-bottom:15px; }
+button { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+.btn-calculate { background:#4CAF50;color:white; }
+.btn-clear { background:#f44336;color:white; }
+button:hover { opacity:0.9; transform:translateY(-2px); }
+.info { background:#e3f2fd; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; }
+.result-box { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; min-height:100px; }
+.tables-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:20px; }
+.table-container { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; }
+.table-title { font-weight:bold; margin-bottom:8px; color:#333; text-align:center; }
+.table-content { font-family:'Courier New',monospace; font-size:12px; line-height:1.4; }
+.explanation { background:#fff3cd; padding:15px; border-radius:8px; margin-top:20px; border:1px solid #ffeaa7; }
+.explanation h3 { color:#856404; margin-bottom:10px; }
+.explanation ul { color:#856404; padding-left:20px; }
+.explanation li { margin-bottom:5px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🔮 KALKULATOR MISTIK</h1>
+    <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap</div>
+    
+    <div class="grid-container">
+        <div class="input-section">
+            <div class="section-title">📥 INPUT DATA</div>
+            
+            <div class="data-input">
+                <textarea id="inputData" placeholder="Masukkan data hasil (contoh:&#10;8445 = 2 ai&#10;2429 = 7 ai&#10;5879 = 8 ai&#10;9158 = 6 ai&#10;5364 = 0 ai&#10;2190 = 8 ai&#10;3358 = 6 ai)"></textarea>
+            </div>
+            
+            <div class="formula-input">
+                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="K1mb+J1m9.(ml)">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-calculate" onclick="calculateFormula()">🧮 HITUNG</button>
+                <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
+            </div>
+            
+            <div class="info" id="info">Masukkan data dan rumus, lalu klik HITUNG</div>
+        </div>
+        
+        <div class="output-section">
+            <div class="section-title">📤 HASIL PERHITUNGAN</div>
+            <div class="result-box" id="resultOutput">
+                // Hasil perhitungan akan muncul di sini
+            </div>
+        </div>
+    </div>
+
+    <div class="tables-grid">
+        <div class="table-container">
+            <div class="table-title">TABEL IX</div>
+            <div class="table-content">0«»5 1«»6<br>2«»7 3«»8<br>4«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL TY</div>
+            <div class="table-content">0«»7 1«»4<br>2«»9 3«»6<br>5«»8</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL ML</div>
+            <div class="table-content">0«»1 2«»5<br>3«»8 4«»7<br>6«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL MB</div>
+            <div class="table-content">0«»8 1«»7<br>2«»6 3«»9<br>4«»5</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M0</div>
+            <div class="table-content">0«»6 1«»5<br>2«»7 3«»8<br>4«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M1</div>
+            <div class="table-content">0«»1 2«»9<br>3«»8 4«»7<br>5«»6</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M3</div>
+            <div class="table-content">0«»3 1«»2<br>4«»9 5«»8<br>6«»7</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M5</div>
+            <div class="table-content">0«»5 1«»4<br>2«»3 6«»9<br>7«»8</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M7</div>
+            <div class="table-content">0«»7 1«»6<br>2«»5 3«»4<br>8«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M9</div>
+            <div class="table-content">0«»9 1«»8<br>2«»7 3«»6<br>4«»5</div>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h3>📝 CARA PENGGUNAAN:</h3>
+        <ul>
+            <li><strong>A = AS</strong>, <strong>C = COP</strong>, <strong>K = KEPALA</strong>, <strong>E = EKOR</strong></li>
+            <li><strong>J = JUMLAH K+E</strong> (jika 2 digit, jumlahkan lagi sampai 1 digit)</li>
+            <li><strong>A1</strong> = AS hari ini, <strong>A2</strong> = AS kemarin, <strong>A3</strong> = AS lusa</li>
+            <li><strong>mb, ml, m9</strong> = konversi menggunakan tabel mistik</li>
+            <li><strong>.(ml)</strong> = konversi hasil akhir ke tabel ML</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Tabel konversi mistik
+const mistikTables = {
+    'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
+    'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
+    'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
+    'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
+    'M0': {'0':'6', '1':'5', '2':'7', '3':'8', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
+    'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
+    'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
+    'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
+    'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
+    'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'}
+};
+
+let dataHistory = [];
+
+function calculateFormula() {
+    const inputData = document.getElementById('inputData').value.trim();
+    const formula = document.getElementById('inputFormula').value.trim();
+    
+    if (!inputData || !formula) {
+        showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
+        return;
+    }
+    
+    try {
+        // Parse data input
+        parseInputData(inputData);
+        
+        // Process formula
+        const result = processFormula(formula);
+        
+        // Display result
+        displayResult(formula, result);
+        showInfo('Perhitungan berhasil!', 'success');
+        
+    } catch (error) {
+        showInfo(`Error: ${error.message}`, 'error');
+        console.error('Calculation error:', error);
+    }
+}
+
+function parseInputData(inputData) {
+    dataHistory = [];
+    const lines = inputData.split('\n').filter(line => line.trim());
+    
+    lines.forEach(line => {
+        const match = line.match(/(\d+)\s*=\s*(\d+)\s*ai/);
+        if (match) {
+            const number = match[1];
+            const result = match[2];
+            
+            // Extract components
+            const as = number.slice(0, 2);
+            const kop = number.slice(1, 3);
+            const kepala = number[0];
+            const ekor = number[3];
+            
+            dataHistory.unshift({
+                number: number,
+                result: result,
+                as: as,
+                kop: kop,
+                kepala: kepala,
+                ekor: ekor,
+                jumlah: reduceToSingleDigit(parseInt(kepala) + parseInt(ekor))
+            });
+        }
+    });
+    
+    console.log('Parsed data:', dataHistory);
+}
+
+function processFormula(formula) {
+    let workingFormula = formula;
+    let stepByStep = [];
+    
+    // Process conversions like .(ml)
+    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+    if (finalConversion) {
+        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+        stepByStep.push(`Rumus: ${formula}`);
+        stepByStep.push(`Setelah remove .(${finalConversion[1]}): ${workingFormula}`);
+    }
+    
+    // Process components
+    const components = workingFormula.split('+');
+    let total = 0;
+    
+    components.forEach(component => {
+        const value = processComponent(component.trim());
+        total += value;
+        stepByStep.push(`${component} = ${value}`);
+    });
+    
+    stepByStep.push(`Total: ${total}`);
+    
+    // Apply final conversion if exists
+    if (finalConversion) {
+        const table = finalConversion[1].toUpperCase();
+        const converted = convertMistik(total.toString(), table);
+        stepByStep.push(`Konversi ${total} ke ${table}: ${converted}`);
+        total = parseInt(converted);
+    }
+    
+    stepByStep.push(`Hasil akhir: ${total}`);
+    
+    return {
+        value: total,
+        steps: stepByStep
+    };
+}
+
+function processComponent(component) {
+    // Examples: K1mb, J1m9, A2, C3, etc.
+    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    if (!match) {
+        throw new Error(`Format komponen tidak valid: ${component}`);
+    }
+    
+    const type = match[1]; // A, K, C, E, J
+    const day = parseInt(match[2]); // 1, 2, 3, ...
+    const conversion = match[3]; // mb, m9, ml, etc.
+    
+    if (day > dataHistory.length) {
+        throw new Error(`Data hari ke-${day} tidak tersedia`);
+    }
+    
+    const data = dataHistory[day - 1];
+    let value;
+    
+    switch(type) {
+        case 'A': value = parseInt(data.as); break;
+        case 'K': value = parseInt(data.kepala); break;
+        case 'C': value = parseInt(data.kop); break;
+        case 'E': value = parseInt(data.ekor); break;
+        case 'J': value = data.jumlah; break;
+        default: throw new Error(`Tipe tidak dikenal: ${type}`);
+    }
+    
+    // Apply conversion if exists
+    if (conversion) {
+        const table = conversion.toUpperCase();
+        value = parseInt(convertMistik(value.toString(), table));
+    }
+    
+    return value;
+}
+
+function convertMistik(number, table) {
+    if (!mistikTables[table]) {
+        throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
+    }
+    
+    // Ensure single digit
+    const digit = reduceToSingleDigit(parseInt(number)).toString();
+    
+    if (mistikTables[table][digit] === undefined) {
+        throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
+    }
+    
+    return mistikTables[table][digit];
+}
+
+function reduceToSingleDigit(num) {
+    let result = num;
+    while (result > 9) {
+        result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return result;
+}
+
+function displayResult(formula, result) {
+    const output = document.getElementById('resultOutput');
+    let html = `<strong>RUMUS: ${formula}</strong>\n\n`;
+    html += `<strong>STEP BY STEP:</strong>\n`;
+    
+    result.steps.forEach(step => {
+        html += `${step}\n`;
+    });
+    
+    html += `\n<strong>HASIL AKHIR: ${result.value}</strong>`;
+    
+    output.textContent = html;
+}
+
+function clearAll() {
+    document.getElementById('inputData').value = '';
+    document.getElementById('inputFormula').value = 'K1mb+J1m9.(ml)';
+    document.getElementById('resultOutput').textContent = '// Hasil perhitungan akan muncul di sini';
+    document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG';
+    dataHistory = [];
+}
+
+function showInfo(message, type) {
+    const infoDiv = document.getElementById('info');
+    infoDiv.textContent = message;
+    infoDiv.style.background = type === 'error' ? '#ffebee' : 
+                             type === 'success' ? '#e8f5e8' : '#e3f2fd';
+    infoDiv.style.color = type === 'error' ? '#c62828' :
+                        type === 'success' ? '#2e7d32' : '#1565c0';
+}
+
+// Support Enter key untuk calculate (Ctrl+Enter)
+document.getElementById('inputFormula').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        calculateFormula();
+    }
+});
+</script>
+</body>
+</html>
