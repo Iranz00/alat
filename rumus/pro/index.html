@@ -7,48 +7,48 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
-.container { max-width:1400px; margin:0 auto; background:white; border-radius:15px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+.container { max-width:1400px; margin:0 auto; background:white; border-radius:15px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
 h1 { text-align:center; color:#333; margin-bottom:10px; }
-.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:20px; }
-.grid-container { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
-.input-section, .output-section { background:#f8f9fa; padding:20px; border-radius:10px; border:2px solid #e9ecef; }
-.section-title { color:#333; margin-bottom:15px; font-size:16px; font-weight:bold; }
-.data-input textarea { width:100%; height:120px; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; margin-bottom:10px; }
-.formula-input { margin-bottom:15px; }
-.formula-input input { width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; }
+.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:30px; }
+
+.input-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
+.section-title { color:#333; margin-bottom:20px; font-size:18px; font-weight:bold; }
+.data-input { margin-bottom:20px; }
+.data-input textarea { width:100%; height:180px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; }
+.formula-input { margin-bottom:20px; }
+.formula-input input { width:100%; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:16px; font-family:monospace; }
 .formula-input input:focus { border-color:#667eea; outline:none; }
-.button-group { display:flex; gap:10px; margin-bottom:15px; }
-button { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+.button-group { display:flex; gap:15px; margin-bottom:20px; }
+button { flex:1; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
 .btn-calculate { background:#4CAF50;color:white; }
 .btn-clear { background:#f44336;color:white; }
 button:hover { opacity:0.9; transform:translateY(-2px); }
-.info { background:#e3f2fd; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; }
-.result-box { background:#2d2d2d; color:#f8f8f2; padding:15px; border-radius:5px; font-family:'Courier New',monospace; min-height:100px; white-space:pre-wrap; line-height:1.4; }
-.tables-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:20px; }
-.table-container { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; }
-.table-title { font-weight:bold; margin-bottom:8px; color:#333; text-align:center; }
-.table-content { font-family:'Courier New',monospace; font-size:12px; line-height:1.4; }
-.explanation { background:#fff3cd; padding:15px; border-radius:8px; margin-top:20px; border:1px solid #ffeaa7; }
-.explanation h3 { color:#856404; margin-bottom:10px; }
+.info { background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; }
+.input-info { text-align:center; color:#666; font-size:14px; margin-bottom:15px; }
+
+.output-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
+.result-box { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:8px; font-family:'Courier New',monospace; min-height:200px; white-space:pre-wrap; line-height:1.5; font-size:14px; overflow-x:auto; }
+
+.pattern-analysis { background:#e8f5e8; padding:20px; border-radius:8px; margin-bottom:20px; border:1px solid #c8e6c9; }
+.pattern-analysis h4 { color:#2e7d32; margin-bottom:15px; }
+.debug-info { background:#ffebee; padding:15px; border-radius:8px; margin-top:15px; font-size:12px; color:#c62828; display:none; }
+
+.explanation { background:#fff3cd; padding:20px; border-radius:8px; margin-top:25px; border:1px solid #ffeaa7; }
+.explanation h3 { color:#856404; margin-bottom:15px; }
 .explanation ul { color:#856404; padding-left:20px; }
-.explanation li { margin-bottom:5px; }
-.input-info { text-align:center; color:#666; font-size:12px; margin-bottom:10px; }
-.debug-info { background:#ffebee; padding:10px; border-radius:5px; margin-top:10px; font-size:12px; color:#c62828; display:none; }
-.pattern-analysis { background:#e8f5e8; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #c8e6c9; }
-.pattern-analysis h4 { color:#2e7d32; margin-bottom:10px; }
+.explanation li { margin-bottom:8px; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔮 KALKULATOR MISTIK PRO</h1>
+    <h1>🔮 KEY KALKULATOR PRO</h1>
     <div class="subtitle">Hitung multiple rumus mistik dengan pattern detection</div>
     
-    <div class="grid-container">
-        <div class="input-section">
-            <div class="section-title">📥 INPUT DATA & RUMUS</div>
-            
-            <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874= 94 . 91 . 49 ai&#10;0489= 83 . 35 . 49 ai&#10;2843= 72 . 57 . 27 ai&#10;...">6874= 94 . 91 . 49 ai
+    <div class="input-section">
+        <div class="section-title">📥 INPUT DATA & RUMUS</div>
+        
+        <div class="data-input">
+            <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874= 94 . 91 . 49 ai&#10;0489= 83 . 35 . 49 ai&#10;2843= 72 . 57 . 27 ai&#10;...">6874= 94 . 91 . 49 ai
 0489= 83 . 35 . 49 ai
 2843= 72 . 57 . 27 ai
 3752= 49 . 24 . 94 ai
@@ -64,29 +64,29 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 2190= 38 . 57 . 50 ai
 3358= 05 . 02 . 05 ai
 1452= </textarea>
-                <div class="input-info" id="inputInfo">16 data terdeteksi</div>
-            </div>
-            
-            <div class="formula-input">
-                <input type="text" id="inputFormula" placeholder="Masukkan rumus (pisahkan dengan spasi):&#10;Contoh: A6ix+K8mb.(mb) A9–C10.(ty) C8ix+E2ml.(ml)" value="A6ix+K8mb.(mb) A9–C10.(ty) C8ix+E2ml.(ml)">
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-calculate" onclick="calculateAdvanced()">🧮 ANALISIS & HITUNG</button>
-                <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
-            </div>
-            
-            <div class="info" id="info">Masukkan data dan rumus, lalu klik ANALISIS & HITUNG</div>
-            <div class="pattern-analysis" id="patternAnalysis" style="display:none;">
-                <h4>🔍 ANALISIS PATTERN DITEMUKAN:</h4>
-                <div id="patternResults"></div>
-            </div>
-            <div class="debug-info" id="debugInfo"></div>
+            <div class="input-info" id="inputInfo">16 data terdeteksi</div>
         </div>
         
-        <div class="output-section">
-            <div class="section-title">📤 HASIL PERHITUNGAN</div>
-            <div class="result-box" id="resultOutput">
+        <div class="formula-input">
+            <input type="text" id="inputFormula" placeholder="Masukkan rumus (pisahkan dengan spasi):&#10;Contoh: A6ix+K8mb.(mb) A9–C10.(ty) C8ix+E2ml.(ml)" value="A6ix+K8mb.(mb) A9–C10.(ty) C8ix+E2ml.(ml)">
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-calculate" onclick="calculateAdvanced()">🧮 ANALISIS & HITUNG</button>
+            <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
+        </div>
+        
+        <div class="info" id="info">Masukkan data dan rumus, lalu klik ANALISIS & HITUNG</div>
+        <div class="pattern-analysis" id="patternAnalysis" style="display:none;">
+            <h4>🔍 ANALISIS PATTERN DITEMUKAN:</h4>
+            <div id="patternResults"></div>
+        </div>
+        <div class="debug-info" id="debugInfo"></div>
+    </div>
+
+    <div class="output-section">
+        <div class="section-title">📤 HASIL PERHITUNGAN</div>
+        <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
 // 6874 = 94 . 91 . 49 ai
@@ -95,50 +95,6 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 // ...
 // ======
 // A6ix+K8mb.(mb) A9–C10.(ty) C8ix+E2ml.(ml)
-            </div>
-        </div>
-    </div>
-
-    <div class="tables-grid">
-        <div class="table-container">
-            <div class="table-title">TABEL IX</div>
-            <div class="table-content">0«»5 1«»6<br>2«»7 3«»8<br>4«»9</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL TY</div>
-            <div class="table-content">0«»7 1«»4<br>2«»9 3«»6<br>5«»8</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL ML</div>
-            <div class="table-content">0«»1 2«»5<br>3«»8 4«»7<br>6«»9</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL MB</div>
-            <div class="table-content">0«»8 1«»7<br>2«»6 3«»9<br>4«»5</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M0</div>
-            <div class="table-content">0«»6 1«»5<br>2«»7 3«»8<br>4«»9</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M1</div>
-            <div class="table-content">0«»1 2«»9<br>3«»8 4«»7<br>5«»6</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M3</div>
-            <div class="table-content">0«»3 1«»2<br>4«»9 5«»8<br>6«»7</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M5</div>
-            <div class="table-content">0«»5 1«»4<br>2«»3 6«»9<br>7«»8</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M7</div>
-            <div class="table-content">0«»7 1«»6<br>2«»5 3«»4<br>8«»9</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">TABEL M9</div>
-            <div class="table-content">0«»9 1«»8<br>2«»7 3«»6<br>4«»5</div>
         </div>
     </div>
 
@@ -149,6 +105,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
             <li><strong>Multiple Rumus:</strong> Pisahkan dengan spasi, sistem akan detect otomatis</li>
             <li><strong>Pattern Detection:</strong> Program akan analisis pattern "naik X" dari data yang ada</li>
             <li><strong>Output Dinamis:</strong> Menyesuaikan jumlah rumus yang diberikan</li>
+            <li><strong>Label Fleksibel:</strong> Bisa ai, ct, k, e, j, c, a, dll.</li>
         </ul>
     </div>
 </div>
@@ -320,8 +277,8 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
     const validData = parsedData.filter(item => item.results.length > formulaIndex && item.results[formulaIndex]);
     
     if (validData.length < 2) {
-        pattern.naikSequence = [0]; // Default pattern jika tidak cukup data
-        pattern.digitLength = 1;
+        pattern.naikSequence = [1]; // Default pattern jika tidak cukup data
+        pattern.digitLength = 2;
         return pattern;
     }
     
@@ -342,8 +299,6 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
             
             // Hitung berapa "naik" dari current ke next
             let naikValue = (nextDigit - currentDigit + 10) % 10;
-            if (naikValue === 0 && currentDigit !== nextDigit) naikValue = 10;
-            
             naikValues.push(naikValue);
         }
         
@@ -356,7 +311,7 @@ function analyzePatternForFormula(parsedData, formula, formulaIndex) {
 }
 
 function findConsistentValue(values) {
-    if (values.length === 0) return 0;
+    if (values.length === 0) return 1;
     
     const frequency = {};
     let maxCount = 0;
@@ -385,7 +340,7 @@ function calculateMissingData(parsedData, formulas) {
         }
         
         // Hitung hasil untuk setiap formula yang belum ada
-        for (let i = data.results.length; i < formulas.length; i++) {
+        for (let i = 0; i < formulas.length; i++) {
             if (!data.results[i]) {
                 const calculatedResult = calculateWithPattern(data, formulas[i], detectedPatterns[i]);
                 data.results[i] = calculatedResult;
@@ -413,21 +368,21 @@ function calculateWithPattern(data, formula, pattern) {
 }
 
 function calculateSingleFormula(data, formula) {
-    // Simplified calculation - ini harus disesuaikan dengan logika program lama
-    // Untuk demo, kita gunakan calculation sederhana
+    // Untuk demo, kita gunakan calculation sederhana berdasarkan komponen
     const components = data.components;
     
-    // Contoh perhitungan sederhana
-    let result = 0;
+    // Hitung berdasarkan jenis rumus
     if (formula.includes('A') && formula.includes('K')) {
-        result = (parseInt(components.as) + parseInt(components.kepala)) % 10;
+        return (parseInt(components.as) + parseInt(components.kepala)) % 10;
     } else if (formula.includes('C') && formula.includes('E')) {
-        result = (parseInt(components.cop) + parseInt(components.ekor)) % 10;
+        return (parseInt(components.cop) + parseInt(components.ekor)) % 10;
+    } else if (formula.includes('A') && formula.includes('C')) {
+        return (parseInt(components.as) + parseInt(components.cop)) % 10;
+    } else if (formula.includes('K') && formula.includes('E')) {
+        return (parseInt(components.kepala) + parseInt(components.ekor)) % 10;
     } else {
-        result = parseInt(components.jumlah);
+        return parseInt(components.jumlah);
     }
-    
-    return result;
 }
 
 function displayPatternAnalysis() {
@@ -436,9 +391,9 @@ function displayPatternAnalysis() {
     
     let html = '';
     detectedPatterns.forEach((pattern, index) => {
-        html += `<div><strong>Rumus ${index + 1}:</strong> ${pattern.formula}</div>`;
-        html += `<div>Pattern "naik X": [${pattern.naikSequence.join(', ')}]</div>`;
-        html += `<div>Digit output: ${pattern.digitLength}</div><br>`;
+        html += `<div style="margin-bottom: 10px;"><strong>Rumus ${index + 1}:</strong> ${pattern.formula}</div>`;
+        html += `<div style="margin-bottom: 10px;">Pattern "naik X": [${pattern.naikSequence.join(', ')}]</div>`;
+        html += `<div style="margin-bottom: 15px;">Digit output: ${pattern.digitLength}</div>`;
     });
     
     patternResults.innerHTML = html;
