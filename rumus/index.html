@@ -38,7 +38,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 </head>
 <body>
 <div class="container">
-    <h1>🔮 KALKULATOR MISTIK</h1>
+    <h1>🔮 KALKULATOR KEY</h1>
     <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap</div>
     
     <div class="grid-container">
@@ -57,7 +57,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
             </div>
             
             <div class="formula-input">
-                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="K1mb+J1m9.(ml)">
+                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="A1+K5">
             </div>
             
             <div class="button-group">
@@ -179,7 +179,11 @@ function calculateFormula() {
         
         // Show debug info
         debugInfo.style.display = 'block';
-        debugInfo.innerHTML = `<strong>Debug Info:</strong><br>Data terbaru (hari ini) adalah: ${dataHistory[0]?.number}<br>Data kemarin: ${dataHistory[1]?.number}<br>Data lusa: ${dataHistory[2]?.number}`;
+        let debugHTML = `<strong>Debug Info:</strong><br>`;
+        dataHistory.forEach((data, index) => {
+            debugHTML += `Hari ${index + 1}: ${data.number} (A:${data.as}, C:${data.cop}, K:${data.kepala}, E:${data.ekor}, J:${data.jumlah})<br>`;
+        });
+        debugInfo.innerHTML = debugHTML;
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
@@ -194,7 +198,7 @@ function parseInputData(inputData) {
     lines.forEach(line => {
         const number = line.trim();
         if (number.match(/^\d+$/)) {
-            // Extract components - PERBAIKAN: Semua single digit
+            // Extract components - Semua single digit
             const as = number[0];           // digit pertama
             const cop = number[1];          // digit kedua
             const kepala = number[2];       // digit ketiga
@@ -280,11 +284,13 @@ function processComponent(component, currentDayIndex, debugSteps) {
     const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa
     const conversion = match[3]; // mb, m9, ml, etc.
     
-    // Calculate which data to use
-    const targetDayIndex = currentDayIndex + (dayOffset - 1);
+    // PERBAIKAN: Hitung index data yang benar
+    // currentDayIndex = index data yang sedang dihitung AI-nya
+    // dayOffset = berapa hari mundur dari data yang sedang dihitung
+    const targetDayIndex = currentDayIndex - (dayOffset - 1);
     
-    if (targetDayIndex >= dataHistory.length || targetDayIndex < 0) {
-        throw new Error(`Data hari ke-${dayOffset} tidak tersedia untuk perhitungan`);
+    if (targetDayIndex < 0 || targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data hari ke-${dayOffset} tidak tersedia untuk perhitungan ${dataHistory[currentDayIndex]?.number}`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -293,7 +299,7 @@ function processComponent(component, currentDayIndex, debugSteps) {
     switch(type) {
         case 'A': value = parseInt(data.as); break;
         case 'K': value = parseInt(data.kepala); break;
-        case 'C': value = parseInt(data.cop); break; // PERBAIKAN: COP bukan KOP
+        case 'C': value = parseInt(data.cop); break;
         case 'E': value = parseInt(data.ekor); break;
         case 'J': value = data.jumlah; break;
         default: throw new Error(`Tipe tidak dikenal: ${type}`);
@@ -352,7 +358,7 @@ function displayResult(results, formula) {
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('inputFormula').value = 'K1mb+J1m9.(ml)';
+    document.getElementById('inputFormula').value = 'A1+K5';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
 // 8445 = 2 ai
