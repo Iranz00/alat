@@ -160,6 +160,18 @@ function calculateAdvanced() {
         
         // Parse data input dan extract formulas
         const { parsedData, formulas } = parseCompleteInput(inputData);
+        
+        if (!parsedData || parsedData.length === 0) {
+            throw new Error('Tidak ada data yang berhasil di-parse');
+        }
+        
+        if (!formulas || formulas.length === 0) {
+            throw new Error('Tidak ada rumus yang ditemukan');
+        }
+        
+        console.log('Data yang di-parse:', parsedData);
+        console.log('Rumus yang ditemukan:', formulas);
+        
         updateProgress(10);
         
         // Hitung BASE RESULT dengan program lama untuk semua data
@@ -182,6 +194,7 @@ function calculateAdvanced() {
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
         console.error('Calculation error:', error);
+        console.error('Stack trace:', error.stack);
     }
 }
 
@@ -256,8 +269,9 @@ function extractComponents(number) {
     return { as, cop, kepala, ekor, jumlah };
 }
 
-// TAHAP 1: Hitung BASE RESULT dengan program lama
+// TAHAP 1: Hitung BASE RESULT dengan program lama - FIXED
 function calculateBaseResults(parsedData, formulas) {
+    // Reverse data untuk program lama (data terbaru di index 0)
     const reversedData = [...parsedData].reverse();
     
     formulas.forEach((formula, formulaIndex) => {
@@ -266,6 +280,9 @@ function calculateBaseResults(parsedData, formulas) {
                 const baseResult = calculateSingleAI(formula, dataIndex, reversedData);
                 if (!data.baseResults) data.baseResults = [];
                 data.baseResults[formulaIndex] = baseResult;
+                
+                // Debug log
+                console.log(`Base result untuk ${data.number} dengan ${formula}: ${baseResult}`);
             } catch (error) {
                 console.error(`Error calculating base for ${data.number} with ${formula}:`, error);
                 if (!data.baseResults) data.baseResults = [];
@@ -273,10 +290,18 @@ function calculateBaseResults(parsedData, formulas) {
             }
         });
     });
+    
+    // Debug: Cek hasil base results
+    console.log('Base results setelah dihitung:', parsedData.map(d => ({
+        number: d.number,
+        baseResults: d.baseResults
+    })));
 }
 
-// PROGRAM LAMA - Calculate Single AI
+// PROGRAM LAMA - Calculate Single AI - FIXED
 function calculateSingleAI(formula, currentDayIndex, dataHistory) {
+    console.log(`Menghitung ${formula} untuk data index ${currentDayIndex}: ${dataHistory[currentDayIndex]?.number}`);
+    
     let workingFormula = formula;
     
     const finalConversion = workingFormula.match(/\.\((\w+)\)/);
@@ -299,6 +324,7 @@ function calculateSingleAI(formula, currentDayIndex, dataHistory) {
     }
     
     const finalResult = reduceToSingleDigit(total);
+    console.log(`Hasil ${formula} untuk ${dataHistory[currentDayIndex]?.number}: ${finalResult}`);
     return finalResult;
 }
 
@@ -620,15 +646,26 @@ function calculateMissingData(parsedData, formulas) {
 }
 
 function calculateWithPattern(data, formula, pattern) {
+    // JIKA PATTERN TIDAK VALID - KOSONGKAN
     if (!pattern || !pattern.isValid) {
+        console.log(`Pattern tidak valid untuk ${formula} pada data ${data.number}`);
         return "";
     }
     
     try {
         const formulaIndex = detectedPatterns.findIndex(p => p.formula === formula);
+        
+        if (formulaIndex === -1) {
+            console.log(`Formula ${formula} tidak ditemukan dalam detectedPatterns`);
+            return "";
+        }
+        
         const baseResult = data.baseResults[formulaIndex];
         
+        console.log(`Calculate with pattern: ${data.number}, ${formula}, base: ${baseResult}, pattern: [${pattern.naikSequence.join(', ')}]`);
+        
         if (!baseResult && baseResult !== 0) {
+            console.log(`Base result kosong untuk ${data.number} dengan ${formula}`);
             return "";
         }
         
@@ -640,7 +677,9 @@ function calculateWithPattern(data, formula, pattern) {
             finalResult += currentDigit.toString();
         }
         
+        console.log(`Hasil transformasi: ${baseResult} -> ${finalResult}`);
         return finalResult;
+        
     } catch (error) {
         console.error('Error in calculateWithPattern:', error);
         return "";
