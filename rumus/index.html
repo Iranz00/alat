@@ -38,7 +38,7 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 </head>
 <body>
 <div class="container">
-    <h1>🔮 KALKULATOR KEY</h1>
+    <h1>🔮 KALKULATOR MISTIK</h1>
     <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap</div>
     
     <div class="grid-container">
@@ -46,18 +46,36 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
             <div class="section-title">📥 INPUT DATA</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan angka saja (contoh:&#10;8445&#10;2429&#10;5879&#10;9158&#10;5364&#10;2190&#10;3358)">8445
+                <textarea id="inputData" placeholder="Masukkan angka saja (contoh:&#10;8445&#10;2429&#10;5879&#10;9158&#10;5364&#10;2190&#10;3358)">7013
+8741
+5337
+7463
+9359
+8250
+0376
+9202
+4063
+6874
+0489
+2843
+3752
+8644
+2962
+6937
+0559
+8445
 2429
 5879
 9158
 5364
 2190
-3358</textarea>
-                <div class="input-info" id="inputInfo">7 angka terdeteksi</div>
+3358
+1452</textarea>
+                <div class="input-info" id="inputInfo">25 angka terdeteksi</div>
             </div>
             
             <div class="formula-input">
-                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="A1+K5">
+                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="A1+K9">
             </div>
             
             <div class="button-group">
@@ -195,7 +213,11 @@ function parseInputData(inputData) {
     dataHistory = [];
     const lines = inputData.split('\n').filter(line => line.trim());
     
-    lines.forEach(line => {
+    // PERBAIKAN: Data terbaru harus di index 0
+    // Reverse array agar data terbaru di awal
+    const reversedLines = [...lines].reverse();
+    
+    reversedLines.forEach(line => {
         const number = line.trim();
         if (number.match(/^\d+$/)) {
             // Extract components - Semua single digit
@@ -285,12 +307,12 @@ function processComponent(component, currentDayIndex, debugSteps) {
     const conversion = match[3]; // mb, m9, ml, etc.
     
     // PERBAIKAN: Hitung index data yang benar
-    // currentDayIndex = index data yang sedang dihitung AI-nya
+    // currentDayIndex = index data yang sedang dihitung AI-nya (0 = hari ini)
     // dayOffset = berapa hari mundur dari data yang sedang dihitung
-    const targetDayIndex = currentDayIndex - (dayOffset - 1);
+    const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
-    if (targetDayIndex < 0 || targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data hari ke-${dayOffset} tidak tersedia untuk perhitungan ${dataHistory[currentDayIndex]?.number}`);
+    if (targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data hari ke-${dayOffset} tidak tersedia untuk perhitungan ${dataHistory[currentDayIndex]?.number}. Hanya tersedia ${dataHistory.length} data.`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -358,7 +380,7 @@ function displayResult(results, formula) {
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('inputFormula').value = 'A1+K5';
+    document.getElementById('inputFormula').value = 'A1+K9';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
 // 8445 = 2 ai
