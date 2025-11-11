@@ -23,6 +23,7 @@ button { flex:1; padding:15px; border:none; border-radius:8px; font-size:16px; f
 .btn-search { background:#4CAF50;color:white; }
 .btn-clear { background:#f44336;color:white; }
 button:hover { opacity:0.9; transform:translateY(-2px); }
+button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 .info { background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; }
 
 .results-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; }
@@ -34,7 +35,13 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 .result-none { background:#ffebee; border-color:#f44336; }
 
 .stats { background:#e3f2fd; padding:15px; border-radius:8px; margin-top:20px; text-align:center; }
-.permutation-list { background:#f5f5f5; padding:10px; border-radius:5px; margin-top:10px; font-size:12px; font-family:monospace; }
+.permutation-list { background:#f5f5f5; padding:10px; border-radius:5px; margin-top:10px; font-size:12px; font-family:monospace; max-height:150px; overflow-y:auto; }
+
+.loading { display:none; text-align:center; padding:20px; }
+.spinner { border:5px solid #f3f3f3; border-top:5px solid #667eea; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 15px; }
+@keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+
+.validation-error { border-color:#f44336 !important; background-color:#ffebee !important; }
 </style>
 </head>
 <body>
@@ -59,8 +66,13 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
         </div>
         
         <div class="button-group">
-            <button class="btn-search" onclick="findNumberPermutations()">🔍 CARI PERMUTASI</button>
+            <button class="btn-search" id="searchButton" onclick="findNumberPermutations()">🔍 CARI PERMUTASI</button>
             <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Mencari permutasi...</p>
         </div>
         
         <div class="info" id="info">Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI</div>
@@ -87,18 +99,25 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 function findNumberPermutations() {
     const inputData = document.getElementById('inputData').value.trim();
     const searchNumber = document.getElementById('searchNumber').value.trim();
+    const searchButton = document.getElementById('searchButton');
+    
+    // Reset validasi
+    resetValidation();
     
     if (!inputData) {
         showInfo('Masukkan data angka terlebih dahulu!', 'error');
+        document.getElementById('inputData').classList.add('validation-error');
         return;
     }
     
     if (!searchNumber || searchNumber.length !== 4 || !/^\d+$/.test(searchNumber)) {
         showInfo('Masukkan angka 4 digit yang valid!', 'error');
+        document.getElementById('searchNumber').classList.add('validation-error');
         return;
     }
     
     try {
+        showLoading(true);
         showInfo('Mencari permutasi...', 'info');
         
         // Parse data input
@@ -107,6 +126,7 @@ function findNumberPermutations() {
         
         if (numbers.length === 0) {
             showInfo('Tidak ada angka valid yang ditemukan dalam data!', 'error');
+            showLoading(false);
             return;
         }
         
@@ -120,10 +140,12 @@ function findNumberPermutations() {
         // Tampilkan hasil
         displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
         showInfo(`Pencarian selesai!`, 'success');
+        showLoading(false);
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
         console.error('Search error:', error);
+        showLoading(false);
     }
 }
 
@@ -228,9 +250,10 @@ function displayPermutationResults(results, searchNumber, totalNumbers, allPermu
     
     // Stats info
     const totalFound = results.exactMatches.length + results.permutationMatches.length;
+    const percentage = ((totalFound / totalNumbers) * 100).toFixed(2);
     statsInfo.innerHTML = `
         <strong>📊 STATISTIK:</strong><br>
-        Total data: ${totalNumbers} angka | Ditemukan: ${totalFound} match<br>
+        Total data: ${totalNumbers} angka | Ditemukan: ${totalFound} match (${percentage}%)<br>
         Exact: ${results.exactMatches.length} | Permutasi: ${results.permutationMatches.length}<br>
         Total kemungkinan permutasi: ${allPermutations.length}
     `;
@@ -248,10 +271,31 @@ function showInfo(message, type) {
                         type === 'success' ? '#2e7d32' : '#1565c0';
 }
 
+function showLoading(show) {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const searchButton = document.getElementById('searchButton');
+    
+    if (show) {
+        loadingIndicator.style.display = 'block';
+        searchButton.disabled = true;
+        searchButton.textContent = '⏳ MENCARI...';
+    } else {
+        loadingIndicator.style.display = 'none';
+        searchButton.disabled = false;
+        searchButton.textContent = '🔍 CARI PERMUTASI';
+    }
+}
+
+function resetValidation() {
+    document.getElementById('inputData').classList.remove('validation-error');
+    document.getElementById('searchNumber').classList.remove('validation-error');
+}
+
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('searchNumber').value = '';
     document.getElementById('resultsSection').style.display = 'none';
+    resetValidation();
     showInfo('Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI', 'info');
 }
 
@@ -265,6 +309,7 @@ document.getElementById('searchNumber').addEventListener('keypress', function(e)
 // Auto-format input hanya angka
 document.getElementById('searchNumber').addEventListener('input', function(e) {
     this.value = this.value.replace(/[^\d]/g, '').slice(0, 4);
+    resetValidation();
 });
 
 // Update info saat data berubah
@@ -273,6 +318,7 @@ document.getElementById('inputData').addEventListener('input', function() {
     const numbers = inputData ? parseInputData(inputData) : [];
     document.getElementById('info').textContent = 
         `${numbers.length} angka valid terdeteksi - Masukkan angka yang dicari`;
+    resetValidation();
 });
 
 // Contoh data untuk testing
