@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Angka Similarity Finder</title>
+<title>Angka Permutation Finder</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
@@ -26,46 +26,48 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
 .info { background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; }
 
 .results-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; }
-.result-item { margin-bottom:15px; padding:15px; background:white; border-radius:8px; border:1px solid #e0e0e0; }
-.result-exact { border-left:4px solid #4CAF50; background:#e8f5e8; }
-.result-similar { border-left:4px solid #FF9800; background:#fff3e0; }
-.similarity-score { display:inline-block; padding:2px 8px; background:#2196F3; color:white; border-radius:10px; font-size:12px; margin-left:10px; }
-.digit-match { color:#4CAF50; font-weight:bold; }
-.digit-mismatch { color:#f44336; }
+.result-category { margin-bottom:25px; }
+.category-title { color:#333; margin-bottom:15px; font-size:16px; font-weight:bold; padding:10px; background:#e9ecef; border-radius:5px; }
+.result-item { display:inline-block; margin:5px; padding:10px 15px; background:white; border-radius:5px; border:1px solid #e0e0e0; font-family:monospace; font-size:14px; }
+.result-exact { background:#e8f5e8; border-color:#4CAF50; border-width:2px; }
+.result-permutation { background:#fff3e0; border-color:#FF9800; }
+.result-none { background:#ffebee; border-color:#f44336; }
 
 .stats { background:#e3f2fd; padding:15px; border-radius:8px; margin-top:20px; text-align:center; }
+.permutation-list { background:#f5f5f5; padding:10px; border-radius:5px; margin-top:10px; font-size:12px; font-family:monospace; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔍 ANGKA SIMILARITY FINDER</h1>
-    <div class="subtitle">Cari angka paling mirip dari kumpulan data besar</div>
+    <h1>🔢 ANGKA PERMUTATION FINDER</h1>
+    <div class="subtitle">Cari angka dengan digit yang sama (urutan boleh berbeda)</div>
     
     <div class="input-section">
         <div class="section-title">📥 INPUT DATA ANGKA (4 digit)</div>
         
         <div class="data-input">
-            <textarea id="inputData" placeholder="Masukkan data angka 4 digit (pisahkan dengan spasi/enter):&#10;2740 9348 7109 8934 0076 1267 4060&#10;4386 0267 6400 3699 6507 3203 4666&#10;0841 2496 2837 0583 0845 9265 7032">2740 9348 7109 8934 0076 1267 4060
+            <textarea id="inputData" placeholder="Masukkan data angka 4 digit (pisahkan dengan spasi/enter):&#10;2740 9348 7109 8934 0076 1267 4060&#10;4386 0267 6400 3699 6507 3203 4666&#10;0841 2496 2837 0583 0845 9265 7032&#10;1145 1645 1141 1445 1165 3145 1185">2740 9348 7109 8934 0076 1267 4060
 4386 0267 6400 3699 6507 3203 4666
 0841 2496 2837 0583 0845 9265 7032
-1234 5678 9012 3456 7890 1357 2468
-8501 8502 8503 8505 8506 8507 8508</textarea>
+1145 1645 1141 1445 1165 3145 1185
+1142 5145 1105 1541 5115 5140 1485
+4165 4155 1134 3115 8514 5841 1458</textarea>
         </div>
         
         <div class="search-input">
-            <input type="text" id="searchNumber" placeholder="Masukkan angka 4 digit yang dicari (contoh: 8504)" maxlength="4" pattern="\d{4}" title="Masukkan 4 digit angka">
+            <input type="text" id="searchNumber" placeholder="Masukkan angka 4 digit yang dicari (contoh: 1145)" maxlength="4" pattern="\d{4}" title="Masukkan 4 digit angka">
         </div>
         
         <div class="button-group">
-            <button class="btn-search" onclick="findSimilarNumbers()">🔍 CARI ANGKA MIRIP</button>
+            <button class="btn-search" onclick="findNumberPermutations()">🔍 CARI PERMUTASI</button>
             <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
         </div>
         
-        <div class="info" id="info">Masukkan data angka dan angka yang dicari, lalu klik CARI ANGKA MIRIP</div>
+        <div class="info" id="info">Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI</div>
     </div>
 
     <div class="results-section" id="resultsSection" style="display:none;">
-        <div class="section-title">📊 HASIL PENCARIAN</div>
+        <div class="section-title">📊 HASIL PENCARIAN PERMUTASI</div>
         <div id="resultsContainer"></div>
         <div class="stats" id="statsInfo"></div>
     </div>
@@ -73,17 +75,16 @@ button:hover { opacity:0.9; transform:translateY(-2px); }
     <div class="input-section">
         <div class="section-title">ℹ️ CARA KERJA PROGRAM</div>
         <div class="info">
-            <strong>Algoritma Similarity:</strong><br>
-            1. <strong>Exact Match</strong> - Semua digit sama persis<br>
-            2. <strong>3 Digit Match</strong> - 3 dari 4 digit sama<br>
-            3. <strong>2 Digit Match</strong> - 2 dari 4 digit sama<br>
-            4. <strong>Digit Position Score</strong> - Digit di posisi yang sama mendapat nilai lebih tinggi
+            <strong>Algoritma Permutasi:</strong><br>
+            1. <strong>Exact Match</strong> - Angka sama persis (abcd)<br>
+            2. <strong>Same Digits</strong> - Digit sama, urutan berbeda (24 kemungkinan)<br>
+            3. <strong>Semua kombinasi</strong> dari 4 digit: abcd, abdc, acbd, acdb, adbc, adcb, bacd, ...
         </div>
     </div>
 </div>
 
 <script>
-function findSimilarNumbers() {
+function findNumberPermutations() {
     const inputData = document.getElementById('inputData').value.trim();
     const searchNumber = document.getElementById('searchNumber').value.trim();
     
@@ -98,23 +99,27 @@ function findSimilarNumbers() {
     }
     
     try {
-        showInfo('Memproses data...', 'info');
+        showInfo('Mencari permutasi...', 'info');
         
         // Parse data input
         const numbers = parseInputData(inputData);
-        const searchDigits = searchNumber.split('').map(Number);
+        const searchDigits = searchNumber.split('');
         
         if (numbers.length === 0) {
             showInfo('Tidak ada angka valid yang ditemukan dalam data!', 'error');
             return;
         }
         
-        // Cari angka yang mirip
-        const results = findSimilarNumbersWithScores(numbers, searchDigits, searchNumber);
+        // Generate semua permutasi dari angka yang dicari
+        const allPermutations = generatePermutations(searchDigits);
+        console.log('Semua permutasi dari', searchNumber, ':', allPermutations);
+        
+        // Cari angka yang match
+        const results = findMatchingNumbers(numbers, allPermutations, searchNumber);
         
         // Tampilkan hasil
-        displayResults(results, searchNumber, numbers.length);
-        showInfo(`Ditemukan ${results.length} angka mirip dari ${numbers.length} total data`, 'success');
+        displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
+        showInfo(`Pencarian selesai!`, 'success');
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
@@ -127,117 +132,107 @@ function parseInputData(inputData) {
     const cleanedData = inputData.replace(/[^\d\s]/g, '');
     const numberStrings = cleanedData.split(/\s+/).filter(str => str.length === 4);
     
-    // Convert ke array of digit arrays
-    return numberStrings.map(str => ({
-        original: str,
-        digits: str.split('').map(Number)
-    }));
+    return numberStrings.map(str => str);
 }
 
-function findSimilarNumbersWithScores(numbers, searchDigits, searchNumber) {
+function generatePermutations(digits) {
     const results = [];
+    const used = new Array(digits.length).fill(false);
+    const current = [];
     
-    numbers.forEach(numberData => {
-        const similarity = calculateSimilarity(numberData.digits, searchDigits);
+    function backtrack() {
+        if (current.length === digits.length) {
+            results.push(current.join(''));
+            return;
+        }
         
-        if (similarity.score > 0) { // Hanya tampilkan yang ada kemiripan
-            results.push({
-                number: numberData.original,
-                digits: numberData.digits,
-                similarity: similarity
-            });
+        for (let i = 0; i < digits.length; i++) {
+            if (!used[i]) {
+                // Skip duplicate permutations untuk digit yang sama
+                if (i > 0 && digits[i] === digits[i-1] && !used[i-1]) {
+                    continue;
+                }
+                
+                used[i] = true;
+                current.push(digits[i]);
+                backtrack();
+                current.pop();
+                used[i] = false;
+            }
+        }
+    }
+    
+    // Sort digits dulu untuk handle duplicates
+    digits.sort();
+    backtrack();
+    
+    return [...new Set(results)]; // Remove duplicates
+}
+
+function findMatchingNumbers(numbers, permutations, searchNumber) {
+    const exactMatches = [];
+    const permutationMatches = [];
+    
+    numbers.forEach(number => {
+        if (number === searchNumber) {
+            exactMatches.push(number);
+        } else if (permutations.includes(number)) {
+            permutationMatches.push(number);
         }
     });
     
-    // Urutkan berdasarkan similarity score (descending)
-    results.sort((a, b) => b.similarity.score - a.similarity.score);
-    
-    return results.slice(0, 20); // Batasi maksimal 20 hasil terbaik
-}
-
-function calculateSimilarity(targetDigits, searchDigits) {
-    let exactMatches = 0;
-    let digitMatches = 0;
-    let positionScore = 0;
-    const matchedPositions = [];
-    
-    // Hitung exact matches dan position matches
-    for (let i = 0; i < 4; i++) {
-        if (targetDigits[i] === searchDigits[i]) {
-            exactMatches++;
-            positionScore += 10; // Bonus untuk posisi yang sama
-            matchedPositions.push(i);
-        }
-    }
-    
-    // Hitung digit matches (tidak peduli posisi)
-    const targetDigitCount = {};
-    const searchDigitCount = {};
-    
-    for (let i = 0; i < 4; i++) {
-        targetDigitCount[targetDigits[i]] = (targetDigitCount[targetDigits[i]] || 0) + 1;
-        searchDigitCount[searchDigits[i]] = (searchDigitCount[searchDigits[i]] || 0) + 1;
-    }
-    
-    for (const digit in searchDigitCount) {
-        const minCount = Math.min(searchDigitCount[digit], targetDigitCount[digit] || 0);
-        digitMatches += minCount;
-    }
-    
-    // Calculate final score
-    const score = (exactMatches * 40) + (digitMatches * 15) + positionScore;
-    
+    // Remove duplicates dan urutkan
     return {
-        exactMatches: exactMatches,
-        digitMatches: digitMatches,
-        positionScore: positionScore,
-        score: score,
-        matchedPositions: matchedPositions
+        exactMatches: [...new Set(exactMatches)].sort(),
+        permutationMatches: [...new Set(permutationMatches)].sort()
     };
 }
 
-function displayResults(results, searchNumber, totalNumbers) {
+function displayPermutationResults(results, searchNumber, totalNumbers, allPermutations) {
     const container = document.getElementById('resultsContainer');
     const statsInfo = document.getElementById('statsInfo');
     let html = '';
     
-    if (results.length === 0) {
-        html = `<div class="result-item">Tidak ditemukan angka yang mirip dengan <strong>${searchNumber}</strong></div>`;
-    } else {
-        results.forEach((result, index) => {
-            const isExactMatch = result.similarity.exactMatches === 4;
-            const resultClass = isExactMatch ? 'result-exact' : 'result-similar';
-            
-            html += `<div class="result-item ${resultClass}">`;
-            html += `<div style="margin-bottom:8px;">`;
-            html += `<strong>${result.number}</strong>`;
-            html += `<span class="similarity-score">Score: ${result.similarity.score}</span>`;
-            if (isExactMatch) {
-                html += `<span style="color:#4CAF50; margin-left:10px;">🎯 EXACT MATCH</span>`;
-            }
-            html += `</div>`;
-            
-            // Tampilkan digit comparison
-            html += `<div style="font-family:monospace; font-size:14px;">`;
-            html += `Pencarian: <strong>${searchNumber}</strong><br>`;
-            html += `Hasil:     `;
-            for (let i = 0; i < 4; i++) {
-                const digitClass = result.similarity.matchedPositions.includes(i) ? 'digit-match' : 'digit-mismatch';
-                html += `<span class="${digitClass}">${result.number[i]}</span>`;
-            }
-            html += `<br>`;
-            html += `Match: ${result.similarity.exactMatches} digit posisi sama, ${result.similarity.digitMatches} digit total sama`;
-            html += `</div>`;
-            html += `</div>`;
+    // Tampilkan Exact Matches
+    html += `<div class="result-category">`;
+    html += `<div class="category-title">🎯 EXACT MATCH - Angka Sama Persis</div>`;
+    if (results.exactMatches.length > 0) {
+        results.exactMatches.forEach(number => {
+            html += `<div class="result-item result-exact">${number}</div>`;
         });
+    } else {
+        html += `<div class="result-item result-none">Tidak ditemukan angka yang sama persis</div>`;
     }
+    html += `</div>`;
+    
+    // Tampilkan Permutation Matches
+    html += `<div class="result-category">`;
+    html += `<div class="category-title">🔄 PERMUTASI MATCH - Digit Sama Urutan Beda</div>`;
+    if (results.permutationMatches.length > 0) {
+        results.permutationMatches.forEach(number => {
+            html += `<div class="result-item result-permutation">${number}</div>`;
+        });
+    } else {
+        html += `<div class="result-item result-none">Tidak ditemukan permutasi</div>`;
+    }
+    html += `</div>`;
+    
+    // Tampilkan semua kemungkinan permutasi
+    html += `<div class="result-category">`;
+    html += `<div class="category-title">📋 SEMUA KEMUNGKINAN PERMUTASI</div>`;
+    html += `<div class="permutation-list">`;
+    html += `Dari angka <strong>${searchNumber}</strong> terdapat ${allPermutations.length} kemungkinan: `;
+    html += allPermutations.join(', ');
+    html += `</div>`;
+    html += `</div>`;
     
     // Stats info
+    const totalFound = results.exactMatches.length + results.permutationMatches.length;
     statsInfo.innerHTML = `
         <strong>📊 STATISTIK:</strong><br>
-        Total data diproses: ${totalNumbers} angka<br>
-        Ditemukan ${results.length} angka dengan kemiripan<br>
-        Angka pencarian: <strong>${searchNumber}</strong>
+        Total data: ${totalNumbers} angka | Ditemukan: ${totalFound} match<br>
+        Exact: ${results.exactMatches.length} | Permutasi: ${results.permutationMatches.length}<br>
+        Total kemungkinan permutasi: ${allPermutations.length}
     `;
     
     container.innerHTML = html;
@@ -257,13 +252,13 @@ function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('searchNumber').value = '';
     document.getElementById('resultsSection').style.display = 'none';
-    showInfo('Masukkan data angka dan angka yang dicari, lalu klik CARI ANGKA MIRIP', 'info');
+    showInfo('Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI', 'info');
 }
 
 // Event listeners untuk Enter key
 document.getElementById('searchNumber').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        findSimilarNumbers();
+        findNumberPermutations();
     }
 });
 
@@ -279,6 +274,15 @@ document.getElementById('inputData').addEventListener('input', function() {
     document.getElementById('info').textContent = 
         `${numbers.length} angka valid terdeteksi - Masukkan angka yang dicari`;
 });
+
+// Contoh data untuk testing
+document.getElementById('inputData').value = `2740 9348 7109 8934 0076 1267 4060
+4386 0267 6400 3699 6507 3203 4666
+0841 2496 2837 0583 0845 9265 7032
+1145 1645 1141 1445 1165 3145 1185
+1142 5145 1105 1541 5115 5140 1485
+4165 4155 1134 3115 8514 5841 1458
+5411 4151 4511 1154 1514 1541 4115`;
 </script>
 </body>
 </html>
