@@ -115,8 +115,13 @@ h1 {
     gap:12px; 
     margin-bottom:20px;
 }
+.button-group-double {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
 button { 
-    flex:1; 
     padding:15px; 
     border:none; 
     border-radius:12px; 
@@ -138,6 +143,16 @@ button {
     background:linear-gradient(135deg, #ff6b6b, #ee5a52);
     color:white;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+.btn-copy { 
+    background:linear-gradient(135deg, #2196F3, #1976D2);
+    color:white;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+.btn-import { 
+    background:linear-gradient(135deg, #FF9800, #F57C00);
+    color:white;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
 }
 button:hover { 
     transform:translateY(-3px);
@@ -186,6 +201,7 @@ button:active {
     font-size:14px;
     overflow-y: auto;
     max-height: 400px;
+    position: relative;
 }
 .result-box::-webkit-scrollbar {
     width:8px;
@@ -258,6 +274,22 @@ button:active {
 .explanation li { 
     margin-bottom:8px;
 }
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    transform: translateX(150%);
+    transition: transform 0.3s ease;
+}
+.copy-notification.show {
+    transform: translateX(0);
+}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -270,6 +302,9 @@ button:active {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 15px;
     }
+    .button-group-double {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
@@ -277,7 +312,7 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KALKULATOR KEY MISTIK</h1>
-        <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap dan tampilan modern</div>
+        <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap dan support hari panjang</div>
     </div>
     
     <div class="grid-container">
@@ -285,7 +320,7 @@ button:active {
             <div class="section-title">📥 INPUT DATA</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan angka 4 digit (contoh:&#10;8445&#10;2429&#10;5879&#10;9158&#10;5364&#10;2190&#10;3358)" oninput="updateInputInfo()">7013
+                <textarea id="inputData" placeholder="Masukkan angka 4 digit atau format output (contoh:&#10;8445 = 2 ai&#10;2429 = 7 ai&#10;5879 = 1 ai)" oninput="updateInputInfo()">7013
 8741
 5337
 7463
@@ -314,7 +349,7 @@ button:active {
             </div>
             
             <div class="formula-input">
-                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="A1+K9">
+                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: A10-C5.(ty))" value="A9-C10.(ty)">
             </div>
             
             <div class="button-group">
@@ -325,6 +360,17 @@ button:active {
                 <button class="btn-clear" onclick="clearAll()">
                     <span>🗑️</span>
                     <span>BERSIHKAN</span>
+                </button>
+            </div>
+
+            <div class="button-group-double">
+                <button class="btn-import" onclick="importFromOutput()">
+                    <span>📥</span>
+                    <span>IMPORT DARI OUTPUT</span>
+                </button>
+                <button class="btn-copy" onclick="copyOutput()">
+                    <span>📋</span>
+                    <span>SALIN OUTPUT</span>
                 </button>
             </div>
             
@@ -341,7 +387,7 @@ button:active {
 // 5337 = 	
 // ...
 // ======
-// A1+K9
+// A9-C10.(ty)
             </div>
         </div>
     </div>
@@ -395,12 +441,19 @@ button:active {
             <li><strong>A = AS</strong> (digit pertama), <strong>C = COP</strong> (digit kedua)</li>
             <li><strong>K = KEPALA</strong> (digit ketiga), <strong>E = EKOR</strong> (digit terakhir)</li>
             <li><strong>J = JUMLAH K+E</strong> (jika 2 digit, jumlahkan lagi sampai 1 digit)</li>
-            <li><strong>A1</strong> = AS hari ini, <strong>A2</strong> = AS kemarin, <strong>A3</strong> = AS lusa</li>
+            <li><strong>A1</strong> = AS hari ini, <strong>A10</strong> = AS 10 hari lalu, <strong>A25</strong> = AS 25 hari lalu</li>
             <li><strong>mb, ml, m9</strong> = konversi menggunakan tabel mistik</li>
             <li><strong>.(ml)</strong> = konversi hasil akhir ke tabel ML</li>
+            <li>Support <strong>+ dan -</strong> operator: <code>A10-C5.(ty)</code></li>
+            <li><strong>Import Output</strong>: Copy hasil output ke input untuk melanjutkan perhitungan</li>
+            <li><strong>Salin Output</strong>: Copy hasil perhitungan ke clipboard</li>
             <li>Gunakan <strong>Ctrl+Enter</strong> pada input rumus untuk menghitung cepat</li>
         </ul>
     </div>
+</div>
+
+<div class="copy-notification" id="copyNotification">
+    ✅ Output berhasil disalin ke clipboard!
 </div>
 
 <script>
@@ -454,8 +507,11 @@ function parseInputData(inputData) {
     const reversedLines = [...lines].reverse();
     
     reversedLines.forEach(line => {
-        const number = line.trim();
-        if (number.match(/^\d+$/)) {
+        // Extract angka 4 digit dari berbagai format
+        const numberMatch = line.match(/(\d{4})/);
+        if (numberMatch) {
+            const number = numberMatch[1];
+            
             // Extract components - Semua single digit
             const as = number[0];           // digit pertama
             const cop = number[1];          // digit kedua
@@ -511,11 +567,14 @@ function calculateAIForAll(formula) {
 function findMaxDayInFormula(formula) {
     let maxDay = 1; // Minimal hari 1 (hari ini)
     
+    // Process final conversion like .(ml) first
+    let workingFormula = formula.replace(/\.\((\w+)\)/, '');
+    
     // Cari semua komponen dalam rumus
-    const components = formula.split('+');
+    const components = workingFormula.split(/[+\-]/);
     
     components.forEach(component => {
-        const match = component.match(/^([AKCEJ])(\d+)/);
+        const match = component.trim().match(/^([AKCEJ])(\d+)/);
         if (match) {
             const day = parseInt(match[2]);
             if (day > maxDay) {
@@ -536,14 +595,34 @@ function calculateSingleAI(formula, currentDayIndex) {
         workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
     }
     
-    // Process components
-    const components = workingFormula.split('+');
+    // Process components dengan support + dan -
+    const components = workingFormula.split(/([+\-])/);
     let total = 0;
+    let currentOperator = '+';
     
-    components.forEach(component => {
-        const value = processComponent(component.trim(), currentDayIndex);
-        total += value;
-    });
+    for (let i = 0; i < components.length; i++) {
+        const component = components[i].trim();
+        
+        if (component === '+' || component === '-') {
+            currentOperator = component;
+            continue;
+        }
+        
+        if (component) {
+            const value = processComponent(component, currentDayIndex);
+            
+            if (currentOperator === '+') {
+                total += value;
+            } else if (currentOperator === '-') {
+                total -= value;
+            }
+        }
+    }
+    
+    // Handle negative results
+    if (total < 0) {
+        total = Math.abs(total);
+    }
     
     // Apply final conversion if exists
     if (finalConversion) {
@@ -557,14 +636,14 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    // Examples: K1mb, J1m9, A2, C3, etc.
+    // Examples: K1mb, J10m9, A25, C30, etc.
     const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
     }
     
     const type = match[1]; // A, K, C, E, J
-    const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa
+    const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa, dst
     const conversion = match[3]; // mb, m9, ml, etc.
     
     // Hitung index data yang benar
@@ -573,7 +652,7 @@ function processComponent(component, currentDayIndex) {
     const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
     if (targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data tidak tersedia untuk ${component}`);
+        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history, hanya ada ${dataHistory.length - currentDayIndex} hari tersedia)`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -672,8 +751,72 @@ function showInfo(message, type) {
 // Update info input real-time
 function updateInputInfo() {
     const input = document.getElementById('inputData').value.trim();
-    const numbers = input.split('\n').filter(line => line.trim() && line.match(/^\d+$/));
+    const numbers = extractNumbersFromText(input);
     document.getElementById('inputInfo').textContent = `${numbers.length} angka terdeteksi`;
+}
+
+// Extract numbers from various formats
+function extractNumbersFromText(text) {
+    const lines = text.split('\n').filter(line => line.trim());
+    const numbers = [];
+    
+    lines.forEach(line => {
+        const numberMatch = line.match(/(\d{4})/);
+        if (numberMatch) {
+            numbers.push(numberMatch[1]);
+        }
+    });
+    
+    return numbers;
+}
+
+// Import data dari output ke input
+function importFromOutput() {
+    const outputText = document.getElementById('resultOutput').textContent;
+    const numbers = extractNumbersFromText(outputText);
+    
+    if (numbers.length === 0) {
+        showInfo('Tidak ada data yang bisa diimport dari output!', 'error');
+        return;
+    }
+    
+    // Format numbers untuk input (satu angka per baris)
+    const formattedInput = numbers.join('\n');
+    document.getElementById('inputData').value = formattedInput;
+    updateInputInfo();
+    
+    showInfo(`Berhasil import ${numbers.length} angka dari output!`, 'success');
+}
+
+// Copy output ke clipboard
+function copyOutput() {
+    const outputText = document.getElementById('resultOutput').textContent;
+    
+    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
+        showInfo('Tidak ada output yang bisa disalin!', 'error');
+        return;
+    }
+    
+    navigator.clipboard.writeText(outputText).then(() => {
+        showCopyNotification();
+    }).catch(err => {
+        // Fallback untuk browser yang tidak support clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = outputText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyNotification();
+    });
+}
+
+function showCopyNotification() {
+    const notification = document.getElementById('copyNotification');
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
 }
 
 // Event listeners
