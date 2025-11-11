@@ -258,50 +258,6 @@ button:active {
 .explanation li { 
     margin-bottom:8px;
 }
-.debug-info { 
-    background:#ffebee; 
-    padding:15px; 
-    border-radius:8px; 
-    margin-top:15px; 
-    font-size:13px; 
-    color:#c62828; 
-    display:none;
-    border-left: 4px solid #f44336;
-}
-.quick-formulas {
-    background: #e3f2fd;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    border: 2px solid #bbdefb;
-}
-.quick-formulas h4 {
-    color: #1565c0;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.formula-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.formula-btn {
-    background: #2196F3;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-weight: 500;
-}
-.formula-btn:hover {
-    background: #1976D2;
-    transform: translateY(-2px);
-}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -314,12 +270,6 @@ button:active {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 15px;
     }
-    .formula-buttons {
-        flex-direction: column;
-    }
-    .formula-btn {
-        text-align: center;
-    }
 }
 </style>
 </head>
@@ -328,17 +278,6 @@ button:active {
     <div class="header">
         <h1>🔮 KALKULATOR KEY MISTIK</h1>
         <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap dan tampilan modern</div>
-    </div>
-    
-    <div class="quick-formulas">
-        <h4>⚡ Rumus Cepat:</h4>
-        <div class="formula-buttons">
-            <button class="formula-btn" onclick="setFormula('A1+K9')">A1+K9</button>
-            <button class="formula-btn" onclick="setFormula('K1mb+J1m9')">K1mb+J1m9</button>
-            <button class="formula-btn" onclick="setFormula('A1+C1.(ml)')">A1+C1.(ml)</button>
-            <button class="formula-btn" onclick="setFormula('K1+E1.(m9)')">K1+E1.(m9)</button>
-            <button class="formula-btn" onclick="setFormula('J1mb+A2')">J1mb+A2</button>
-        </div>
     </div>
     
     <div class="grid-container">
@@ -390,7 +329,6 @@ button:active {
             </div>
             
             <div class="info" id="info">Masukkan data angka dan rumus, lalu klik HITUNG RUMUS</div>
-            <div class="debug-info" id="debugInfo"></div>
         </div>
         
         <div class="output-section">
@@ -482,15 +420,9 @@ const mistikTables = {
 
 let dataHistory = [];
 
-function setFormula(formula) {
-    document.getElementById('inputFormula').value = formula;
-    document.getElementById('inputFormula').focus();
-}
-
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
     const formula = document.getElementById('inputFormula').value.trim();
-    const debugInfo = document.getElementById('debugInfo');
     
     if (!inputData || !formula) {
         showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
@@ -507,14 +439,6 @@ function calculateFormula() {
         // Display result dalam format yang diminta
         displayResult(results, formula);
         showInfo('Perhitungan berhasil!', 'success');
-        
-        // Show debug info
-        debugInfo.style.display = 'block';
-        let debugHTML = `<strong>Debug Info:</strong><br>`;
-        dataHistory.forEach((data, index) => {
-            debugHTML += `Hari ${index + 1}: ${data.number} (A:${data.as}, C:${data.cop}, K:${data.kepala}, E:${data.ekor}, J:${data.jumlah})<br>`;
-        });
-        debugInfo.innerHTML = debugHTML;
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
@@ -605,13 +529,11 @@ function findMaxDayInFormula(formula) {
 
 function calculateSingleAI(formula, currentDayIndex) {
     let workingFormula = formula;
-    let debugSteps = [];
     
     // Process final conversion like .(ml)
     const finalConversion = workingFormula.match(/\.\((\w+)\)/);
     if (finalConversion) {
         workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
-        debugSteps.push(`Remove .(${finalConversion[1]})`);
     }
     
     // Process components
@@ -619,29 +541,22 @@ function calculateSingleAI(formula, currentDayIndex) {
     let total = 0;
     
     components.forEach(component => {
-        const value = processComponent(component.trim(), currentDayIndex, debugSteps);
+        const value = processComponent(component.trim(), currentDayIndex);
         total += value;
-        debugSteps.push(`${component} = ${value}, Total sementara: ${total}`);
     });
-    
-    debugSteps.push(`Total sebelum konversi: ${total}`);
     
     // Apply final conversion if exists
     if (finalConversion) {
         const table = finalConversion[1].toUpperCase();
         const converted = convertMistik(total.toString(), table);
-        debugSteps.push(`Konversi ${total} ke ${table}: ${converted}`);
         total = parseInt(converted);
     }
     
     const finalResult = reduceToSingleDigit(total);
-    debugSteps.push(`Hasil akhir: ${finalResult}`);
-    
-    console.log(`Debug untuk ${dataHistory[currentDayIndex].number}:`, debugSteps);
     return finalResult;
 }
 
-function processComponent(component, currentDayIndex, debugSteps) {
+function processComponent(component, currentDayIndex) {
     // Examples: K1mb, J1m9, A2, C3, etc.
     const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
     if (!match) {
@@ -673,14 +588,10 @@ function processComponent(component, currentDayIndex, debugSteps) {
         default: throw new Error(`Tipe tidak dikenal: ${type}`);
     }
     
-    debugSteps.push(`${component}: Menggunakan data hari ke-${dayOffset} (${data.number}) -> ${type} = ${value}`);
-    
     // Apply conversion if exists
     if (conversion) {
         const table = conversion.toUpperCase();
-        const originalValue = value;
         value = parseInt(convertMistik(value.toString(), table));
-        debugSteps.push(`Konversi ${originalValue} ke ${table}: ${value}`);
     }
     
     return value;
@@ -744,7 +655,6 @@ function clearAll() {
 // A1+K9`;
     document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka terdeteksi';
-    document.getElementById('debugInfo').style.display = 'none';
     dataHistory = [];
 }
 
