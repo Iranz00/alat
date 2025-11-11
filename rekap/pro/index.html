@@ -77,6 +77,11 @@ textarea:focus {
     gap:12px; 
     margin-bottom:20px;
 }
+.button-group-2 {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
 button { 
     flex:1; 
     padding:16px; 
@@ -100,6 +105,11 @@ button {
     background:linear-gradient(135deg, #2196F3, #1976D2);
     color:white;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+.btn-clean {
+    background:linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color:white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 button:hover { 
     transform:translateY(-3px);
@@ -164,27 +174,6 @@ button:active {
 .markdown-output::-webkit-scrollbar-thumb:hover {
     background:#718096;
 }
-.example {
-    background:#f7fafc;
-    padding:15px;
-    border-radius:10px;
-    margin-top:15px;
-    border-left:4px solid #667eea;
-}
-.example h4 {
-    color:#2d3748;
-    margin-bottom:8px;
-    font-size:14px;
-}
-.example code {
-    background:#edf2f7;
-    padding:8px 12px;
-    border-radius:6px;
-    font-family: 'Courier New', monospace;
-    color:#2d3748;
-    font-size:13px;
-    display:block;
-}
 .footer {
     text-align:center;
     margin-top:25px;
@@ -199,7 +188,8 @@ button:active {
     h1 {
         font-size:1.8rem;
     }
-    .button-group {
+    .button-group,
+    .button-group-2 {
         flex-direction:column;
     }
     textarea {
@@ -212,7 +202,6 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma</div>
     </div>
     
     <div class="input-section">
@@ -233,28 +222,26 @@ button:active {
                 <span>SALIN OUTPUT</span>
             </button>
         </div>
+
+        <div class="button-group-2">
+            <button class="btn-clean" onclick="cleanAll()">
+                <span>🧹</span>
+                <span>RESET</span>
+            </button>
+        </div>
     </div>
     
     <div class="info" id="info">
         💡 Masukkan data Anda dan klik "PROSES DATA"
     </div>
 
-    <div class="example">
-        <h4>📝 Contoh Format Input:</h4>
-        <code>01*02#2000, 01#10000, 03*04#5000, 05#3000, 12*13*14#7500</code>
-    </div>
-
     <div class="output-section">
         <h3>📊 Hasil Output:</h3>
         <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
     </div>
-
-    <div class="footer">
-        &copy; 2024 Rekap Data Otomatis • Data akan dikelompokkan berdasarkan digit dan diurutkan
-    </div>
 </div>
 
-<!-- JavaScript tetap sama seperti yang Anda berikan -->
+<!-- JavaScript tetap sama seperti yang Anda berikan, ditambah fungsi cleanAll() -->
 <script>
 function prosesData() {
     const input = document.getElementById('inputData').value.trim();
@@ -391,6 +378,17 @@ function copyMarkdown() {
     document.execCommand('copy');
     document.body.removeChild(textArea);
     showInfo('Output berhasil disalin!', 'success');
+}
+
+function cleanAll() {
+    // Hapus input data
+    document.getElementById('inputData').value = '';
+    
+    // Reset output ke default
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    
+    // Reset info message
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
 }
 
 function showInfo(message, type) {
