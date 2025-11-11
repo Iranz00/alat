@@ -728,11 +728,9 @@ function displayResult(results, formula) {
     const output = document.getElementById('resultOutput');
     let outputText = '';
     
-    // Format output seperti yang diminta
-    // Data terlama dulu, lalu data terbaru
-    const reversedResults = [...results].reverse();
-    
-    reversedResults.forEach(result => {
+    // TIDAK PERLU DIBALIK - tetap urutan asli (terbaru -> terlama)
+    // Langsung gunakan results dalam urutan asli
+    results.forEach(result => {
         if (result.canCalculate) {
             outputText += `${result.number} = ${result.ai} ai\n`;
         } else {
