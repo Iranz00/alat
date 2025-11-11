@@ -90,20 +90,22 @@ textarea:focus {
     display:flex; 
     gap:12px; 
     margin-bottom:20px;
+    flex-wrap: nowrap; /* Pastikan tetap satu baris */
 }
 button { 
-    flex:1; 
-    padding:16px; 
+    flex: 1; 
+    min-width: 120px; /* Minimum width untuk tombol */
+    padding: 16px 12px; /* Sesuaikan padding */
     border:none; 
     border-radius:12px; 
-    font-size:16px; 
+    font-size:15px; 
     font-weight:600; 
     cursor:pointer; 
     transition:all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
 }
 .btn-submit { 
     background:linear-gradient(135deg, #4CAF50, #45a049);
@@ -116,7 +118,7 @@ button {
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
 .btn-clean {
-    background:linear-gradient(135deg, #ff9999, #ff6b6b); /* Warna lebih terang */
+    background:linear-gradient(135deg, #ff9999, #ff6b6b);
     color:white;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
@@ -210,7 +212,10 @@ button:active {
         font-size:1.8rem;
     }
     .button-group {
-        flex-direction: column;
+        flex-wrap: wrap; /* Di mobile boleh wrap */
+    }
+    button {
+        min-width: calc(50% - 6px); /* Di mobile jadi 2 kolom */
     }
     textarea {
         height:150px;
@@ -285,8 +290,12 @@ function updateInputCounter() {
             if (line.includes('#')) {
                 const parts = line.split('#');
                 if (parts.length === 2 && parts[1].trim()) {
+                    const keyPart = parts[0].trim();
                     const value = parseInt(parts[1].trim()) || 0;
-                    if (!isNaN(value)) {
+                    const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+                    
+                    if (keys.length > 0 && !isNaN(value)) {
+                        // Hitung total dengan cara yang sama seperti di prosesData
                         total += value;
                     }
                 }
@@ -418,14 +427,18 @@ function generateMarkdown(groups, totalInputValue) {
             output += `${group}\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
-                totalOutputValue += entry.value * entry.keys.length;
+                // Hitung total output dengan benar - hanya value sekali, tidak dikali jumlah keys
+                totalOutputValue += entry.value;
             });
             output += '\n';
         }
     });
     
-    // Update total output
+    // Update total output - harus sama dengan total input
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
+    
+    // Juga update input counter untuk memastikan konsistensi
+    document.getElementById('inputCounter').textContent = `Total: ${totalInputValue.toLocaleString()}`;
     
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
 }
