@@ -290,6 +290,16 @@ button:active {
     margin-bottom: 5px;
     text-align: center;
 }
+.history-info {
+    background: #e8f5e8;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #2e7d32;
+    text-align: center;
+    border-left: 4px solid #4CAF50;
+}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -320,7 +330,7 @@ button:active {
             <div class="section-title">📥 INPUT DATA & RUMUS</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai&#10;0489 = 49 ai&#10;2843 = 27 ai&#10;...&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">6874 = 49 ai
+                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai  ← (paling lama)&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        ← (hari ini)&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">6874 = 49 ai
 0489 = 49 ai
 2843 = 27 ai
 3752 = 94 ai
@@ -344,6 +354,10 @@ C8ix+E2ml.(ml)</textarea>
             <div class="formula-display">
                 <div class="formula-label">RUMUS TERDETEKSI:</div>
                 <div id="detectedFormula">C8ix+E2ml.(ml)</div>
+            </div>
+
+            <div class="history-info" id="historyInfo">
+                Butuh 8 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.
             </div>
             
             <div class="button-group">
@@ -376,10 +390,10 @@ C8ix+E2ml.(ml)</textarea>
             <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
-// 6874 = 49 ai
-// 0489 = 49 ai
-// 2843 = 27 ai
+// 6874 = 9 ai  ← (paling lama)
+// 0489 = 3 ai  
 // ...
+// 1452 =       ← (hari ini)
 // ======
 // C8ix+E2ml.(ml)
             </div>
@@ -432,6 +446,7 @@ C8ix+E2ml.(ml)</textarea>
     <div class="explanation">
         <h3>📝 CARA PENGGUNAAN:</h3>
         <ul>
+            <li><strong>Urutan Data:</strong> Paling ATAS = data terlama, Paling BAWAH = hari ini</li>
             <li><strong>A = AS</strong> (digit pertama), <strong>C = COP</strong> (digit kedua)</li>
             <li><strong>K = KEPALA</strong> (digit ketiga), <strong>E = EKOR</strong> (digit terakhir)</li>
             <li><strong>J = JUMLAH K+E</strong> (jika 2 digit, jumlahkan lagi sampai 1 digit)</li>
@@ -440,8 +455,7 @@ C8ix+E2ml.(ml)</textarea>
             <li><strong>.(ml)</strong> = konversi hasil akhir ke tabel ML</li>
             <li>Support <strong>+ dan -</strong> operator: <code>A10-C5.(ty)</code></li>
             <li><strong>Auto-detect rumus</strong>: Program otomatis mendeteksi rumus setelah garis "======"</li>
-            <li><strong>Salin Output</strong>: Copy hasil perhitungan ke clipboard</li>
-            <li><strong>Gunakan Output</strong>: Gunakan hasil sebagai input baru untuk perhitungan berikutnya</li>
+            <li><strong>Data terbaru membutuhkan history</strong>: Rumus butuh data sebelumnya untuk perhitungan</li>
             <li>Gunakan <strong>Ctrl+Enter</strong> pada input untuk menghitung cepat</li>
         </ul>
     </div>
@@ -505,6 +519,7 @@ function parseInputData(inputData) {
     
     const lines = inputData.split('\n').filter(line => line.trim());
     let foundSeparator = false;
+    const tempData = [];
     
     for (let line of lines) {
         line = line.trim();
@@ -534,7 +549,7 @@ function parseInputData(inputData) {
                 const ekor = number[3];         // digit terakhir
                 const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
                 
-                dataHistory.push({
+                tempData.push({
                     number: number,
                     as: as,
                     cop: cop,
@@ -546,8 +561,18 @@ function parseInputData(inputData) {
         }
     }
     
+    // REVERSE DATA: Index 0 = terlama (paling atas), index terakhir = terbaru (paling bawah)
+    dataHistory = [...tempData].reverse();
+    
     // Update tampilan rumus yang terdeteksi
     document.getElementById('detectedFormula').textContent = currentFormula || 'Tidak ada rumus';
+    
+    // Update info kebutuhan history
+    if (currentFormula) {
+        const maxDayNeeded = findMaxDayInFormula(currentFormula);
+        document.getElementById('historyInfo').textContent = 
+            `Butuh ${maxDayNeeded} hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
+    }
     
     console.log('Parsed data:', dataHistory);
     console.log('Detected formula:', currentFormula);
@@ -569,7 +594,9 @@ function calculateAIForAll(formula) {
     // Hanya hitung untuk data yang memiliki cukup riwayat
     for (let i = 0; i < dataHistory.length; i++) {
         // Cek apakah data ini memiliki cukup riwayat untuk rumus
-        if (i + maxDayNeeded <= dataHistory.length) {
+        // i = index data saat ini (0 = terlama, terakhir = terbaru)
+        // Data terbaru (index besar) butuh data sebelumnya (index kecil)
+        if (i >= maxDayNeeded - 1) {
             const aiResult = calculateSingleAI(formula, i);
             results.push({
                 number: dataHistory[i].number,
@@ -672,12 +699,13 @@ function processComponent(component, currentDayIndex) {
     const conversion = match[3]; // mb, m9, ml, etc.
     
     // Hitung index data yang benar
-    // currentDayIndex = index data yang sedang dihitung (0 = hari ini)
+    // currentDayIndex = index data yang sedang dihitung (0 = terlama, terakhir = terbaru)
     // dayOffset = berapa hari mundur dari data yang sedang dihitung
-    const targetDayIndex = currentDayIndex + (dayOffset - 1);
+    // Untuk data terlama (index 0), tidak bisa akses data sebelumnya
+    const targetDayIndex = currentDayIndex - (dayOffset - 1);
     
-    if (targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history, hanya ada ${dataHistory.length - currentDayIndex} hari tersedia)`);
+    if (targetDayIndex < 0) {
+        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -728,8 +756,8 @@ function displayResult(results, formula) {
     const output = document.getElementById('resultOutput');
     let outputText = '';
     
-    // TIDAK PERLU DIBALIK - tetap urutan asli (terbaru -> terlama)
-    // Langsung gunakan results dalam urutan asli
+    // Tampilkan dalam urutan yang sama dengan input (terlama -> terbaru)
+    // results sudah dalam urutan: index 0 = terlama, index terakhir = terbaru
     results.forEach(result => {
         if (result.canCalculate) {
             outputText += `${result.number} = ${result.ai} ai\n`;
@@ -748,15 +776,16 @@ function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
-// 6874 = 49 ai
-// 0489 = 49 ai
-// 2843 = 27 ai
+// 6874 = 9 ai  ← (paling lama)
+// 0489 = 3 ai  
 // ...
+// 1452 =       ← (hari ini)
 // ======
 // C8ix+E2ml.(ml)`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
+    document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
     dataHistory = [];
     currentFormula = '';
 }
