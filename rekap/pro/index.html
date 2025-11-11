@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekap Data Otomatis</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
+.container { max-width:800px; margin:0 auto; background:white; border-radius:15px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+h1 { text-align:center; color:#333; margin-bottom:10px; }
+.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:20px; }
+textarea { width:100%; height:150px; padding:15px; border:2px solid #ddd; border-radius:10px; font-size:16px; resize:vertical; margin-bottom:15px; }
+textarea:focus { border-color:#667eea; outline:none; }
+.button-group { display:flex; gap:10px; margin-bottom:15px; }
+button { flex:1; padding:15px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+.btn-submit { background:#4CAF50;color:white; }
+.btn-copy { background:#2196F3;color:white; }
+button:hover { opacity:0.9; transform:translateY(-2px); }
+.info { background:#e3f2fd; padding:15px; border-radius:10px; margin-bottom:15px; text-align:center; }
+.markdown-output { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:10px; margin-top:15px; font-family:'Courier New',monospace; white-space:pre-wrap; max-height:500px; overflow-y:auto; line-height:1.4; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🧮 REKAP DATA OTOMATIS </h1>
+    <div class="subtitle">Format: key#value atau key*key#value</div>
+    
+    <textarea id="inputData" placeholder="Contoh: 01*02#2000, 01#10000, 03*04#5000, ..."></textarea>
+    
+    <div class="button-group">
+        <button class="btn-submit" onclick="prosesData()">🚀 SUBMIT</button>
+        <button class="btn-copy" onclick="copyMarkdown()">📋 COPY OUTPUT</button>
+    </div>
+    
+    <div class="info" id="info">Masukkan data dan klik SUBMIT</div>
+
+    <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah submit</div>
+</div>
+
+<script>
+function prosesData() {
+    const input = document.getElementById('inputData').value.trim();
+    if (!input) {
+        showInfo('Masukkan data terlebih dahulu!', 'error');
+        return;
+    }
+    
+    const lines = input.split(',').map(line => line.trim()).filter(line => line);
+    
+    // Step 1: Kumpulkan value untuk setiap individual key
+    const individualKeyMap = {};
+    
+    lines.forEach(line => {
+        if (line.includes('#')) {
+            const parts = line.split('#');
+            if (parts.length === 2 && parts[1].trim()) {
+                const keyPart = parts[0].trim();
+                const value = parseInt(parts[1].trim()) || 0;
+                const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+                
+                if (keys.length > 0 && !isNaN(value)) {
+                    // Distribusikan value ke setiap individual key
+                    keys.forEach(key => {
+                        if (!individualKeyMap[key]) {
+                            individualKeyMap[key] = 0;
+                        }
+                        individualKeyMap[key] += value;
+                    });
+                }
+            }
+        }
+    });
+    
+    if (Object.keys(individualKeyMap).length === 0) {
+        showInfo('Tidak ada data valid yang ditemukan!', 'error');
+        return;
+    }
+    
+    // Step 2: Gabungkan keys dengan value yang sama
+    const valueMap = {};
+    Object.entries(individualKeyMap).forEach(([key, value]) => {
+        if (!valueMap[value]) {
+            valueMap[value] = [];
+        }
+        valueMap[value].push(key);
+    });
+    
+    // Step 3: Konversi ke array dan sort by value descending
+    const mergedData = Object.entries(valueMap)
+        .map(([value, keys]) => ({
+            keys: keys.sort(),
+            value: parseInt(value)
+        }))
+        .sort((a, b) => b.value - a.value);
+    
+    // Step 4: Kelompokkan berdasarkan digit length
+    const groups = {
+        '4DIGIT': [],
+        '3DIGIT': [],
+        '2DIGIT': []
+    };
+    
+    mergedData.forEach(item => {
+        const keys4 = [];
+        const keys3 = [];
+        const keys2 = [];
+        
+        item.keys.forEach(key => {
+            const digitLength = key.replace(/[^0-9]/g, '').length;
+            
+            if (digitLength === 4) {
+                keys4.push(key);
+            } else if (digitLength === 3) {
+                keys3.push(key);
+            } else if (digitLength === 2) {
+                keys2.push(key);
+            }
+        });
+        
+        if (keys4.length > 0) {
+            groups['4DIGIT'].push({
+                keys: keys4.sort(),
+                value: item.value
+            });
+        }
+        if (keys3.length > 0) {
+            groups['3DIGIT'].push({
+                keys: keys3.sort(),
+                value: item.value
+            });
+        }
+        if (keys2.length > 0) {
+            groups['2DIGIT'].push({
+                keys: keys2.sort(),
+                value: item.value
+            });
+        }
+    });
+    
+    // Step 5: Sort setiap kelompok oleh value descending
+    Object.keys(groups).forEach(group => {
+        groups[group].sort((a, b) => b.value - a.value);
+    });
+    
+    generateMarkdown(groups);
+    showInfo('Data berhasil diproses!', 'success');
+}
+
+function generateMarkdown(groups) {
+    const markdownOutput = document.getElementById('markdownOutput');
+    
+    let output = '';
+    
+    ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
+        if (groups[group] && groups[group].length > 0) {
+            output += `${group}\n`;
+            groups[group].forEach(entry => {
+                output += `${entry.keys.join('*')}#${entry.value},\n`;
+            });
+            output += '\n';
+        }
+    });
+    
+    markdownOutput.textContent = output || '// Tidak ada data yang diproses';
+}
+
+function copyMarkdown() {
+    const markdownOutput = document.getElementById('markdownOutput');
+    const textArea = document.createElement('textarea');
+    textArea.value = markdownOutput.textContent;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showInfo('Output berhasil disalin!', 'success');
+}
+
+function showInfo(message, type) {
+    const infoDiv = document.getElementById('info');
+    infoDiv.textContent = message;
+    infoDiv.style.background = type === 'error' ? '#ffebee' : 
+                             type === 'success' ? '#e8f5e8' : '#e3f2fd';
+    infoDiv.style.color = type === 'error' ? '#c62828' :
+                        type === 'success' ? '#2e7d32' : '#1565c0';
+}
+</script>
+</body>
+</html>
