@@ -16,9 +16,9 @@ body {
     min-height: 100vh;
     padding: 20px;
     display: flex;
-    align-items: flex-start; /* Changed from center to flex-start */
+    align-items: flex-start;
     justify-content: center;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 .container { 
     max-width:900px; 
@@ -28,7 +28,6 @@ body {
     border-radius:20px; 
     padding:30px; 
     box-shadow:0 20px 40px rgba(0,0,0,0.15);
-    /* Removed backdrop-filter: blur(10px); */
 }
 .header { 
     text-align:center; 
@@ -54,6 +53,10 @@ h1 {
 .input-section {
     margin-bottom:20px;
 }
+.textarea-container {
+    position: relative;
+    margin-bottom: 15px;
+}
 textarea { 
     width:100%; 
     height:180px; 
@@ -62,7 +65,6 @@ textarea {
     border-radius:12px; 
     font-size:16px; 
     resize:vertical; 
-    margin-bottom:15px;
     font-family: 'Courier New', monospace;
     transition: all 0.3s ease;
     background: #f8fafc;
@@ -73,15 +75,21 @@ textarea:focus {
     background: white;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
+.input-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    background: rgba(255,255,255,0.9);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
 .button-group { 
     display:flex; 
     gap:12px; 
     margin-bottom:20px;
-}
-.button-group-2 {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
 }
 button { 
     flex:1; 
@@ -108,7 +116,7 @@ button {
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
 .btn-clean {
-    background:linear-gradient(135deg, #ff6b6b, #ee5a52);
+    background:linear-gradient(135deg, #ff9999, #ff6b6b); /* Warna lebih terang */
     color:white;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
@@ -147,6 +155,20 @@ button:active {
     align-items: center;
     gap: 8px;
 }
+.output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.total-value {
+    background: #667eea;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
 .markdown-output { 
     background:#1a202c; 
     color:#e2e8f0; 
@@ -155,7 +177,7 @@ button:active {
     margin-top:10px; 
     font-family:'Courier New', monospace; 
     white-space:pre-wrap; 
-    max-height:400px; /* Reduced from 500px */
+    max-height:400px;
     overflow-y:auto; 
     line-height:1.5;
     border:1px solid #2d3748;
@@ -175,40 +197,32 @@ button:active {
 .markdown-output::-webkit-scrollbar-thumb:hover {
     background:#718096;
 }
-.footer {
-    text-align:center;
-    margin-top:25px;
-    color:#718096;
-    font-size:13px;
-}
 @media (max-width: 768px) {
     body {
-        padding: 10px; /* Reduced padding on mobile */
+        padding: 10px;
         align-items: flex-start;
     }
     .container {
         padding:20px;
-        margin:0; /* Remove margin on mobile */
+        margin:0;
     }
     h1 {
         font-size:1.8rem;
     }
-    .button-group,
-    .button-group-2 {
-        flex-direction:column;
+    .button-group {
+        flex-direction: column;
     }
     textarea {
         height:150px;
     }
     .markdown-output {
-        max-height:300px; /* Further reduce on mobile */
+        max-height:300px;
     }
-}
-
-/* Added to prevent extra space at bottom */
-html, body {
-    height: auto;
-    min-height: 100vh;
+    .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 }
 </style>
 </head>
@@ -220,11 +234,15 @@ html, body {
     </div>
     
     <div class="input-section">
-        <textarea id="inputData" placeholder="Contoh:
+        <div class="textarea-container">
+            <textarea id="inputData" placeholder="Contoh:
 01*02#2000, 
 01#10000, 
-03*04#5500, 
-05#3000,"></textarea>
+03*04#5000, 
+05#3000,
+12*13*14#7500" oninput="updateInputCounter()"></textarea>
+            <div class="input-counter" id="inputCounter">Total: 0</div>
+        </div>
         
         <div class="button-group">
             <button class="btn-submit" onclick="prosesData()">
@@ -235,12 +253,9 @@ html, body {
                 <span>📋</span>
                 <span>SALIN OUTPUT</span>
             </button>
-        </div>
-
-        <div class="button-group-2">
             <button class="btn-clean" onclick="cleanAll()">
-                <span>🗑️</span>
-                <span>BERSIHKAN SEMUA</span>
+                <span>🧹</span>
+                <span>HAPUS</span>
             </button>
         </div>
     </div>
@@ -250,12 +265,38 @@ html, body {
     </div>
 
     <div class="output-section">
-        <h3>📊 Hasil Output:</h3>
+        <div class="output-header">
+            <h3>📊 Hasil Output:</h3>
+            <div class="total-value" id="outputTotal">Total: 0</div>
+        </div>
         <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
     </div>
 </div>
 
 <script>
+function updateInputCounter() {
+    const input = document.getElementById('inputData').value.trim();
+    let total = 0;
+    
+    if (input) {
+        const lines = input.split(',').map(line => line.trim()).filter(line => line);
+        
+        lines.forEach(line => {
+            if (line.includes('#')) {
+                const parts = line.split('#');
+                if (parts.length === 2 && parts[1].trim()) {
+                    const value = parseInt(parts[1].trim()) || 0;
+                    if (!isNaN(value)) {
+                        total += value;
+                    }
+                }
+            }
+        });
+    }
+    
+    document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
+}
+
 function prosesData() {
     const input = document.getElementById('inputData').value.trim();
     if (!input) {
@@ -267,6 +308,7 @@ function prosesData() {
     
     // Step 1: Kumpulkan value untuk setiap individual key
     const individualKeyMap = {};
+    let totalInputValue = 0;
     
     lines.forEach(line => {
         if (line.includes('#')) {
@@ -277,6 +319,7 @@ function prosesData() {
                 const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
                 
                 if (keys.length > 0 && !isNaN(value)) {
+                    totalInputValue += value;
                     // Distribusikan value ke setiap individual key
                     keys.forEach(key => {
                         if (!individualKeyMap[key]) {
@@ -360,24 +403,29 @@ function prosesData() {
         groups[group].sort((a, b) => b.value - a.value);
     });
     
-    generateMarkdown(groups);
+    generateMarkdown(groups, totalInputValue);
     showInfo('Data berhasil diproses!', 'success');
 }
 
-function generateMarkdown(groups) {
+function generateMarkdown(groups, totalInputValue) {
     const markdownOutput = document.getElementById('markdownOutput');
     
     let output = '';
+    let totalOutputValue = 0;
     
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
             output += `${group}\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
+                totalOutputValue += entry.value * entry.keys.length;
             });
             output += '\n';
         }
     });
+    
+    // Update total output
+    document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
     
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
 }
@@ -400,6 +448,10 @@ function cleanAll() {
     // Reset output ke default
     document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
     
+    // Reset counters
+    document.getElementById('inputCounter').textContent = 'Total: 0';
+    document.getElementById('outputTotal').textContent = 'Total: 0';
+    
     // Reset info message
     showInfo('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
 }
@@ -414,6 +466,11 @@ function showInfo(message, type) {
         infoDiv.classList.add('success');
     }
 }
+
+// Initialize counter on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateInputCounter();
+});
 </script>
 </body>
 </html>
