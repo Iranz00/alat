@@ -43,14 +43,14 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 
 .validation-error { border-color:#f44336 !important; background-color:#ffebee !important; }
 
-/* Styling untuk tampilan data dengan highlight markdown */
+/* Styling untuk tampilan data dengan highlight */
 .data-display { background:white; padding:20px; border-radius:8px; border:2px solid #e9ecef; margin-bottom:20px; }
-.markdown-output { background:#f8f9fa; padding:15px; border-radius:8px; font-family:'Courier New', monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; max-height:400px; overflow-y:auto; }
-.markdown-line { margin-bottom:5px; }
-.markdown-number { display:inline-block; padding:2px 6px; margin:1px; border-radius:3px; border:1px solid #ddd; }
-.markdown-exact { background:#ffebee; border-color:#f44336; color:#c62828; font-weight:bold; }
-.markdown-permutation { background:#e3f2fd; border-color:#2196F3; color:#1565c0; font-weight:bold; }
-.markdown-normal { background:transparent; border-color:transparent; }
+.text-output { background:#f8f9fa; padding:15px; border-radius:8px; font-family:'Courier New', monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; max-height:400px; overflow-y:auto; }
+.text-line { margin-bottom:8px; }
+.text-number { display:inline-block; padding:2px 6px; margin:1px; border-radius:3px; border:1px solid #ddd; }
+.text-exact { background:#ffebee; border-color:#f44336; color:#c62828; font-weight:bold; }
+.text-permutation { background:#e3f2fd; border-color:#2196F3; color:#1565c0; font-weight:bold; }
+.text-normal { background:transparent; border-color:transparent; }
 
 .legend { display:flex; justify-content:center; gap:15px; margin-top:15px; flex-wrap:wrap; }
 .legend-item { display:flex; align-items:center; gap:5px; font-size:12px; }
@@ -58,8 +58,10 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 .legend-exact { background:#ffebee; border-color:#f44336; }
 .legend-permutation { background:#e3f2fd; border-color:#2196F3; }
 
-.copy-btn { background:#2196F3; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-size:12px; margin-top:10px; }
+.copy-btn { background:#2196F3; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-size:12px; margin-top:10px; margin-bottom:15px; }
 .copy-btn:hover { background:#1976D2; }
+
+.search-info { background:#e8f5e8; padding:10px; border-radius:5px; margin-bottom:15px; font-size:14px; text-align:center; }
 </style>
 </head>
 <body>
@@ -100,17 +102,21 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
         <div class="section-title">📊 HASIL PENCARIAN PERMUTASI</div>
         
         <div class="data-display" id="dataDisplay">
-            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT (MARKDOWN)</div>
-            <button class="copy-btn" onclick="copyMarkdownToClipboard()">📋 Copy Markdown</button>
-            <div class="markdown-output" id="markdownOutput"></div>
+            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT</div>
+            <button class="copy-btn" onclick="copyTextToClipboard()">📋 Copy Text</button>
+            
+            <div class="search-info" id="searchInfo"></div>
+            
+            <div class="text-output" id="textOutput"></div>
+            
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color legend-exact"></div>
-                    <span>Exact Match</span>
+                    <span>Exact Match (angka sama persis)</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color legend-permutation"></div>
-                    <span>Permutation Match</span>
+                    <span>Permutation Match (digit sama, urutan berbeda)</span>
                 </div>
             </div>
         </div>
@@ -172,8 +178,8 @@ function findNumberPermutations() {
         // Cari angka yang match
         const results = findMatchingNumbers(numbers, allPermutations, searchNumber);
         
-        // Tampilkan hasil dengan highlight markdown
-        displayMarkdownData(inputData, results, searchNumber);
+        // Tampilkan hasil dengan highlight text biasa
+        displayTextData(inputData, results, searchNumber, allPermutations);
         
         // Tampilkan hasil ringkasan
         displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
@@ -248,79 +254,76 @@ function findMatchingNumbers(numbers, permutations, searchNumber) {
     };
 }
 
-function displayMarkdownData(inputData, results, searchNumber) {
-    const container = document.getElementById('markdownOutput');
+function displayTextData(inputData, results, searchNumber, allPermutations) {
+    const container = document.getElementById('textOutput');
+    const searchInfo = document.getElementById('searchInfo');
+    
+    // Tampilkan informasi pencarian
+    searchInfo.innerHTML = `
+        <strong>Angka yang dicari:</strong> ${searchNumber} | 
+        <strong>Exact Match:</strong> ${results.exactMatches.length} | 
+        <strong>Permutation Match:</strong> ${results.permutationMatches.length}
+    `;
     
     // Split data input menjadi baris-baris
     const lines = inputData.split('\n');
-    let markdown = '';
-    
-    // Header markdown
-    markdown += `# Data Angka dengan Highlight Permutasi\n\n`;
-    markdown += `**Angka yang dicari:** ${searchNumber}\n`;
-    markdown += `**Total Exact Match:** ${results.exactMatches.length}\n`;
-    markdown += `**Total Permutation Match:** ${results.permutationMatches.length}\n\n`;
-    markdown += `---\n\n`;
+    let textOutput = '';
     
     lines.forEach((line, lineIndex) => {
         if (line.trim() === '') return;
         
         // Split setiap baris menjadi angka-angka
         const numbersInLine = line.trim().split(/\s+/);
-        let markdownLine = '';
+        let textLine = '';
         
         numbersInLine.forEach(number => {
             // Hanya proses angka 4 digit
             if (number.length === 4 && /^\d+$/.test(number)) {
                 if (results.exactMatches.includes(number)) {
                     // Exact match - merah
-                    markdownLine += `<span class="markdown-number markdown-exact">${number}</span> `;
+                    textLine += `<span class="text-number text-exact">${number}</span> `;
                 } else if (results.permutationMatches.includes(number)) {
                     // Permutation match - biru
-                    markdownLine += `<span class="markdown-number markdown-permutation">${number}</span> `;
+                    textLine += `<span class="text-number text-permutation">${number}</span> `;
                 } else {
                     // Normal
-                    markdownLine += `<span class="markdown-number markdown-normal">${number}</span> `;
+                    textLine += `<span class="text-number text-normal">${number}</span> `;
                 }
             } else {
                 // Untuk teks yang bukan angka 4 digit, tampilkan normal
-                markdownLine += `<span class="markdown-number markdown-normal">${number}</span> `;
+                textLine += `<span class="text-number text-normal">${number}</span> `;
             }
         });
         
-        markdown += `<div class="markdown-line">${markdownLine}</div>`;
+        textOutput += `<div class="text-line">${textLine}</div>`;
     });
     
-    // Tambahkan footer dengan informasi
-    markdown += `\n---\n\n`;
-    markdown += `## Keterangan:\n`;
-    markdown += `- <span class="markdown-number markdown-exact">MERAH</span> = Exact Match (angka sama persis)\n`;
-    markdown += `- <span class="markdown-number markdown-permutation">BIRU</span> = Permutation Match (digit sama, urutan berbeda)\n`;
-    markdown += `- Normal = Tidak match\n\n`;
-    
-    if (results.exactMatches.length > 0) {
-        markdown += `### Exact Matches:\n`;
-        markdown += `${results.exactMatches.join(', ')}\n\n`;
-    }
-    
-    if (results.permutationMatches.length > 0) {
-        markdown += `### Permutation Matches:\n`;
-        markdown += `${results.permutationMatches.join(', ')}\n\n`;
-    }
-    
-    container.innerHTML = markdown;
+    container.innerHTML = textOutput;
     document.getElementById('dataDisplay').style.display = 'block';
 }
 
-function copyMarkdownToClipboard() {
-    const markdownOutput = document.getElementById('markdownOutput');
+function copyTextToClipboard() {
+    const textOutput = document.getElementById('textOutput');
+    const searchInfo = document.getElementById('searchInfo');
     const tempTextArea = document.createElement('textarea');
     
-    // Extract text content without HTML tags for plain text copy
-    let plainText = markdownOutput.textContent || markdownOutput.innerText;
+    // Extract text content tanpa HTML tags
+    let plainText = "DATA INPUT DENGAN HIGHLIGHT\n";
+    plainText += "=".repeat(50) + "\n\n";
     
-    // Clean up the text for better markdown formatting
-    plainText = plainText.replace(/\s+/g, ' ').trim();
+    // Tambahkan info pencarian
+    const searchText = searchInfo.textContent || searchInfo.innerText;
+    plainText += searchText + "\n\n";
+    
+    // Tambahkan data angka
+    const dataText = textOutput.textContent || textOutput.innerText;
+    plainText += dataText + "\n";
+    
+    // Tambahkan keterangan
+    plainText += "\nKETERANGAN:\n";
+    plainText += "• MERAH = Exact Match (angka sama persis)\n";
+    plainText += "• BIRU = Permutation Match (digit sama, urutan berbeda)\n";
+    plainText += "• Normal = Tidak match\n";
     
     tempTextArea.value = plainText;
     document.body.appendChild(tempTextArea);
@@ -330,7 +333,7 @@ function copyMarkdownToClipboard() {
     try {
         const successful = document.execCommand('copy');
         const msg = successful ? 'berhasil' : 'gagal';
-        showInfo(`Markdown ${msg} disalin ke clipboard!`, 'success');
+        showInfo(`Text ${msg} disalin ke clipboard!`, 'success');
     } catch (err) {
         console.error('Fallback: Oops, unable to copy', err);
         showInfo('Gagal menyalin ke clipboard', 'error');
