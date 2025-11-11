@@ -90,12 +90,12 @@ textarea:focus {
     display:flex; 
     gap:12px; 
     margin-bottom:20px;
-    flex-wrap: nowrap; /* Pastikan tetap satu baris */
+    flex-wrap: nowrap;
 }
 button { 
     flex: 1; 
-    min-width: 120px; /* Minimum width untuk tombol */
-    padding: 16px 12px; /* Sesuaikan padding */
+    min-width: 120px;
+    padding: 16px 12px;
     border:none; 
     border-radius:12px; 
     font-size:15px; 
@@ -212,10 +212,10 @@ button:active {
         font-size:1.8rem;
     }
     .button-group {
-        flex-wrap: wrap; /* Di mobile boleh wrap */
+        flex-wrap: wrap;
     }
     button {
-        min-width: calc(50% - 6px); /* Di mobile jadi 2 kolom */
+        min-width: calc(50% - 6px);
     }
     textarea {
         height:150px;
@@ -286,6 +286,9 @@ function updateInputCounter() {
     if (input) {
         const lines = input.split(',').map(line => line.trim()).filter(line => line);
         
+        // Hitung total dengan distribusi ke individual keys (sama seperti prosesData)
+        const individualKeyMap = {};
+        
         lines.forEach(line => {
             if (line.includes('#')) {
                 const parts = line.split('#');
@@ -295,11 +298,21 @@ function updateInputCounter() {
                     const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
                     
                     if (keys.length > 0 && !isNaN(value)) {
-                        // Hitung total dengan cara yang sama seperti di prosesData
-                        total += value;
+                        // Distribusikan value ke setiap individual key dan hitung total
+                        keys.forEach(key => {
+                            if (!individualKeyMap[key]) {
+                                individualKeyMap[key] = 0;
+                            }
+                            individualKeyMap[key] += value;
+                        });
                     }
                 }
             }
+        });
+        
+        // Jumlahkan semua value dari individualKeyMap
+        Object.values(individualKeyMap).forEach(value => {
+            total += value;
         });
     }
     
@@ -328,7 +341,6 @@ function prosesData() {
                 const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
                 
                 if (keys.length > 0 && !isNaN(value)) {
-                    totalInputValue += value;
                     // Distribusikan value ke setiap individual key
                     keys.forEach(key => {
                         if (!individualKeyMap[key]) {
@@ -345,6 +357,11 @@ function prosesData() {
         showInfo('Tidak ada data valid yang ditemukan!', 'error');
         return;
     }
+    
+    // Hitung total input value dari individualKeyMap
+    Object.values(individualKeyMap).forEach(value => {
+        totalInputValue += value;
+    });
     
     // Step 2: Gabungkan keys dengan value yang sama
     const valueMap = {};
@@ -427,18 +444,15 @@ function generateMarkdown(groups, totalInputValue) {
             output += `${group}\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
-                // Hitung total output dengan benar - hanya value sekali, tidak dikali jumlah keys
-                totalOutputValue += entry.value;
+                // Hitung total output (value dikali jumlah keys)
+                totalOutputValue += entry.value * entry.keys.length;
             });
             output += '\n';
         }
     });
     
-    // Update total output - harus sama dengan total input
+    // Update total output
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
-    
-    // Juga update input counter untuk memastikan konsistensi
-    document.getElementById('inputCounter').textContent = `Total: ${totalInputValue.toLocaleString()}`;
     
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
 }
