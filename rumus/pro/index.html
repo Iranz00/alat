@@ -1,634 +1,784 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rumus Harian - Sistem Konversi Mistik</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(135deg,#667eea,#764ba2); 
-            min-height:100vh; 
-            padding:20px; 
-        }
-        .container { 
-            max-width:1000px; 
-            margin:0 auto; 
-            background:white; 
-            border-radius:15px; 
-            padding:30px; 
-            box-shadow:0 10px 30px rgba(0,0,0,0.2); 
-        }
-        h1 { 
-            text-align:center; 
-            color:#333; 
-            margin-bottom:10px; 
-        }
-        .subtitle { 
-            text-align:center; 
-            color:#666; 
-            font-size:14px; 
-            margin-bottom:30px; 
-        }
-        
-        .input-section { 
-            background:#f8f9fa; 
-            padding:25px; 
-            border-radius:10px; 
-            border:2px solid #e9ecef; 
-            margin-bottom:25px; 
-        }
-        .section-title { 
-            color:#333; 
-            margin-bottom:15px; 
-            font-size:16px; 
-            font-weight:bold; 
-        }
-        
-        .form-control, .form-select {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px;
-            width: 100%;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
-        }
-        
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -5px;
-        }
-        .col {
-            flex: 1;
-            padding: 0 5px;
-            margin-bottom: 10px;
-            min-width: 120px;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-submit {
-            background: #4CAF50;
-            color: white;
-        }
-        .btn-submit:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-        
-        .result-input-section {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 2px solid #c8e6c9;
-        }
-        
-        .manual-input-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .input-label {
-            font-weight: bold;
-            color: #333;
-            min-width: 80px;
-        }
-        
-        .number-input {
-            width: 60px;
-            text-align: center;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
-        .bg-info { background-color: #d1ecf1 !important; }
-        .bg-danger { background-color: #f8d7da !important; }
-        
-        .result-section {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 2px solid #ffeaa7;
-            display: none;
-        }
-        
-        .conversion-table {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-        }
-        .table-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .conversion-row {
-            display: flex;
-            margin-bottom: 5px;
-            padding: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .conv-type {
-            font-weight: bold;
-            min-width: 50px;
-            color: #666;
-        }
-        .conv-pairs {
-            display: flex;
-            gap: 15px;
-        }
-        .conv-pair {
-            background: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-family: monospace;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Mistik</title>
+<style>
+* { 
+    margin:0; 
+    padding:0; 
+    box-sizing:border-box; 
+}
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    min-height:100vh; 
+    padding:20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.container { 
+    max-width:1200px; 
+    width:100%;
+    margin:0 auto; 
+    background:white; 
+    border-radius:20px; 
+    padding:30px; 
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+.header { 
+    text-align:center; 
+    margin-bottom:25px; 
+}
+h1 { 
+    color:#2d3748; 
+    margin-bottom:8px; 
+    font-size:2.2rem;
+    font-weight:700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.subtitle { 
+    text-align:center; 
+    color:#718096; 
+    font-size:15px; 
+    margin-bottom:25px;
+    line-height:1.5;
+}
+.grid-container { 
+    display:grid; 
+    grid-template-columns:1fr 1fr; 
+    gap:25px; 
+    margin-bottom:25px;
+}
+.input-section, .output-section { 
+    background:#f8f9fa; 
+    padding:25px; 
+    border-radius:15px; 
+    border:2px solid #e9ecef;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+.section-title { 
+    color:#2d3748; 
+    margin-bottom:20px; 
+    font-size:18px; 
+    font-weight:bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.data-input { 
+    margin-bottom:20px;
+}
+.data-input textarea { 
+    width:100%; 
+    height:150px; 
+    padding:15px; 
+    border:2px solid #e2e8f0; 
+    border-radius:12px; 
+    font-size:15px; 
+    resize:vertical; 
+    margin-bottom:10px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    background: white;
+}
+.data-input textarea:focus { 
+    border-color:#667eea; 
+    outline:none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.formula-input { 
+    margin-bottom:20px;
+}
+.formula-input input { 
+    width:100%; 
+    padding:15px; 
+    border:2px solid #e2e8f0; 
+    border-radius:12px; 
+    font-size:16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: white;
+}
+.formula-input input:focus { 
+    border-color:#667eea; 
+    outline:none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.button-group { 
+    display:flex; 
+    gap:12px; 
+    margin-bottom:20px;
+}
+button { 
+    flex:1; 
+    padding:15px; 
+    border:none; 
+    border-radius:12px; 
+    font-size:15px; 
+    font-weight:600; 
+    cursor:pointer; 
+    transition:all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-calculate { 
+    background:linear-gradient(135deg, #4CAF50, #45a049);
+    color:white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+.btn-clear { 
+    background:linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color:white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+button:hover { 
+    transform:translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+button:active {
+    transform:translateY(-1px);
+}
+.info { 
+    background:#e3f2fd; 
+    padding:18px; 
+    border-radius:12px; 
+    margin-bottom:20px; 
+    text-align:center;
+    font-weight:500;
+    border-left:4px solid #2196F3;
+    transition: all 0.3s ease;
+}
+.info.success {
+    background:#e8f5e8;
+    border-left-color:#4CAF50;
+    color:#2e7d32;
+}
+.info.error {
+    background:#ffebee;
+    border-left-color:#f44336;
+    color:#c62828;
+}
+.input-info { 
+    text-align:center; 
+    color:#718096; 
+    font-size:13px; 
+    margin-bottom:15px;
+    font-weight: 500;
+}
+.result-box { 
+    background:#1a202c; 
+    color:#e2e8f0; 
+    padding:25px; 
+    border-radius:12px; 
+    font-family:'Courier New',monospace; 
+    min-height:200px; 
+    white-space:pre-wrap; 
+    line-height:1.6;
+    border:1px solid #2d3748;
+    font-size:14px;
+    overflow-y: auto;
+    max-height: 400px;
+}
+.result-box::-webkit-scrollbar {
+    width:8px;
+}
+.result-box::-webkit-scrollbar-track {
+    background:#2d3748;
+    border-radius:4px;
+}
+.result-box::-webkit-scrollbar-thumb {
+    background:#4a5568;
+    border-radius:4px;
+}
+.result-box::-webkit-scrollbar-thumb:hover {
+    background:#718096;
+}
+.tables-grid { 
+    display:grid; 
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); 
+    gap:20px; 
+    margin-top:25px;
+}
+.table-container { 
+    background:white; 
+    padding:20px; 
+    border-radius:12px; 
+    border:2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+.table-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border-color: #667eea;
+}
+.table-title { 
+    font-weight:bold; 
+    margin-bottom:12px; 
+    color:#2d3748; 
+    text-align:center;
+    font-size:16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+}
+.table-content { 
+    font-family:'Courier New',monospace; 
+    font-size:13px; 
+    line-height:1.6;
+    text-align: center;
+    color:#4a5568;
+}
+.explanation { 
+    background:#fff3cd; 
+    padding:25px; 
+    border-radius:12px; 
+    margin-top:25px; 
+    border:2px solid #ffeaa7;
+}
+.explanation h3 { 
+    color:#856404; 
+    margin-bottom:15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.explanation ul { 
+    color:#856404; 
+    padding-left:25px;
+    line-height: 1.6;
+}
+.explanation li { 
+    margin-bottom:8px;
+}
+.debug-info { 
+    background:#ffebee; 
+    padding:15px; 
+    border-radius:8px; 
+    margin-top:15px; 
+    font-size:13px; 
+    color:#c62828; 
+    display:none;
+    border-left: 4px solid #f44336;
+}
+.quick-formulas {
+    background: #e3f2fd;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #bbdefb;
+}
+.quick-formulas h4 {
+    color: #1565c0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.formula-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.formula-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+.formula-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+    .container {
+        padding:20px;
+    }
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .tables-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    .formula-buttons {
+        flex-direction: column;
+    }
+    .formula-btn {
+        text-align: center;
+    }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔢 RUMUS HARIAN OTOMATIS</h1>
-        <div class="subtitle">Sistem Konversi Angka Mistik Lengkap</div>
-        
-        <div class="input-section">
-            <div class="section-title">📥 INPUT DATA MANUAL</div>
-            
-            <form id="predictionForm">
-                <!-- Manual Result Input -->
-                <div class="result-input-section">
-                    <div class="section-title">🎯 INPUT RESULT MANUAL</div>
-                    
-                    <div class="manual-input-group">
-                        <span class="input-label">AS:</span>
-                        <input type="number" name="as" class="number-input" min="0" max="99" placeholder="00" required>
-                    </div>
-                    
-                    <div class="manual-input-group">
-                        <span class="input-label">KOP:</span>
-                        <input type="number" name="kop" class="number-input" min="0" max="99" placeholder="00" required>
-                    </div>
-                    
-                    <div class="manual-input-group">
-                        <span class="input-label">KEPALA:</span>
-                        <input type="number" name="kepala" class="number-input" min="0" max="99" placeholder="00" required>
-                    </div>
-                    
-                    <div class="manual-input-group">
-                        <span class="input-label">EKOR:</span>
-                        <input type="number" name="ekor" class="number-input" min="0" max="99" placeholder="00" required>
-                    </div>
-                </div>
-
-                <!-- Configuration -->
-                <div class="row">
-                    <div class="col">
-                        <label class="section-title">Putaran</label>
-                        <input type="number" name="putaran" value="3" min="3" max="200" class="form-control">
-                    </div>
-                    <div class="col">
-                        <label class="section-title">Posisi</label>
-                        <select class="form-select" name="posisi">
-                            <option value="a">A</option>
-                            <option value="c">C</option>
-                            <option value="k">K</option>
-                            <option value="e">E</option>
-                            <option value="ac">Ac</option>
-                            <option value="ck">Ck</option>
-                            <option value="ke">Ke</option>
-                            <option value="jd">Jd</option>
-                            <option value="jt">Jt</option>
-                            <option value="j">J</option>
-                            <option value="acke">Cb</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Calculation System -->
-                <div class="section-title mt-3">🧮 SISTEM KALKULASI</div>
-                
-                <div class="row">
-                    <div class="col">
-                        <select class="form-select" name="key1">
-                            <option value="a1">a1</option>
-                            <option value="a2">a2</option>
-                            <option value="a3">a3</option>
-                            <option value="a4">a4</option>
-                            <option value="a5">a5</option>
-                            <option value="a6">a6</option>
-                            <option value="a7">a7</option>
-                            <option value="a8">a8</option>
-                            <option value="a9">a9</option>
-                            <option value="a10">a10</option>
-                            <option value="c1">c1</option>
-                            <option value="c2">c2</option>
-                            <option value="c3">c3</option>
-                            <option value="c4">c4</option>
-                            <option value="c5">c5</option>
-                            <option value="c6">c6</option>
-                            <option value="c7">c7</option>
-                            <option value="c8">c8</option>
-                            <option value="c9">c9</option>
-                            <option value="c10">c10</option>
-                            <option value="k1">k1</option>
-                            <option value="k2">k2</option>
-                            <option value="k3">k3</option>
-                            <option value="k4">k4</option>
-                            <option value="k5">k5</option>
-                            <option value="k6">k6</option>
-                            <option value="k7">k7</option>
-                            <option value="k8">k8</option>
-                            <option value="k9">k9</option>
-                            <option value="k10">k10</option>
-                            <option value="e1">e1</option>
-                            <option value="e2">e2</option>
-                            <option value="e3">e3</option>
-                            <option value="e4">e4</option>
-                            <option value="e5">e5</option>
-                            <option value="e6">e6</option>
-                            <option value="e7">e7</option>
-                            <option value="e8">e8</option>
-                            <option value="e9">e9</option>
-                            <option value="e10">e10</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <select class="form-select bg-info" name="conversi1">
-                            <option value="n0">Tidak</option>
-                            <option value="ix">ix</option>
-                            <option value="ty">ty</option>
-                            <option value="ml">ml</option>
-                            <option value="mb">mb</option>
-                            <option value="m0">m0</option>
-                            <option value="m1">m1</option>
-                            <option value="m3">m3</option>
-                            <option value="m5">m5</option>
-                            <option value="m7">m7</option>
-                            <option value="m9">m9</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <select class="form-select" name="arit1">
-                            <option value="+">+</option>
-                            <option value="-">-</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row mt-2">
-                    <div class="col">
-                        <select class="form-select" name="key2">
-                            <option value="">Tidak</option>
-                            <option value="a1">a1</option>
-                            <option value="a2">a2</option>
-                            <option value="a3">a3</option>
-                            <option value="a4">a4</option>
-                            <option value="a5">a5</option>
-                            <option value="a6">a6</option>
-                            <option value="a7">a7</option>
-                            <option value="a8">a8</option>
-                            <option value="a9">a9</option>
-                            <option value="a10">a10</option>
-                            <option value="c1">c1</option>
-                            <option value="c2">c2</option>
-                            <option value="c3">c3</option>
-                            <option value="c4">c4</option>
-                            <option value="c5">c5</option>
-                            <option value="c6">c6</option>
-                            <option value="c7">c7</option>
-                            <option value="c8">c8</option>
-                            <option value="c9">c9</option>
-                            <option value="c10">c10</option>
-                            <option value="k1">k1</option>
-                            <option value="k2">k2</option>
-                            <option value="k3">k3</option>
-                            <option value="k4">k4</option>
-                            <option value="k5">k5</option>
-                            <option value="k6">k6</option>
-                            <option value="k7">k7</option>
-                            <option value="k8">k8</option>
-                            <option value="k9">k9</option>
-                            <option value="k10">k10</option>
-                            <option value="e1">e1</option>
-                            <option value="e2">e2</option>
-                            <option value="e3">e3</option>
-                            <option value="e4">e4</option>
-                            <option value="e5">e5</option>
-                            <option value="e6">e6</option>
-                            <option value="e7">e7</option>
-                            <option value="e8">e8</option>
-                            <option value="e9">e9</option>
-                            <option value="e10">e10</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <select class="form-select bg-info" name="conversi2">
-                            <option value="n0">Tidak</option>
-                            <option value="ix">ix</option>
-                            <option value="ty">ty</option>
-                            <option value="ml">ml</option>
-                            <option value="mb">mb</option>
-                            <option value="m0">m0</option>
-                            <option value="m1">m1</option>
-                            <option value="m3">m3</option>
-                            <option value="m5">m5</option>
-                            <option value="m7">m7</option>
-                            <option value="m9">m9</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <select class="form-select bg-danger" name="conversihasil">
-                            <option value="n0">Tidak</option>
-                            <option value="ix">ix</option>
-                            <option value="ty">ty</option>
-                            <option value="ml">ml</option>
-                            <option value="mb">mb</option>
-                            <option value="m0">m0</option>
-                            <option value="m1">m1</option>
-                            <option value="m3">m3</option>
-                            <option value="m5">m5</option>
-                            <option value="m7">m7</option>
-                            <option value="m9">m9</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button class="btn btn-submit mt-3" type="button" id="calculateBtn">🚀 PROSES KALKULASI</button>
-            </form>
-
-            <!-- Conversion Table -->
-            <div class="conversion-table">
-                <div class="table-title">📋 TABEL KONVERSI ANGKA MISTIK</div>
-                <div class="conversion-row">
-                    <div class="conv-type">IX:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»5</div>
-                        <div class="conv-pair">1«»6</div>
-                        <div class="conv-pair">2«»7</div>
-                        <div class="conv-pair">3«»8</div>
-                        <div class="conv-pair">4«»9</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">TY:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»7</div>
-                        <div class="conv-pair">1«»4</div>
-                        <div class="conv-pair">2«»9</div>
-                        <div class="conv-pair">3«»6</div>
-                        <div class="conv-pair">5«»8</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">ML:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»1</div>
-                        <div class="conv-pair">2«»5</div>
-                        <div class="conv-pair">3«»8</div>
-                        <div class="conv-pair">4«»7</div>
-                        <div class="conv-pair">6«»9</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">MB:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»8</div>
-                        <div class="conv-pair">1«»7</div>
-                        <div class="conv-pair">2«»6</div>
-                        <div class="conv-pair">3«»9</div>
-                        <div class="conv-pair">4«»5</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M0:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»6</div>
-                        <div class="conv-pair">1«»5</div>
-                        <div class="conv-pair">2«»7</div>
-                        <div class="conv-pair">3«»8</div>
-                        <div class="conv-pair">4«»9</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M1:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»1</div>
-                        <div class="conv-pair">2«»9</div>
-                        <div class="conv-pair">3«»8</div>
-                        <div class="conv-pair">4«»7</div>
-                        <div class="conv-pair">5«»6</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M3:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»3</div>
-                        <div class="conv-pair">1«»2</div>
-                        <div class="conv-pair">4«»9</div>
-                        <div class="conv-pair">5«»8</div>
-                        <div class="conv-pair">6«»7</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M5:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»5</div>
-                        <div class="conv-pair">1«»4</div>
-                        <div class="conv-pair">2«»3</div>
-                        <div class="conv-pair">6«»9</div>
-                        <div class="conv-pair">7«»8</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M7:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»7</div>
-                        <div class="conv-pair">1«»6</div>
-                        <div class="conv-pair">2«»5</div>
-                        <div class="conv-pair">3«»4</div>
-                        <div class="conv-pair">8«»9</div>
-                    </div>
-                </div>
-                <div class="conversion-row">
-                    <div class="conv-type">M9:</div>
-                    <div class="conv-pairs">
-                        <div class="conv-pair">0«»9</div>
-                        <div class="conv-pair">1«»8</div>
-                        <div class="conv-pair">2«»7</div>
-                        <div class="conv-pair">3«»6</div>
-                        <div class="conv-pair">4«»5</div>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+    <div class="header">
+        <h1>🔮 KALKULATOR KEY MISTIK</h1>
+        <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap dan tampilan modern</div>
+    </div>
+    
+    <div class="quick-formulas">
+        <h4>⚡ Rumus Cepat:</h4>
+        <div class="formula-buttons">
+            <button class="formula-btn" onclick="setFormula('A1+K9')">A1+K9</button>
+            <button class="formula-btn" onclick="setFormula('K1mb+J1m9')">K1mb+J1m9</button>
+            <button class="formula-btn" onclick="setFormula('A1+C1.(ml)')">A1+C1.(ml)</button>
+            <button class="formula-btn" onclick="setFormula('K1+E1.(m9)')">K1+E1.(m9)</button>
+            <button class="formula-btn" onclick="setFormula('J1mb+A2')">J1mb+A2</button>
         </div>
-
-        <!-- Results Section -->
-        <div class="result-section" id="resultSection">
-            <div class="section-title">📊 HASIL KALKULASI</div>
-            <div id="calculationResult"></div>
-            <div id="calculationDetails" style="margin-top: 15px; font-size: 14px; color: #666;"></div>
+    </div>
+    
+    <div class="grid-container">
+        <div class="input-section">
+            <div class="section-title">📥 INPUT DATA</div>
+            
+            <div class="data-input">
+                <textarea id="inputData" placeholder="Masukkan angka 4 digit (contoh:&#10;8445&#10;2429&#10;5879&#10;9158&#10;5364&#10;2190&#10;3358)" oninput="updateInputInfo()">7013
+8741
+5337
+7463
+9359
+8250
+0376
+9202
+4063
+6874
+0489
+2843
+3752
+8644
+2962
+6937
+0559
+8445
+2429
+5879
+9158
+5364
+2190
+3358
+1452</textarea>
+                <div class="input-info" id="inputInfo">25 angka terdeteksi</div>
+            </div>
+            
+            <div class="formula-input">
+                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: K1mb+J1m9.(ml))" value="A1+K9">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-calculate" onclick="calculateFormula()">
+                    <span>🧮</span>
+                    <span>HITUNG RUMUS</span>
+                </button>
+                <button class="btn-clear" onclick="clearAll()">
+                    <span>🗑️</span>
+                    <span>BERSIHKAN</span>
+                </button>
+            </div>
+            
+            <div class="info" id="info">Masukkan data angka dan rumus, lalu klik HITUNG RUMUS</div>
+            <div class="debug-info" id="debugInfo"></div>
+        </div>
+        
+        <div class="output-section">
+            <div class="section-title">📤 HASIL PERHITUNGAN</div>
+            <div class="result-box" id="resultOutput">
+// Hasil perhitungan akan muncul di sini
+// Format:
+// 7013 = 	
+// 8741 = 	
+// 5337 = 	
+// ...
+// ======
+// A1+K9
+            </div>
         </div>
     </div>
 
-    <script>
-        // Tabel Konversi Angka Mistik
-        const conversionTables = {
-            'ix': {'0': '5', '5': '0', '1': '6', '6': '1', '2': '7', '7': '2', '3': '8', '8': '3', '4': '9', '9': '4'},
-            'ty': {'0': '7', '7': '0', '1': '4', '4': '1', '2': '9', '9': '2', '3': '6', '6': '3', '5': '8', '8': '5'},
-            'ml': {'0': '1', '1': '0', '2': '5', '5': '2', '3': '8', '8': '3', '4': '7', '7': '4', '6': '9', '9': '6'},
-            'mb': {'0': '8', '8': '0', '1': '7', '7': '1', '2': '6', '6': '2', '3': '9', '9': '3', '4': '5', '5': '4'},
-            'm0': {'0': '6', '6': '0', '1': '5', '5': '1', '2': '7', '7': '2', '3': '8', '8': '3', '4': '9', '9': '4'},
-            'm1': {'0': '1', '1': '0', '2': '9', '9': '2', '3': '8', '8': '3', '4': '7', '7': '4', '5': '6', '6': '5'},
-            'm3': {'0': '3', '3': '0', '1': '2', '2': '1', '4': '9', '9': '4', '5': '8', '8': '5', '6': '7', '7': '6'},
-            'm5': {'0': '5', '5': '0', '1': '4', '4': '1', '2': '3', '3': '2', '6': '9', '9': '6', '7': '8', '8': '7'},
-            'm7': {'0': '7', '7': '0', '1': '6', '6': '1', '2': '5', '5': '2', '3': '4', '4': '3', '8': '9', '9': '8'},
-            'm9': {'0': '9', '9': '0', '1': '8', '8': '1', '2': '7', '7': '2', '3': '6', '6': '3', '4': '5', '5': '4'}
-        };
+    <div class="tables-grid">
+        <div class="table-container">
+            <div class="table-title">TABEL IX</div>
+            <div class="table-content">0«»5 1«»6<br>2«»7 3«»8<br>4«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL TY</div>
+            <div class="table-content">0«»7 1«»4<br>2«»9 3«»6<br>5«»8</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL ML</div>
+            <div class="table-content">0«»1 2«»5<br>3«»8 4«»7<br>6«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL MB</div>
+            <div class="table-content">0«»8 1«»7<br>2«»6 3«»9<br>4«»5</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M0</div>
+            <div class="table-content">0«»6 1«»5<br>2«»7 3«»8<br>4«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M1</div>
+            <div class="table-content">0«»1 2«»9<br>3«»8 4«»7<br>5«»6</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M3</div>
+            <div class="table-content">0«»3 1«»2<br>4«»9 5«»8<br>6«»7</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M5</div>
+            <div class="table-content">0«»5 1«»4<br>2«»3 6«»9<br>7«»8</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M7</div>
+            <div class="table-content">0«»7 1«»6<br>2«»5 3«»4<br>8«»9</div>
+        </div>
+        <div class="table-container">
+            <div class="table-title">TABEL M9</div>
+            <div class="table-content">0«»9 1«»8<br>2«»7 3«»6<br>4«»5</div>
+        </div>
+    </div>
 
-        // Fungsi konversi angka
-        function convertNumber(number, conversionType) {
-            if (conversionType === 'n0') return number;
-            
-            const numStr = number.toString();
-            let result = '';
-            
-            for (let digit of numStr) {
-                if (conversionTables[conversionType] && conversionTables[conversionType][digit]) {
-                    result += conversionTables[conversionType][digit];
-                } else {
-                    result += digit;
-                }
-            }
-            
-            return parseInt(result);
-        }
+    <div class="explanation">
+        <h3>📝 CARA PENGGUNAAN:</h3>
+        <ul>
+            <li><strong>A = AS</strong> (digit pertama), <strong>C = COP</strong> (digit kedua)</li>
+            <li><strong>K = KEPALA</strong> (digit ketiga), <strong>E = EKOR</strong> (digit terakhir)</li>
+            <li><strong>J = JUMLAH K+E</strong> (jika 2 digit, jumlahkan lagi sampai 1 digit)</li>
+            <li><strong>A1</strong> = AS hari ini, <strong>A2</strong> = AS kemarin, <strong>A3</strong> = AS lusa</li>
+            <li><strong>mb, ml, m9</strong> = konversi menggunakan tabel mistik</li>
+            <li><strong>.(ml)</strong> = konversi hasil akhir ke tabel ML</li>
+            <li>Gunakan <strong>Ctrl+Enter</strong> pada input rumus untuk menghitung cepat</li>
+        </ul>
+    </div>
+</div>
 
-        // Fungsi extract digit dari key
-        function getDigitFromKey(key, data) {
-            if (!key) return 0;
-            
-            const keyType = key.charAt(0); // a, c, k, e
-            const keyIndex = parseInt(key.substring(1)) - 1; // 0-based index
-            
-            const digits = {
-                'a': data.as.toString().padStart(2, '0'),
-                'c': data.kop.toString().padStart(2, '0'),
-                'k': data.kepala.toString().padStart(2, '0'),
-                'e': data.ekor.toString().padStart(2, '0')
-            };
-            
-            if (digits[keyType] && digits[keyType][keyIndex]) {
-                return parseInt(digits[keyType][keyIndex]);
-            }
-            
-            return 0;
-        }
+<script>
+// Tabel konversi mistik
+const mistikTables = {
+    'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
+    'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
+    'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
+    'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
+    'M0': {'0':'6', '1':'5', '2':'7', '3':'8', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
+    'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
+    'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
+    'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
+    'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
+    'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'}
+};
 
-        // Fungsi kalkulasi utama
-        function calculatePrediction() {
-            // Ambil nilai dari form
-            const as = parseInt(document.querySelector('[name="as"]').value) || 0;
-            const kop = parseInt(document.querySelector('[name="kop"]').value) || 0;
-            const kepala = parseInt(document.querySelector('[name="kepala"]').value) || 0;
-            const ekor = parseInt(document.querySelector('[name="ekor"]').value) || 0;
-            const key1 = document.querySelector('[name="key1"]').value;
-            const conversi1 = document.querySelector('[name="conversi1"]').value;
-            const arit1 = document.querySelector('[name="arit1"]').value;
-            const key2 = document.querySelector('[name="key2"]').value;
-            const conversi2 = document.querySelector('[name="conversi2"]').value;
-            const conversihasil = document.querySelector('[name="conversihasil"]').value;
-            
-            const data = { as, kop, kepala, ekor };
-            
-            // Proses kalkulasi
-            let value1 = getDigitFromKey(key1, data);
-            let value2 = getDigitFromKey(key2, data);
-            
-            // Konversi nilai
-            value1 = convertNumber(value1, conversi1);
-            value2 = convertNumber(value2, conversi2);
-            
-            // Operasi aritmatika
-            let result;
-            if (arit1 === '+') {
-                result = value1 + value2;
-            } else {
-                result = value1 - value2;
-            }
-            
-            // Konversi hasil akhir
-            result = convertNumber(Math.abs(result), conversihasil);
-            
-            // Pastikan hasil 2 digit
-            result = result % 100;
-            
-            // Tampilkan hasil
-            const resultStr = result.toString().padStart(2, '0');
-            
-            document.getElementById('calculationResult').innerHTML = `
-                <div style="font-size: 24px; font-weight: bold; text-align: center; color: #d63031;">
-                    🎯 PREDIKSI: <span style="color: #e17055;">${resultStr}</span>
-                </div>
-            `;
-            
-            // Detail kalkulasi
-            document.getElementById('calculationDetails').innerHTML = `
-                <p><strong>Detail Kalkulasi:</strong></p>
-                <p>${key1} (${getDigitFromKey(key1, data)}) → ${conversi1} → ${value1}</p>
-                <p>${arit1}</p>
-                <p>${key2 ? key2 + ' (' + getDigitFromKey(key2, data) + ') → ' + conversi2 + ' → ' + value2 : '0'}</p>
-                <p>= ${value1} ${arit1} ${value2} = ${result}</p>
-                <p>Konversi ${conversihasil} → <strong>${resultStr}</strong></p>
-            `;
-            
-            document.getElementById('resultSection').style.display = 'block';
-        }
+let dataHistory = [];
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            const numberInputs = document.querySelectorAll('.number-input');
-            const calculateBtn = document.getElementById('calculateBtn');
-            
-            numberInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    if (this.value > 99) this.value = 99;
-                    if (this.value < 0) this.value = 0;
-                    if (this.value.length === 1) {
-                        this.value = '0' + this.value;
-                    }
-                });
-                
-                input.addEventListener('blur', function() {
-                    if (this.value && this.value.length === 1) {
-                        this.value = '0' + this.value;
-                    }
-                });
-            });
-            
-            calculateBtn.addEventListener('click', calculatePrediction);
+function setFormula(formula) {
+    document.getElementById('inputFormula').value = formula;
+    document.getElementById('inputFormula').focus();
+}
+
+function calculateFormula() {
+    const inputData = document.getElementById('inputData').value.trim();
+    const formula = document.getElementById('inputFormula').value.trim();
+    const debugInfo = document.getElementById('debugInfo');
+    
+    if (!inputData || !formula) {
+        showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
+        return;
+    }
+    
+    try {
+        // Parse data input (hanya angka)
+        parseInputData(inputData);
+        
+        // Calculate AI untuk setiap angka
+        const results = calculateAIForAll(formula);
+        
+        // Display result dalam format yang diminta
+        displayResult(results, formula);
+        showInfo('Perhitungan berhasil!', 'success');
+        
+        // Show debug info
+        debugInfo.style.display = 'block';
+        let debugHTML = `<strong>Debug Info:</strong><br>`;
+        dataHistory.forEach((data, index) => {
+            debugHTML += `Hari ${index + 1}: ${data.number} (A:${data.as}, C:${data.cop}, K:${data.kepala}, E:${data.ekor}, J:${data.jumlah})<br>`;
         });
-    </script>
+        debugInfo.innerHTML = debugHTML;
+        
+    } catch (error) {
+        showInfo(`Error: ${error.message}`, 'error');
+        console.error('Calculation error:', error);
+    }
+}
+
+function parseInputData(inputData) {
+    dataHistory = [];
+    const lines = inputData.split('\n').filter(line => line.trim());
+    
+    // Data terbaru harus di index 0
+    const reversedLines = [...lines].reverse();
+    
+    reversedLines.forEach(line => {
+        const number = line.trim();
+        if (number.match(/^\d+$/)) {
+            // Extract components - Semua single digit
+            const as = number[0];           // digit pertama
+            const cop = number[1];          // digit kedua
+            const kepala = number[2];       // digit ketiga
+            const ekor = number[3];         // digit terakhir
+            const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
+            
+            dataHistory.push({
+                number: number,
+                as: as,
+                cop: cop,
+                kepala: kepala,
+                ekor: ekor,
+                jumlah: jumlah
+            });
+        }
+    });
+    
+    console.log('Parsed data:', dataHistory);
+}
+
+function calculateAIForAll(formula) {
+    const results = [];
+    
+    // Cari hari maksimum yang dibutuhkan dalam rumus
+    const maxDayNeeded = findMaxDayInFormula(formula);
+    console.log(`Hari maksimum yang dibutuhkan: ${maxDayNeeded}`);
+    
+    // Untuk setiap angka dalam dataHistory, hitung AI-nya
+    // Hanya hitung untuk data yang memiliki cukup riwayat
+    for (let i = 0; i < dataHistory.length; i++) {
+        // Cek apakah data ini memiliki cukup riwayat untuk rumus
+        if (i + maxDayNeeded <= dataHistory.length) {
+            const aiResult = calculateSingleAI(formula, i);
+            results.push({
+                number: dataHistory[i].number,
+                ai: aiResult,
+                canCalculate: true
+            });
+        } else {
+            // Data tidak memiliki cukup riwayat
+            results.push({
+                number: dataHistory[i].number,
+                ai: '',
+                canCalculate: false
+            });
+        }
+    }
+    
+    return results;
+}
+
+function findMaxDayInFormula(formula) {
+    let maxDay = 1; // Minimal hari 1 (hari ini)
+    
+    // Cari semua komponen dalam rumus
+    const components = formula.split('+');
+    
+    components.forEach(component => {
+        const match = component.match(/^([AKCEJ])(\d+)/);
+        if (match) {
+            const day = parseInt(match[2]);
+            if (day > maxDay) {
+                maxDay = day;
+            }
+        }
+    });
+    
+    return maxDay;
+}
+
+function calculateSingleAI(formula, currentDayIndex) {
+    let workingFormula = formula;
+    let debugSteps = [];
+    
+    // Process final conversion like .(ml)
+    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+    if (finalConversion) {
+        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+        debugSteps.push(`Remove .(${finalConversion[1]})`);
+    }
+    
+    // Process components
+    const components = workingFormula.split('+');
+    let total = 0;
+    
+    components.forEach(component => {
+        const value = processComponent(component.trim(), currentDayIndex, debugSteps);
+        total += value;
+        debugSteps.push(`${component} = ${value}, Total sementara: ${total}`);
+    });
+    
+    debugSteps.push(`Total sebelum konversi: ${total}`);
+    
+    // Apply final conversion if exists
+    if (finalConversion) {
+        const table = finalConversion[1].toUpperCase();
+        const converted = convertMistik(total.toString(), table);
+        debugSteps.push(`Konversi ${total} ke ${table}: ${converted}`);
+        total = parseInt(converted);
+    }
+    
+    const finalResult = reduceToSingleDigit(total);
+    debugSteps.push(`Hasil akhir: ${finalResult}`);
+    
+    console.log(`Debug untuk ${dataHistory[currentDayIndex].number}:`, debugSteps);
+    return finalResult;
+}
+
+function processComponent(component, currentDayIndex, debugSteps) {
+    // Examples: K1mb, J1m9, A2, C3, etc.
+    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    if (!match) {
+        throw new Error(`Format komponen tidak valid: ${component}`);
+    }
+    
+    const type = match[1]; // A, K, C, E, J
+    const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa
+    const conversion = match[3]; // mb, m9, ml, etc.
+    
+    // Hitung index data yang benar
+    // currentDayIndex = index data yang sedang dihitung (0 = hari ini)
+    // dayOffset = berapa hari mundur dari data yang sedang dihitung
+    const targetDayIndex = currentDayIndex + (dayOffset - 1);
+    
+    if (targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data tidak tersedia untuk ${component}`);
+    }
+    
+    const data = dataHistory[targetDayIndex];
+    let value;
+    
+    switch(type) {
+        case 'A': value = parseInt(data.as); break;
+        case 'K': value = parseInt(data.kepala); break;
+        case 'C': value = parseInt(data.cop); break;
+        case 'E': value = parseInt(data.ekor); break;
+        case 'J': value = data.jumlah; break;
+        default: throw new Error(`Tipe tidak dikenal: ${type}`);
+    }
+    
+    debugSteps.push(`${component}: Menggunakan data hari ke-${dayOffset} (${data.number}) -> ${type} = ${value}`);
+    
+    // Apply conversion if exists
+    if (conversion) {
+        const table = conversion.toUpperCase();
+        const originalValue = value;
+        value = parseInt(convertMistik(value.toString(), table));
+        debugSteps.push(`Konversi ${originalValue} ke ${table}: ${value}`);
+    }
+    
+    return value;
+}
+
+function convertMistik(number, table) {
+    if (!mistikTables[table]) {
+        throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
+    }
+    
+    // Ensure single digit
+    const digit = reduceToSingleDigit(parseInt(number)).toString();
+    
+    if (mistikTables[table][digit] === undefined) {
+        throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
+    }
+    
+    return mistikTables[table][digit];
+}
+
+function reduceToSingleDigit(num) {
+    let result = num;
+    while (result > 9) {
+        result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return result;
+}
+
+function displayResult(results, formula) {
+    const output = document.getElementById('resultOutput');
+    let outputText = '';
+    
+    // Format output seperti yang diminta
+    // Data terlama dulu, lalu data terbaru
+    const reversedResults = [...results].reverse();
+    
+    reversedResults.forEach(result => {
+        if (result.canCalculate) {
+            outputText += `${result.number} = ${result.ai} ai\n`;
+        } else {
+            outputText += `${result.number} = \t\n`;
+        }
+    });
+    
+    outputText += '======\n';
+    outputText += formula;
+    
+    output.textContent = outputText;
+}
+
+function clearAll() {
+    document.getElementById('inputData').value = '';
+    document.getElementById('inputFormula').value = 'A1+K9';
+    document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
+// Format:
+// 7013 = 	
+// 8741 = 	
+// 5337 = 	
+// ...
+// ======
+// A1+K9`;
+    document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG RUMUS';
+    document.getElementById('inputInfo').textContent = '0 angka terdeteksi';
+    document.getElementById('debugInfo').style.display = 'none';
+    dataHistory = [];
+}
+
+function showInfo(message, type) {
+    const infoDiv = document.getElementById('info');
+    infoDiv.textContent = message;
+    infoDiv.className = 'info';
+    if (type === 'error') {
+        infoDiv.classList.add('error');
+    } else if (type === 'success') {
+        infoDiv.classList.add('success');
+    }
+}
+
+// Update info input real-time
+function updateInputInfo() {
+    const input = document.getElementById('inputData').value.trim();
+    const numbers = input.split('\n').filter(line => line.trim() && line.match(/^\d+$/));
+    document.getElementById('inputInfo').textContent = `${numbers.length} angka terdeteksi`;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Update input info real-time
+    document.getElementById('inputData').addEventListener('input', updateInputInfo);
+    updateInputInfo(); // Initialize
+});
+
+// Support Enter key untuk calculate (Ctrl+Enter)
+document.getElementById('inputFormula').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        calculateFormula();
+    }
+});
+</script>
 </body>
 </html>
