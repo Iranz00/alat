@@ -5,40 +5,320 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rekap Data Otomatis</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
-.container { max-width:800px; margin:0 auto; background:white; border-radius:15px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
-h1 { text-align:center; color:#333; margin-bottom:10px; }
-.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:20px; }
-textarea { width:100%; height:150px; padding:15px; border:2px solid #ddd; border-radius:10px; font-size:16px; resize:vertical; margin-bottom:15px; }
-textarea:focus { border-color:#667eea; outline:none; }
-.button-group { display:flex; gap:10px; margin-bottom:15px; }
-button { flex:1; padding:15px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
-.btn-submit { background:#4CAF50;color:white; }
-.btn-copy { background:#2196F3;color:white; }
-button:hover { opacity:0.9; transform:translateY(-2px); }
-.info { background:#e3f2fd; padding:15px; border-radius:10px; margin-bottom:15px; text-align:center; }
-.markdown-output { background:#2d2d2d; color:#f8f8f2; padding:20px; border-radius:10px; margin-top:15px; font-family:'Courier New',monospace; white-space:pre-wrap; max-height:500px; overflow-y:auto; line-height:1.4; }
+* { 
+    margin:0; 
+    padding:0; 
+    box-sizing:border-box; 
+}
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-x: hidden;
+}
+.container { 
+    max-width:900px; 
+    width:100%;
+    margin:0 auto; 
+    background:white; 
+    border-radius:20px; 
+    padding:30px; 
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+.header { 
+    text-align:center; 
+    margin-bottom:25px; 
+}
+h1 { 
+    color:#2d3748; 
+    margin-bottom:8px; 
+    font-size:2.2rem;
+    font-weight:700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.subtitle { 
+    text-align:center; 
+    color:#718096; 
+    font-size:15px; 
+    margin-bottom:25px;
+    line-height:1.5;
+}
+.input-section {
+    margin-bottom:20px;
+}
+.textarea-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+textarea { 
+    width:100%; 
+    height:180px; 
+    padding:20px; 
+    border:2px solid #e2e8f0; 
+    border-radius:12px; 
+    font-size:16px; 
+    resize:vertical; 
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+textarea:focus { 
+    border-color:#667eea; 
+    outline:none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.input-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    background: rgba(255,255,255,0.9);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+.button-group { 
+    display:flex; 
+    gap:12px; 
+    margin-bottom:20px;
+    flex-wrap: nowrap;
+}
+button { 
+    flex: 1; 
+    min-width: 120px;
+    padding: 16px 12px;
+    border:none; 
+    border-radius:12px; 
+    font-size:15px; 
+    font-weight:600; 
+    cursor:pointer; 
+    transition:all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.btn-submit { 
+    background:linear-gradient(135deg, #4CAF50, #45a049);
+    color:white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+.btn-copy { 
+    background:linear-gradient(135deg, #2196F3, #1976D2);
+    color:white;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+.btn-clean {
+    background:linear-gradient(135deg, #f44336, #f44336);
+    color:white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+button:hover { 
+    transform:translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+button:active {
+    transform:translateY(-1px);
+}
+.info { 
+    background:#e3f2fd; 
+    padding:18px; 
+    border-radius:12px; 
+    margin-bottom:20px; 
+    text-align:center;
+    font-weight:500;
+    border-left:4px solid #2196F3;
+    transition: all 0.3s ease;
+}
+.info.success {
+    background:#e8f5e8;
+    border-left-color:#4CAF50;
+    color:#2e7d32;
+}
+.info.error {
+    background:#ffebee;
+    border-left-color:#f44336;
+    color:#c62828;
+}
+.output-section h3 {
+    color:#2d3748;
+    margin-bottom:12px;
+    font-size:1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.total-value {
+    background: #667eea;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.markdown-output { 
+    background:#1a202c; 
+    color:#e2e8f0; 
+    padding:25px; 
+    border-radius:12px; 
+    margin-top:10px; 
+    font-family:'Courier New', monospace; 
+    white-space:pre-wrap; 
+    max-height:400px;
+    overflow-y:auto; 
+    line-height:1.5;
+    border:1px solid #2d3748;
+    font-size:14px;
+}
+.markdown-output::-webkit-scrollbar {
+    width:8px;
+}
+.markdown-output::-webkit-scrollbar-track {
+    background:#2d3748;
+    border-radius:4px;
+}
+.markdown-output::-webkit-scrollbar-thumb {
+    background:#4a5568;
+    border-radius:4px;
+}
+.markdown-output::-webkit-scrollbar-thumb:hover {
+    background:#718096;
+}
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+    .container {
+        padding:20px;
+        margin:0;
+    }
+    h1 {
+        font-size:1.8rem;
+    }
+    .button-group {
+        flex-wrap: wrap;
+    }
+    button {
+        min-width: calc(50% - 6px);
+    }
+    textarea {
+        height:150px;
+    }
+    .markdown-output {
+        max-height:300px;
+    }
+    .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🧮 REKAP DATA OTOMATIS </h1>
-    <div class="subtitle">Format: key#value atau key*key#value</div>
-    
-    <textarea id="inputData" placeholder="Contoh: 01*02#2000, 01#10000, 03*04#5000, ..."></textarea>
-    
-    <div class="button-group">
-        <button class="btn-submit" onclick="prosesData()">🚀 SUBMIT</button>
-        <button class="btn-copy" onclick="copyMarkdown()">📋 COPY OUTPUT</button>
+    <div class="header">
+        <h1>🧮 REKAP DATA OTOMATIS</h1>
+        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma</div>
     </div>
     
-    <div class="info" id="info">Masukkan data dan klik SUBMIT</div>
+    <div class="input-section">
+        <div class="textarea-container">
+            <textarea id="inputData" placeholder="Contoh:
+01*02#2000, 
+01#10000, 
+03*04#5000, 
+05#3000,
+12*13*14#7500" oninput="updateInputCounter()"></textarea>
+            <div class="input-counter" id="inputCounter">Total: 0</div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="prosesData()">
+                <span>🚀</span>
+                <span>PROSES DATA</span>
+            </button>
+            <button class="btn-copy" onclick="copyMarkdown()">
+                <span>📋</span>
+                <span>SALIN OUTPUT</span>
+            </button>
+            <button class="btn-clean" onclick="cleanAll()">
+                <span>🗑️</span>
+                <span>CLEAR</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="info" id="info">
+        💡 Masukkan data Anda dan klik "PROSES DATA"
+    </div>
 
-    <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah submit</div>
+    <div class="output-section">
+        <div class="output-header">
+            <h3>📊 Hasil Output:</h3>
+            <div class="total-value" id="outputTotal">Total: 0</div>
+        </div>
+        <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+    </div>
 </div>
 
 <script>
+function updateInputCounter() {
+    const input = document.getElementById('inputData').value.trim();
+    let total = 0;
+    
+    if (input) {
+        const lines = input.split(',').map(line => line.trim()).filter(line => line);
+        
+        // Hitung total dengan distribusi ke individual keys (sama seperti prosesData)
+        const individualKeyMap = {};
+        
+        lines.forEach(line => {
+            if (line.includes('#')) {
+                const parts = line.split('#');
+                if (parts.length === 2 && parts[1].trim()) {
+                    const keyPart = parts[0].trim();
+                    const value = parseInt(parts[1].trim()) || 0;
+                    const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+                    
+                    if (keys.length > 0 && !isNaN(value)) {
+                        // Distribusikan value ke setiap individual key dan hitung total
+                        keys.forEach(key => {
+                            if (!individualKeyMap[key]) {
+                                individualKeyMap[key] = 0;
+                            }
+                            individualKeyMap[key] += value;
+                        });
+                    }
+                }
+            }
+        });
+        
+        // Jumlahkan semua value dari individualKeyMap
+        Object.values(individualKeyMap).forEach(value => {
+            total += value;
+        });
+    }
+    
+    document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
+}
+
 function prosesData() {
     const input = document.getElementById('inputData').value.trim();
     if (!input) {
@@ -50,6 +330,7 @@ function prosesData() {
     
     // Step 1: Kumpulkan value untuk setiap individual key
     const individualKeyMap = {};
+    let totalInputValue = 0;
     
     lines.forEach(line => {
         if (line.includes('#')) {
@@ -76,6 +357,11 @@ function prosesData() {
         showInfo('Tidak ada data valid yang ditemukan!', 'error');
         return;
     }
+    
+    // Hitung total input value dari individualKeyMap
+    Object.values(individualKeyMap).forEach(value => {
+        totalInputValue += value;
+    });
     
     // Step 2: Gabungkan keys dengan value yang sama
     const valueMap = {};
@@ -143,24 +429,30 @@ function prosesData() {
         groups[group].sort((a, b) => b.value - a.value);
     });
     
-    generateMarkdown(groups);
+    generateMarkdown(groups, totalInputValue);
     showInfo('Data berhasil diproses!', 'success');
 }
 
-function generateMarkdown(groups) {
+function generateMarkdown(groups, totalInputValue) {
     const markdownOutput = document.getElementById('markdownOutput');
     
     let output = '';
+    let totalOutputValue = 0;
     
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
             output += `${group}\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
+                // Hitung total output (value dikali jumlah keys)
+                totalOutputValue += entry.value * entry.keys.length;
             });
             output += '\n';
         }
     });
+    
+    // Update total output
+    document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
     
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
 }
@@ -176,14 +468,36 @@ function copyMarkdown() {
     showInfo('Output berhasil disalin!', 'success');
 }
 
+function cleanAll() {
+    // Hapus input data
+    document.getElementById('inputData').value = '';
+    
+    // Reset output ke default
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    
+    // Reset counters
+    document.getElementById('inputCounter').textContent = 'Total: 0';
+    document.getElementById('outputTotal').textContent = 'Total: 0';
+    
+    // Reset info message
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
+}
+
 function showInfo(message, type) {
     const infoDiv = document.getElementById('info');
     infoDiv.textContent = message;
-    infoDiv.style.background = type === 'error' ? '#ffebee' : 
-                             type === 'success' ? '#e8f5e8' : '#e3f2fd';
-    infoDiv.style.color = type === 'error' ? '#c62828' :
-                        type === 'success' ? '#2e7d32' : '#1565c0';
+    infoDiv.className = 'info';
+    if (type === 'error') {
+        infoDiv.classList.add('error');
+    } else if (type === 'success') {
+        infoDiv.classList.add('success');
+    }
 }
+
+// Initialize counter on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateInputCounter();
+});
 </script>
 </body>
 </html>
