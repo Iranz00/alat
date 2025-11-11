@@ -43,20 +43,23 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 
 .validation-error { border-color:#f44336 !important; background-color:#ffebee !important; }
 
-/* Styling untuk tampilan data dengan highlight */
+/* Styling untuk tampilan data dengan highlight markdown */
 .data-display { background:white; padding:20px; border-radius:8px; border:2px solid #e9ecef; margin-bottom:20px; }
-.data-line { margin-bottom:10px; line-height:1.8; }
-.number-item { display:inline-block; padding:5px 10px; margin:2px; border-radius:4px; border:1px solid #ddd; font-family:monospace; font-size:14px; }
-.number-normal { background:#f8f9fa; }
-.number-exact { background:#ffebee; border-color:#f44336; color:#c62828; font-weight:bold; }
-.number-permutation { background:#e3f2fd; border-color:#2196F3; color:#1565c0; font-weight:bold; }
+.markdown-output { background:#f8f9fa; padding:15px; border-radius:8px; font-family:'Courier New', monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; max-height:400px; overflow-y:auto; }
+.markdown-line { margin-bottom:5px; }
+.markdown-number { display:inline-block; padding:2px 6px; margin:1px; border-radius:3px; border:1px solid #ddd; }
+.markdown-exact { background:#ffebee; border-color:#f44336; color:#c62828; font-weight:bold; }
+.markdown-permutation { background:#e3f2fd; border-color:#2196F3; color:#1565c0; font-weight:bold; }
+.markdown-normal { background:transparent; border-color:transparent; }
 
 .legend { display:flex; justify-content:center; gap:15px; margin-top:15px; flex-wrap:wrap; }
 .legend-item { display:flex; align-items:center; gap:5px; font-size:12px; }
 .legend-color { width:15px; height:15px; border-radius:3px; border:1px solid #ddd; }
 .legend-exact { background:#ffebee; border-color:#f44336; }
 .legend-permutation { background:#e3f2fd; border-color:#2196F3; }
-.legend-normal { background:#f8f9fa; }
+
+.copy-btn { background:#2196F3; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-size:12px; margin-top:10px; }
+.copy-btn:hover { background:#1976D2; }
 </style>
 </head>
 <body>
@@ -97,8 +100,9 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
         <div class="section-title">📊 HASIL PENCARIAN PERMUTASI</div>
         
         <div class="data-display" id="dataDisplay">
-            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT</div>
-            <div id="highlightedData"></div>
+            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT (MARKDOWN)</div>
+            <button class="copy-btn" onclick="copyMarkdownToClipboard()">📋 Copy Markdown</button>
+            <div class="markdown-output" id="markdownOutput"></div>
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color legend-exact"></div>
@@ -107,10 +111,6 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
                 <div class="legend-item">
                     <div class="legend-color legend-permutation"></div>
                     <span>Permutation Match</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color legend-normal"></div>
-                    <span>Tidak Match</span>
                 </div>
             </div>
         </div>
@@ -172,8 +172,8 @@ function findNumberPermutations() {
         // Cari angka yang match
         const results = findMatchingNumbers(numbers, allPermutations, searchNumber);
         
-        // Tampilkan hasil dengan highlight
-        displayHighlightedData(inputData, results, searchNumber);
+        // Tampilkan hasil dengan highlight markdown
+        displayMarkdownData(inputData, results, searchNumber);
         
         // Tampilkan hasil ringkasan
         displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
@@ -248,44 +248,95 @@ function findMatchingNumbers(numbers, permutations, searchNumber) {
     };
 }
 
-function displayHighlightedData(inputData, results, searchNumber) {
-    const container = document.getElementById('highlightedData');
+function displayMarkdownData(inputData, results, searchNumber) {
+    const container = document.getElementById('markdownOutput');
     
     // Split data input menjadi baris-baris
     const lines = inputData.split('\n');
-    let html = '';
+    let markdown = '';
     
-    lines.forEach(line => {
+    // Header markdown
+    markdown += `# Data Angka dengan Highlight Permutasi\n\n`;
+    markdown += `**Angka yang dicari:** ${searchNumber}\n`;
+    markdown += `**Total Exact Match:** ${results.exactMatches.length}\n`;
+    markdown += `**Total Permutation Match:** ${results.permutationMatches.length}\n\n`;
+    markdown += `---\n\n`;
+    
+    lines.forEach((line, lineIndex) => {
         if (line.trim() === '') return;
-        
-        html += '<div class="data-line">';
         
         // Split setiap baris menjadi angka-angka
         const numbersInLine = line.trim().split(/\s+/);
+        let markdownLine = '';
         
         numbersInLine.forEach(number => {
             // Hanya proses angka 4 digit
             if (number.length === 4 && /^\d+$/.test(number)) {
-                let cssClass = 'number-normal';
-                
                 if (results.exactMatches.includes(number)) {
-                    cssClass = 'number-exact';
+                    // Exact match - merah
+                    markdownLine += `<span class="markdown-number markdown-exact">${number}</span> `;
                 } else if (results.permutationMatches.includes(number)) {
-                    cssClass = 'number-permutation';
+                    // Permutation match - biru
+                    markdownLine += `<span class="markdown-number markdown-permutation">${number}</span> `;
+                } else {
+                    // Normal
+                    markdownLine += `<span class="markdown-number markdown-normal">${number}</span> `;
                 }
-                
-                html += `<span class="number-item ${cssClass}">${number}</span>`;
             } else {
-                // Untuk teks yang bukan angka 4 digit, tampilkan tanpa styling
-                html += `<span>${number} </span>`;
+                // Untuk teks yang bukan angka 4 digit, tampilkan normal
+                markdownLine += `<span class="markdown-number markdown-normal">${number}</span> `;
             }
         });
         
-        html += '</div>';
+        markdown += `<div class="markdown-line">${markdownLine}</div>`;
     });
     
-    container.innerHTML = html;
+    // Tambahkan footer dengan informasi
+    markdown += `\n---\n\n`;
+    markdown += `## Keterangan:\n`;
+    markdown += `- <span class="markdown-number markdown-exact">MERAH</span> = Exact Match (angka sama persis)\n`;
+    markdown += `- <span class="markdown-number markdown-permutation">BIRU</span> = Permutation Match (digit sama, urutan berbeda)\n`;
+    markdown += `- Normal = Tidak match\n\n`;
+    
+    if (results.exactMatches.length > 0) {
+        markdown += `### Exact Matches:\n`;
+        markdown += `${results.exactMatches.join(', ')}\n\n`;
+    }
+    
+    if (results.permutationMatches.length > 0) {
+        markdown += `### Permutation Matches:\n`;
+        markdown += `${results.permutationMatches.join(', ')}\n\n`;
+    }
+    
+    container.innerHTML = markdown;
     document.getElementById('dataDisplay').style.display = 'block';
+}
+
+function copyMarkdownToClipboard() {
+    const markdownOutput = document.getElementById('markdownOutput');
+    const tempTextArea = document.createElement('textarea');
+    
+    // Extract text content without HTML tags for plain text copy
+    let plainText = markdownOutput.textContent || markdownOutput.innerText;
+    
+    // Clean up the text for better markdown formatting
+    plainText = plainText.replace(/\s+/g, ' ').trim();
+    
+    tempTextArea.value = plainText;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    tempTextArea.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'berhasil' : 'gagal';
+        showInfo(`Markdown ${msg} disalin ke clipboard!`, 'success');
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        showInfo('Gagal menyalin ke clipboard', 'error');
+    }
+    
+    document.body.removeChild(tempTextArea);
 }
 
 function displayPermutationResults(results, searchNumber, totalNumbers, allPermutations) {
