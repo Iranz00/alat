@@ -42,6 +42,21 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
 
 .validation-error { border-color:#f44336 !important; background-color:#ffebee !important; }
+
+/* Styling untuk tampilan data dengan highlight */
+.data-display { background:white; padding:20px; border-radius:8px; border:2px solid #e9ecef; margin-bottom:20px; }
+.data-line { margin-bottom:10px; line-height:1.8; }
+.number-item { display:inline-block; padding:5px 10px; margin:2px; border-radius:4px; border:1px solid #ddd; font-family:monospace; font-size:14px; }
+.number-normal { background:#f8f9fa; }
+.number-exact { background:#ffebee; border-color:#f44336; color:#c62828; font-weight:bold; }
+.number-permutation { background:#e3f2fd; border-color:#2196F3; color:#1565c0; font-weight:bold; }
+
+.legend { display:flex; justify-content:center; gap:15px; margin-top:15px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:12px; }
+.legend-color { width:15px; height:15px; border-radius:3px; border:1px solid #ddd; }
+.legend-exact { background:#ffebee; border-color:#f44336; }
+.legend-permutation { background:#e3f2fd; border-color:#2196F3; }
+.legend-normal { background:#f8f9fa; }
 </style>
 </head>
 <body>
@@ -80,6 +95,26 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
 
     <div class="results-section" id="resultsSection" style="display:none;">
         <div class="section-title">📊 HASIL PENCARIAN PERMUTASI</div>
+        
+        <div class="data-display" id="dataDisplay">
+            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT</div>
+            <div id="highlightedData"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-exact"></div>
+                    <span>Exact Match</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-permutation"></div>
+                    <span>Permutation Match</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-normal"></div>
+                    <span>Tidak Match</span>
+                </div>
+            </div>
+        </div>
+        
         <div id="resultsContainer"></div>
         <div class="stats" id="statsInfo"></div>
     </div>
@@ -88,8 +123,8 @@ button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
         <div class="section-title">ℹ️ CARA KERJA PROGRAM</div>
         <div class="info">
             <strong>Algoritma Permutasi:</strong><br>
-            1. <strong>Exact Match</strong> - Angka sama persis (abcd)<br>
-            2. <strong>Same Digits</strong> - Digit sama, urutan berbeda (24 kemungkinan)<br>
+            1. <strong>Exact Match</strong> - Angka sama persis (abcd) <span style="color:#c62828; font-weight:bold;">[MERAH]</span><br>
+            2. <strong>Same Digits</strong> - Digit sama, urutan berbeda (24 kemungkinan) <span style="color:#1565c0; font-weight:bold;">[BIRU]</span><br>
             3. <strong>Semua kombinasi</strong> dari 4 digit: abcd, abdc, acbd, acdb, adbc, adcb, bacd, ...
         </div>
     </div>
@@ -137,7 +172,10 @@ function findNumberPermutations() {
         // Cari angka yang match
         const results = findMatchingNumbers(numbers, allPermutations, searchNumber);
         
-        // Tampilkan hasil
+        // Tampilkan hasil dengan highlight
+        displayHighlightedData(inputData, results, searchNumber);
+        
+        // Tampilkan hasil ringkasan
         displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
         showInfo(`Pencarian selesai!`, 'success');
         showLoading(false);
@@ -208,6 +246,46 @@ function findMatchingNumbers(numbers, permutations, searchNumber) {
         exactMatches: [...new Set(exactMatches)].sort(),
         permutationMatches: [...new Set(permutationMatches)].sort()
     };
+}
+
+function displayHighlightedData(inputData, results, searchNumber) {
+    const container = document.getElementById('highlightedData');
+    
+    // Split data input menjadi baris-baris
+    const lines = inputData.split('\n');
+    let html = '';
+    
+    lines.forEach(line => {
+        if (line.trim() === '') return;
+        
+        html += '<div class="data-line">';
+        
+        // Split setiap baris menjadi angka-angka
+        const numbersInLine = line.trim().split(/\s+/);
+        
+        numbersInLine.forEach(number => {
+            // Hanya proses angka 4 digit
+            if (number.length === 4 && /^\d+$/.test(number)) {
+                let cssClass = 'number-normal';
+                
+                if (results.exactMatches.includes(number)) {
+                    cssClass = 'number-exact';
+                } else if (results.permutationMatches.includes(number)) {
+                    cssClass = 'number-permutation';
+                }
+                
+                html += `<span class="number-item ${cssClass}">${number}</span>`;
+            } else {
+                // Untuk teks yang bukan angka 4 digit, tampilkan tanpa styling
+                html += `<span>${number} </span>`;
+            }
+        });
+        
+        html += '</div>';
+    });
+    
+    container.innerHTML = html;
+    document.getElementById('dataDisplay').style.display = 'block';
 }
 
 function displayPermutationResults(results, searchNumber, totalNumbers, allPermutations) {
@@ -295,6 +373,7 @@ function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('searchNumber').value = '';
     document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('dataDisplay').style.display = 'none';
     resetValidation();
     showInfo('Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI', 'info');
 }
