@@ -76,7 +76,7 @@ h1 {
 }
 .data-input textarea { 
     width:100%; 
-    height:150px; 
+    height:200px; 
     padding:15px; 
     border:2px solid #e2e8f0; 
     border-radius:12px; 
@@ -92,23 +92,17 @@ h1 {
     outline:none;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
-.formula-input { 
-    margin-bottom:20px;
-}
-.formula-input input { 
-    width:100%; 
-    padding:15px; 
-    border:2px solid #e2e8f0; 
-    border-radius:12px; 
-    font-size:16px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    background: white;
-}
-.formula-input input:focus { 
-    border-color:#667eea; 
-    outline:none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.formula-display {
+    background: #1a202c;
+    color: #e2e8f0;
+    padding: 15px;
+    border-radius: 12px;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 20px;
+    border: 2px solid #2d3748;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
 }
 .button-group { 
     display:flex; 
@@ -290,6 +284,12 @@ button:active {
 .copy-notification.show {
     transform: translateX(0);
 }
+.formula-label {
+    color: #a0aec0;
+    font-size: 12px;
+    margin-bottom: 5px;
+    text-align: center;
+}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -312,44 +312,38 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KALKULATOR KEY MISTIK</h1>
-        <div class="subtitle">Hitung rumus mistik dengan tabel konversi lengkap dan support hari panjang</div>
+        <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
     <div class="grid-container">
         <div class="input-section">
-            <div class="section-title">📥 INPUT DATA</div>
+            <div class="section-title">📥 INPUT DATA & RUMUS</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan angka 4 digit atau format output (contoh:&#10;8445 = 2 ai&#10;2429 = 7 ai&#10;5879 = 1 ai)" oninput="updateInputInfo()">7013
-8741
-5337
-7463
-9359
-8250
-0376
-9202
-4063
-6874
-0489
-2843
-3752
-8644
-2962
-6937
-0559
-8445
-2429
-5879
-9158
-5364
-2190
-3358
-1452</textarea>
-                <div class="input-info" id="inputInfo">25 angka terdeteksi</div>
+                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai&#10;0489 = 49 ai&#10;2843 = 27 ai&#10;...&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">6874 = 49 ai
+0489 = 49 ai
+2843 = 27 ai
+3752 = 94 ai
+8644 = 72 ai
+2962 = 27 ai
+6937 = 05 ai
+0559 = 49 ai
+8445 = 94 ai
+2429 = 27 ai
+5879 = 38 ai
+9158 = 49 ai
+5364 = 49 ai
+2190 = 50 ai
+3358 = 05 ai
+1452 = 
+======
+C8ix+E2ml.(ml)</textarea>
+                <div class="input-info" id="inputInfo">16 angka + 1 rumus terdeteksi</div>
             </div>
             
-            <div class="formula-input">
-                <input type="text" id="inputFormula" placeholder="Masukkan rumus (contoh: A10-C5.(ty))" value="A9-C10.(ty)">
+            <div class="formula-display">
+                <div class="formula-label">RUMUS TERDETEKSI:</div>
+                <div id="detectedFormula">C8ix+E2ml.(ml)</div>
             </div>
             
             <div class="button-group">
@@ -364,17 +358,17 @@ button:active {
             </div>
 
             <div class="button-group-double">
-                <button class="btn-import" onclick="importFromOutput()">
-                    <span>📥</span>
-                    <span>IMPORT DARI OUTPUT</span>
-                </button>
                 <button class="btn-copy" onclick="copyOutput()">
                     <span>📋</span>
                     <span>SALIN OUTPUT</span>
                 </button>
+                <button class="btn-import" onclick="useOutputAsInput()">
+                    <span>🔄</span>
+                    <span>GUNAKAN OUTPUT SEBAGAI INPUT</span>
+                </button>
             </div>
             
-            <div class="info" id="info">Masukkan data angka dan rumus, lalu klik HITUNG RUMUS</div>
+            <div class="info" id="info">Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS</div>
         </div>
         
         <div class="output-section">
@@ -382,12 +376,12 @@ button:active {
             <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
-// 7013 = 	
-// 8741 = 	
-// 5337 = 	
+// 6874 = 49 ai
+// 0489 = 49 ai
+// 2843 = 27 ai
 // ...
 // ======
-// A9-C10.(ty)
+// C8ix+E2ml.(ml)
             </div>
         </div>
     </div>
@@ -445,9 +439,10 @@ button:active {
             <li><strong>mb, ml, m9</strong> = konversi menggunakan tabel mistik</li>
             <li><strong>.(ml)</strong> = konversi hasil akhir ke tabel ML</li>
             <li>Support <strong>+ dan -</strong> operator: <code>A10-C5.(ty)</code></li>
-            <li><strong>Import Output</strong>: Copy hasil output ke input untuk melanjutkan perhitungan</li>
+            <li><strong>Auto-detect rumus</strong>: Program otomatis mendeteksi rumus setelah garis "======"</li>
             <li><strong>Salin Output</strong>: Copy hasil perhitungan ke clipboard</li>
-            <li>Gunakan <strong>Ctrl+Enter</strong> pada input rumus untuk menghitung cepat</li>
+            <li><strong>Gunakan Output</strong>: Gunakan hasil sebagai input baru untuk perhitungan berikutnya</li>
+            <li>Gunakan <strong>Ctrl+Enter</strong> pada input untuk menghitung cepat</li>
         </ul>
     </div>
 </div>
@@ -472,25 +467,30 @@ const mistikTables = {
 };
 
 let dataHistory = [];
+let currentFormula = '';
 
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
-    const formula = document.getElementById('inputFormula').value.trim();
     
-    if (!inputData || !formula) {
-        showInfo('Masukkan data dan rumus terlebih dahulu!', 'error');
+    if (!inputData) {
+        showInfo('Masukkan data terlebih dahulu!', 'error');
         return;
     }
     
     try {
-        // Parse data input (hanya angka)
-        parseInputData(inputData);
+        // Parse data input dan extract rumus
+        const parsedData = parseInputData(inputData);
+        
+        if (!currentFormula) {
+            showInfo('Tidak ada rumus yang terdeteksi! Pastikan ada rumus setelah garis "======"', 'error');
+            return;
+        }
         
         // Calculate AI untuk setiap angka
-        const results = calculateAIForAll(formula);
+        const results = calculateAIForAll(currentFormula);
         
         // Display result dalam format yang diminta
-        displayResult(results, formula);
+        displayResult(results, currentFormula);
         showInfo('Perhitungan berhasil!', 'success');
         
     } catch (error) {
@@ -501,36 +501,61 @@ function calculateFormula() {
 
 function parseInputData(inputData) {
     dataHistory = [];
+    currentFormula = '';
+    
     const lines = inputData.split('\n').filter(line => line.trim());
+    let foundSeparator = false;
     
-    // Data terbaru harus di index 0
-    const reversedLines = [...lines].reverse();
-    
-    reversedLines.forEach(line => {
-        // Extract angka 4 digit dari berbagai format
-        const numberMatch = line.match(/(\d{4})/);
-        if (numberMatch) {
-            const number = numberMatch[1];
-            
-            // Extract components - Semua single digit
-            const as = number[0];           // digit pertama
-            const cop = number[1];          // digit kedua
-            const kepala = number[2];       // digit ketiga
-            const ekor = number[3];         // digit terakhir
-            const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
-            
-            dataHistory.push({
-                number: number,
-                as: as,
-                cop: cop,
-                kepala: kepala,
-                ekor: ekor,
-                jumlah: jumlah
-            });
+    for (let line of lines) {
+        line = line.trim();
+        
+        // Cari garis pemisah "======"
+        if (line === '======' || line.startsWith('======')) {
+            foundSeparator = true;
+            continue;
         }
-    });
+        
+        // Jika sudah menemukan separator, line berikutnya adalah rumus
+        if (foundSeparator && line) {
+            currentFormula = line;
+            break;
+        }
+        
+        // Sebelum separator, proses data angka
+        if (!foundSeparator) {
+            const numberMatch = line.match(/(\d{4})/);
+            if (numberMatch) {
+                const number = numberMatch[1];
+                
+                // Extract components - Semua single digit
+                const as = number[0];           // digit pertama
+                const cop = number[1];          // digit kedua
+                const kepala = number[2];       // digit ketiga
+                const ekor = number[3];         // digit terakhir
+                const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
+                
+                dataHistory.push({
+                    number: number,
+                    as: as,
+                    cop: cop,
+                    kepala: kepala,
+                    ekor: ekor,
+                    jumlah: jumlah
+                });
+            }
+        }
+    }
+    
+    // Update tampilan rumus yang terdeteksi
+    document.getElementById('detectedFormula').textContent = currentFormula || 'Tidak ada rumus';
     
     console.log('Parsed data:', dataHistory);
+    console.log('Detected formula:', currentFormula);
+    
+    return {
+        data: dataHistory,
+        formula: currentFormula
+    };
 }
 
 function calculateAIForAll(formula) {
@@ -723,18 +748,19 @@ function displayResult(results, formula) {
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('inputFormula').value = 'A1+K9';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
-// 7013 = 	
-// 8741 = 	
-// 5337 = 	
+// 6874 = 49 ai
+// 0489 = 49 ai
+// 2843 = 27 ai
 // ...
 // ======
-// A1+K9`;
-    document.getElementById('info').textContent = 'Masukkan data dan rumus, lalu klik HITUNG RUMUS';
-    document.getElementById('inputInfo').textContent = '0 angka terdeteksi';
+// C8ix+E2ml.(ml)`;
+    document.getElementById('info').textContent = 'Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS';
+    document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
+    document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
     dataHistory = [];
+    currentFormula = '';
 }
 
 function showInfo(message, type) {
@@ -751,41 +777,11 @@ function showInfo(message, type) {
 // Update info input real-time
 function updateInputInfo() {
     const input = document.getElementById('inputData').value.trim();
-    const numbers = extractNumbersFromText(input);
-    document.getElementById('inputInfo').textContent = `${numbers.length} angka terdeteksi`;
-}
-
-// Extract numbers from various formats
-function extractNumbersFromText(text) {
-    const lines = text.split('\n').filter(line => line.trim());
-    const numbers = [];
+    const parsed = parseInputData(input);
+    const numberCount = dataHistory.length;
+    const formulaCount = currentFormula ? 1 : 0;
     
-    lines.forEach(line => {
-        const numberMatch = line.match(/(\d{4})/);
-        if (numberMatch) {
-            numbers.push(numberMatch[1]);
-        }
-    });
-    
-    return numbers;
-}
-
-// Import data dari output ke input
-function importFromOutput() {
-    const outputText = document.getElementById('resultOutput').textContent;
-    const numbers = extractNumbersFromText(outputText);
-    
-    if (numbers.length === 0) {
-        showInfo('Tidak ada data yang bisa diimport dari output!', 'error');
-        return;
-    }
-    
-    // Format numbers untuk input (satu angka per baris)
-    const formattedInput = numbers.join('\n');
-    document.getElementById('inputData').value = formattedInput;
-    updateInputInfo();
-    
-    showInfo(`Berhasil import ${numbers.length} angka dari output!`, 'success');
+    document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
 }
 
 // Copy output ke clipboard
@@ -811,6 +807,20 @@ function copyOutput() {
     });
 }
 
+// Gunakan output sebagai input baru
+function useOutputAsInput() {
+    const outputText = document.getElementById('resultOutput').textContent;
+    
+    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
+        showInfo('Tidak ada output yang bisa digunakan!', 'error');
+        return;
+    }
+    
+    document.getElementById('inputData').value = outputText;
+    updateInputInfo();
+    showInfo('Output berhasil digunakan sebagai input baru!', 'success');
+}
+
 function showCopyNotification() {
     const notification = document.getElementById('copyNotification');
     notification.classList.add('show');
@@ -827,7 +837,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Support Enter key untuk calculate (Ctrl+Enter)
-document.getElementById('inputFormula').addEventListener('keydown', function(e) {
+document.getElementById('inputData').addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
         calculateFormula();
     }
