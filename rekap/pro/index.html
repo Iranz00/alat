@@ -13,11 +13,12 @@
 body { 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    min-height:100vh; 
-    padding:20px; 
+    min-height: 100vh;
+    padding: 20px;
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Changed from center to flex-start */
     justify-content: center;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 .container { 
     max-width:900px; 
@@ -27,7 +28,7 @@ body {
     border-radius:20px; 
     padding:30px; 
     box-shadow:0 20px 40px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
+    /* Removed backdrop-filter: blur(10px); */
 }
 .header { 
     text-align:center; 
@@ -152,9 +153,9 @@ button:active {
     padding:25px; 
     border-radius:12px; 
     margin-top:10px; 
-    font-family:'Fira Code', 'Courier New', monospace; 
+    font-family:'Courier New', monospace; 
     white-space:pre-wrap; 
-    max-height:500px; 
+    max-height:400px; /* Reduced from 500px */
     overflow-y:auto; 
     line-height:1.5;
     border:1px solid #2d3748;
@@ -181,9 +182,13 @@ button:active {
     font-size:13px;
 }
 @media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduced padding on mobile */
+        align-items: flex-start;
+    }
     .container {
         padding:20px;
-        margin:10px;
+        margin:0; /* Remove margin on mobile */
     }
     h1 {
         font-size:1.8rem;
@@ -195,6 +200,15 @@ button:active {
     textarea {
         height:150px;
     }
+    .markdown-output {
+        max-height:300px; /* Further reduce on mobile */
+    }
+}
+
+/* Added to prevent extra space at bottom */
+html, body {
+    height: auto;
+    min-height: 100vh;
 }
 </style>
 </head>
@@ -202,15 +216,15 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
+        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma</div>
     </div>
     
     <div class="input-section">
         <textarea id="inputData" placeholder="Contoh:
 01*02#2000, 
 01#10000, 
-03*04#5000, 
-05#3000,
-12*13*14#7500"></textarea>
+03*04#5500, 
+05#3000,"></textarea>
         
         <div class="button-group">
             <button class="btn-submit" onclick="prosesData()">
@@ -225,8 +239,8 @@ button:active {
 
         <div class="button-group-2">
             <button class="btn-clean" onclick="cleanAll()">
-                <span>🧹</span>
-                <span>RESET</span>
+                <span>🗑️</span>
+                <span>BERSIHKAN SEMUA</span>
             </button>
         </div>
     </div>
@@ -241,7 +255,6 @@ button:active {
     </div>
 </div>
 
-<!-- JavaScript tetap sama seperti yang Anda berikan, ditambah fungsi cleanAll() -->
 <script>
 function prosesData() {
     const input = document.getElementById('inputData').value.trim();
