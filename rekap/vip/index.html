@@ -280,3 +280,392 @@ button:active {
     
     <div class="input-section">
         <div class="textarea-container">
+            <textarea id="inputData" placeholder="Contoh:
+01*02#2000, 
+01#10000, 
+03*04#5000, 
+05#3000,
+12*13*14#7500
+
+Baris dengan value 2 digit akan diabaikan:
+30#10 ❌ (diabaikan)
+50#99 ❌ (diabaikan)
+
+Baris dengan huruf/simbol akan diabaikan:
+BAPAK ♑ ❌
+CM 8.0 #50 ❌" oninput="updateInputCounter()"></textarea>
+            <div class="input-counter" id="inputCounter">Total: 0</div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="prosesData()">
+                <span>🚀</span>
+                <span>PROSES DATA</span>
+            </button>
+            <button class="btn-copy" onclick="copyMarkdown()">
+                <span>📋</span>
+                <span>SALIN OUTPUT</span>
+            </button>
+            <button class="btn-clean" onclick="cleanAll()">
+                <span>🗑️</span>
+                <span>CLEAR</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="info" id="info">
+        💡 Masukkan data Anda dan klik "PROSES DATA" - Value minimal 3 digit
+    </div>
+
+    <div id="errorDetails" style="display: none;"></div>
+
+    <div class="output-section">
+        <div class="output-header">
+            <h3>📊 Hasil Output:</h3>
+            <div class="total-value" id="outputTotal">Total: 0</div>
+        </div>
+        <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+    </div>
+</div>
+
+<script>
+function updateInputCounter() {
+    const input = document.getElementById('inputData').value.trim();
+    let total = 0;
+    
+    if (input) {
+        const lines = input.split(',').map(line => line.trim()).filter(line => line);
+        
+        // Hitung total dengan distribusi ke individual keys (sama seperti prosesData)
+        const individualKeyMap = {};
+        
+        lines.forEach(line => {
+            const validation = validateLine(line);
+            if (validation.isValid) {
+                const parts = line.split('#');
+                const keyPart = parts[0].trim();
+                const value = parseInt(parts[1].trim()) || 0;
+                const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+                
+                if (keys.length > 0 && !isNaN(value) && value >= 100) {
+                    // Distribusikan value ke setiap individual key dan hitung total
+                    keys.forEach(key => {
+                        if (!individualKeyMap[key]) {
+                            individualKeyMap[key] = 0;
+                        }
+                        individualKeyMap[key] += value;
+                    });
+                }
+            }
+        });
+        
+        // Jumlahkan semua value dari individualKeyMap
+        Object.values(individualKeyMap).forEach(value => {
+            total += value;
+        });
+    }
+    
+    document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
+}
+
+function validateLine(line) {
+    // Validasi 1: Harus mengandung #
+    if (!line.includes('#')) {
+        return {
+            isValid: false,
+            reason: 'Tidak mengandung tanda #',
+            line: line
+        };
+    }
+    
+    const parts = line.split('#');
+    
+    // Validasi 2: Harus tepat 2 bagian (key#value)
+    if (parts.length !== 2) {
+        return {
+            isValid: false,
+            reason: 'Format tidak valid (harus key#value)',
+            line: line
+        };
+    }
+    
+    const valuePart = parts[1].trim();
+    
+    // Validasi 3: Value tidak boleh kosong
+    if (!valuePart) {
+        return {
+            isValid: false,
+            reason: 'Value tidak boleh kosong',
+            line: line
+        };
+    }
+    
+    // Validasi 4: Value harus angka
+    if (!/^\d+$/.test(valuePart)) {
+        return {
+            isValid: false,
+            reason: 'Value harus angka (0-9)',
+            line: line
+        };
+    }
+    
+    const value = parseInt(valuePart);
+    
+    // Validasi 5: Value minimal 3 digit (>= 100)
+    if (value < 100) {
+        return {
+            isValid: false,
+            reason: 'Value minimal 3 digit (≥100)',
+            line: line
+        };
+    }
+    
+    // Validasi 6: Key tidak boleh kosong
+    const keyPart = parts[0].trim();
+    if (!keyPart) {
+        return {
+            isValid: false,
+            reason: 'Key tidak boleh kosong',
+            line: line
+        };
+    }
+    
+    return {
+        isValid: true,
+        reason: 'Valid',
+        line: line
+    };
+}
+
+function showErrorDetails(invalidLines) {
+    const errorDetails = document.getElementById('errorDetails');
+    
+    if (invalidLines.length === 0) {
+        errorDetails.style.display = 'none';
+        return;
+    }
+    
+    let errorHTML = `
+        <div class="error-details">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #c62828;">
+                ⚠️ ${invalidLines.length} Data Tidak Valid:
+            </div>
+    `;
+    
+    invalidLines.forEach((item, index) => {
+        errorHTML += `
+            <div class="error-item">
+                <span class="error-line">"${item.line}"</span>
+                <span class="error-reason">${item.reason}</span>
+            </div>
+        `;
+    });
+    
+    errorHTML += `</div>`;
+    errorDetails.innerHTML = errorHTML;
+    errorDetails.style.display = 'block';
+}
+
+function prosesData() {
+    const input = document.getElementById('inputData').value.trim();
+    if (!input) {
+        showInfo('Masukkan data terlebih dahulu!', 'error');
+        document.getElementById('errorDetails').style.display = 'none';
+        return;
+    }
+    
+    const lines = input.split(',').map(line => line.trim()).filter(line => line);
+    
+    // Validasi semua line
+    const validationResults = lines.map(line => validateLine(line));
+    const validLines = validationResults.filter(result => result.isValid);
+    const invalidLines = validationResults.filter(result => !result.isValid);
+    
+    // Tampilkan detail error
+    showErrorDetails(invalidLines);
+    
+    if (validLines.length === 0) {
+        showInfo('Tidak ada data valid yang ditemukan! Periksa format input Anda.', 'error');
+        return;
+    }
+    
+    if (invalidLines.length > 0 && validLines.length > 0) {
+        showInfo(`Data berhasil diproses! ${validLines.length} data valid, ${invalidLines.length} data tidak valid.`, 'warning');
+    } else if (invalidLines.length === 0) {
+        showInfo('Data berhasil diproses! Semua data valid.', 'success');
+    }
+    
+    // Step 1: Kumpulkan value untuk setiap individual key
+    const individualKeyMap = {};
+    let totalInputValue = 0;
+    
+    validLines.forEach(result => {
+        const line = result.line;
+        const parts = line.split('#');
+        const keyPart = parts[0].trim();
+        const value = parseInt(parts[1].trim());
+        const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+        
+        if (keys.length > 0 && !isNaN(value) && value >= 100) {
+            // Distribusikan value ke setiap individual key
+            keys.forEach(key => {
+                if (!individualKeyMap[key]) {
+                    individualKeyMap[key] = 0;
+                }
+                individualKeyMap[key] += value;
+            });
+        }
+    });
+    
+    if (Object.keys(individualKeyMap).length === 0) {
+        showInfo('Tidak ada data valid yang ditemukan!', 'error');
+        return;
+    }
+    
+    // Hitung total input value dari individualKeyMap
+    Object.values(individualKeyMap).forEach(value => {
+        totalInputValue += value;
+    });
+    
+    // Step 2: Gabungkan keys dengan value yang sama
+    const valueMap = {};
+    Object.entries(individualKeyMap).forEach(([key, value]) => {
+        if (!valueMap[value]) {
+            valueMap[value] = [];
+        }
+        valueMap[value].push(key);
+    });
+    
+    // Step 3: Konversi ke array dan sort by value descending
+    const mergedData = Object.entries(valueMap)
+        .map(([value, keys]) => ({
+            keys: keys.sort(),
+            value: parseInt(value)
+        }))
+        .sort((a, b) => b.value - a.value);
+    
+    // Step 4: Kelompokkan berdasarkan digit length
+    const groups = {
+        '4DIGIT': [],
+        '3DIGIT': [],
+        '2DIGIT': []
+    };
+    
+    mergedData.forEach(item => {
+        const keys4 = [];
+        const keys3 = [];
+        const keys2 = [];
+        
+        item.keys.forEach(key => {
+            const digitLength = key.replace(/[^0-9]/g, '').length;
+            
+            if (digitLength === 4) {
+                keys4.push(key);
+            } else if (digitLength === 3) {
+                keys3.push(key);
+            } else if (digitLength === 2) {
+                keys2.push(key);
+            }
+        });
+        
+        if (keys4.length > 0) {
+            groups['4DIGIT'].push({
+                keys: keys4.sort(),
+                value: item.value
+            });
+        }
+        if (keys3.length > 0) {
+            groups['3DIGIT'].push({
+                keys: keys3.sort(),
+                value: item.value
+            });
+        }
+        if (keys2.length > 0) {
+            groups['2DIGIT'].push({
+                keys: keys2.sort(),
+                value: item.value
+            });
+        }
+    });
+    
+    // Step 5: Sort setiap kelompok oleh value descending
+    Object.keys(groups).forEach(group => {
+        groups[group].sort((a, b) => b.value - a.value);
+    });
+    
+    generateMarkdown(groups, totalInputValue);
+}
+
+function generateMarkdown(groups, totalInputValue) {
+    const markdownOutput = document.getElementById('markdownOutput');
+    
+    let output = '';
+    let totalOutputValue = 0;
+    
+    ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
+        if (groups[group] && groups[group].length > 0) {
+            output += `${group}\n`;
+            groups[group].forEach(entry => {
+                output += `${entry.keys.join('*')}#${entry.value},\n`;
+                // Hitung total output (value dikali jumlah keys)
+                totalOutputValue += entry.value * entry.keys.length;
+            });
+            output += '\n';
+        }
+    });
+    
+    // Update total output
+    document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
+    
+    markdownOutput.textContent = output || '// Tidak ada data yang diproses';
+}
+
+function copyMarkdown() {
+    const markdownOutput = document.getElementById('markdownOutput');
+    const textArea = document.createElement('textarea');
+    textArea.value = markdownOutput.textContent;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showInfo('Output berhasil disalin!', 'success');
+}
+
+function cleanAll() {
+    // Hapus input data
+    document.getElementById('inputData').value = '';
+    
+    // Reset output ke default
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    
+    // Reset counters
+    document.getElementById('inputCounter').textContent = 'Total: 0';
+    document.getElementById('outputTotal').textContent = 'Total: 0';
+    
+    // Reset info message
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Value minimal 3 digit', 'default');
+    
+    // Sembunyikan error details
+    document.getElementById('errorDetails').style.display = 'none';
+}
+
+function showInfo(message, type) {
+    const infoDiv = document.getElementById('info');
+    infoDiv.textContent = message;
+    infoDiv.className = 'info';
+    if (type === 'error') {
+        infoDiv.classList.add('error');
+    } else if (type === 'success') {
+        infoDiv.classList.add('success');
+    } else if (type === 'warning') {
+        infoDiv.classList.add('warning');
+    }
+}
+
+// Initialize counter on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateInputCounter();
+});
+</script>
+</body>
+</html>
