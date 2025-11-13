@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rekap Data Otomatis</title>
 <style>
-/* CSS tetap sama seperti sebelumnya */
 * { 
     margin:0; 
     padding:0; 
@@ -276,20 +275,17 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma<br><strong>Program akan otomatis mengekstrak angka dari key, Value minimal 3 digit</strong></div>
+        <div class="subtitle">Masukkan data - Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br><strong>Contoh: 503*530#1000, 90*91*92*94#2000</strong></div>
     </div>
     
     <div class="input-section">
         <div class="textarea-container">
             <textarea id="inputData" placeholder="Contoh:
-TAMBANG ♓ 087*079#2000,
-SURAT ♊ 97#15000,
-TOKET ♏ 03*30*35*37*73#3000,
-90*91*92*94#2000
-
-Program akan otomatis mengambil angka dari key:
-&quot;TAMBANG ♓ 087*079#2000&quot; → &quot;087*079#2000&quot;
-&quot;SURAT ♊ 97#15000&quot; → &quot;97#15000&quot;" oninput="updateInputCounter()"></textarea>
+01*02#2000, 
+01#10000, 
+03*04#5000, 
+05#3000,
+12*13*14#7500," oninput="updateInputCounter()"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
         </div>
         
@@ -310,7 +306,7 @@ Program akan otomatis mengambil angka dari key:
     </div>
     
     <div class="info" id="info">
-        💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak angka dari key
+        💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka
     </div>
 
     <div id="errorDetails" style="display: none;"></div>
@@ -325,34 +321,32 @@ Program akan otomatis mengambil angka dari key:
 </div>
 
 <script>
-function extractNumbersFromKey(keyPart) {
-    // Ekstrak hanya angka dan * dari key part
-    // Contoh: "TAMBANG ♓ 087*079" → "087*079"
-    // Contoh: "SURAT ♊ 97" → "97"
-    // Contoh: "TOKET ♏ 03*30*35*37*73" → "03*30*35*37*73"
+function extractValidPatterns(line) {
+    // Mencari semua pattern: angka*angka#angka atau angka#angka dengan value minimal 3 digit
+    const patterns = [];
     
-    let cleanedKey = '';
-    let inNumberBlock = false;
+    // Regex untuk mencari pattern: (angka dan *) diikuti # diikuti angka (minimal 3 digit)
+    const regex = /([0-9*]+)#(\d{3,})/g;
     
-    for (let i = 0; i < keyPart.length; i++) {
-        const char = keyPart[i];
+    let match;
+    while ((match = regex.exec(line)) !== null) {
+        const fullPattern = match[0]; // contoh: "503*530#1000"
+        const keyPart = match[1];     // contoh: "503*530"
+        const valuePart = match[2];   // contoh: "1000"
+        const value = parseInt(valuePart);
         
-        if (char === '*' || (char >= '0' && char <= '9')) {
-            cleanedKey += char;
-            inNumberBlock = true;
-        } else if (inNumberBlock && char === ' ') {
-            // Biarkan spasi di antara angka (untuk kasus seperti "087 079" → "087*079")
-            cleanedKey += '*';
-        } else if (inNumberBlock && char !== ' ' && !(char >= '0' && char <= '9')) {
-            // Stop jika menemukan karakter non-angka setelah blok angka
-            break;
+        // Validasi: value harus >= 100 dan key harus mengandung angka
+        if (value >= 100 && /[0-9]/.test(keyPart)) {
+            patterns.push({
+                fullPattern: fullPattern,
+                keyPart: keyPart,
+                value: value,
+                originalLine: line
+            });
         }
     }
     
-    // Bersihkan hasil: hapus * di awal/akhir, dan ganti multiple * dengan single *
-    cleanedKey = cleanedKey.replace(/^\*+/, '').replace(/\*+$/, '').replace(/\*+/g, '*');
-    
-    return cleanedKey;
+    return patterns;
 }
 
 function updateInputCounter() {
@@ -362,32 +356,27 @@ function updateInputCounter() {
     if (input) {
         const lines = input.split(',').map(line => line.trim()).filter(line => line);
         
-        // Hitung total dengan distribusi ke individual keys (sama seperti prosesData)
+        // Hitung total dengan distribusi ke individual keys
         const individualKeyMap = {};
         
         lines.forEach(line => {
-            const validation = validateLine(line);
-            if (validation.isValid) {
-                const parts = line.split('#');
-                const rawKeyPart = parts[0].trim();
-                const value = parseInt(parts[1].trim()) || 0;
-                
-                // Ekstrak hanya angka dari key
-                const cleanedKeyPart = extractNumbersFromKey(rawKeyPart);
-                const keys = cleanedKeyPart.split('*')
+            const patterns = extractValidPatterns(line);
+            
+            patterns.forEach(pattern => {
+                const keys = pattern.keyPart.split('*')
                     .map(k => k.trim())
                     .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
                 
-                if (keys.length > 0 && !isNaN(value) && value >= 100) {
+                if (keys.length > 0 && !isNaN(pattern.value)) {
                     // Distribusikan value ke setiap individual key dan hitung total
                     keys.forEach(key => {
                         if (!individualKeyMap[key]) {
                             individualKeyMap[key] = 0;
                         }
-                        individualKeyMap[key] += value;
+                        individualKeyMap[key] += pattern.value;
                     });
                 }
-            }
+            });
         });
         
         // Jumlahkan semua value dari individualKeyMap
@@ -400,64 +389,12 @@ function updateInputCounter() {
 }
 
 function validateLine(line) {
-    // Validasi 1: Harus mengandung # dan diakhiri dengan value
-    if (!line.includes('#')) {
+    const patterns = extractValidPatterns(line);
+    
+    if (patterns.length === 0) {
         return {
             isValid: false,
-            reason: 'Tidak diakhiri dengan #value',
-            line: line
-        };
-    }
-    
-    const parts = line.split('#');
-    
-    // Validasi 2: Harus tepat 2 bagian (key#value) dan tidak boleh ada # tambahan
-    if (parts.length !== 2) {
-        return {
-            isValid: false,
-            reason: 'Format tidak valid (harus key#value)',
-            line: line
-        };
-    }
-    
-    const rawKeyPart = parts[0].trim();
-    const valuePart = parts[1].trim();
-    
-    // Validasi 3: Key tidak boleh kosong setelah pembersihan
-    const cleanedKeyPart = extractNumbersFromKey(rawKeyPart);
-    if (!cleanedKeyPart) {
-        return {
-            isValid: false,
-            reason: 'Tidak ada angka yang ditemukan di key',
-            line: line
-        };
-    }
-    
-    // Validasi 4: Value tidak boleh kosong
-    if (!valuePart) {
-        return {
-            isValid: false,
-            reason: 'Tidak diakhiri dengan value',
-            line: line
-        };
-    }
-    
-    // Validasi 5: Value harus angka
-    if (!/^\d+$/.test(valuePart)) {
-        return {
-            isValid: false,
-            reason: 'Value harus angka (0-9)',
-            line: line
-        };
-    }
-    
-    const value = parseInt(valuePart);
-    
-    // Validasi 6: Value minimal 3 digit (>= 100)
-    if (value < 100) {
-        return {
-            isValid: false,
-            reason: 'Value minimal 3 digit (≥100)',
+            reason: 'Tidak ditemukan pattern angka#angka dengan value ≥100',
             line: line
         };
     }
@@ -466,7 +403,7 @@ function validateLine(line) {
         isValid: true,
         reason: 'Valid',
         line: line,
-        cleanedKey: cleanedKeyPart
+        patterns: patterns
     };
 }
 
@@ -522,35 +459,39 @@ function prosesData() {
         return;
     }
     
-    if (invalidLines.length > 0 && validLines.length > 0) {
-        showInfo(`Data berhasil diproses! ${validLines.length} data valid, ${invalidLines.length} data tidak valid.`, 'warning');
-    } else if (invalidLines.length === 0) {
-        showInfo('Data berhasil diproses! Semua data valid.', 'success');
+    // Kumpulkan semua pattern valid dari semua line
+    const allValidPatterns = [];
+    validLines.forEach(result => {
+        allValidPatterns.push(...result.patterns);
+    });
+    
+    if (allValidPatterns.length === 0) {
+        showInfo('Tidak ada data valid yang ditemukan!', 'error');
+        return;
     }
     
-    // Step 1: Kumpulkan value untuk setiap individual key (HANYA KEY ANGKA)
+    if (invalidLines.length > 0 && validLines.length > 0) {
+        showInfo(`Data berhasil diproses! ${allValidPatterns.length} pattern valid ditemukan, ${invalidLines.length} baris tidak valid.`, 'warning');
+    } else if (invalidLines.length === 0) {
+        showInfo(`Data berhasil diproses! ${allValidPatterns.length} pattern valid ditemukan.`, 'success');
+    }
+    
+    // Step 1: Kumpulkan value untuk setiap individual key
     const individualKeyMap = {};
     let totalInputValue = 0;
     
-    validLines.forEach(result => {
-        const line = result.line;
-        const parts = line.split('#');
-        const rawKeyPart = parts[0].trim();
-        const value = parseInt(parts[1].trim());
-        
-        // Ekstrak hanya angka dari key
-        const cleanedKeyPart = result.cleanedKey;
-        const keys = cleanedKeyPart.split('*')
+    allValidPatterns.forEach(pattern => {
+        const keys = pattern.keyPart.split('*')
             .map(k => k.trim())
             .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
         
-        if (keys.length > 0 && !isNaN(value) && value >= 100) {
+        if (keys.length > 0 && !isNaN(pattern.value)) {
             // Distribusikan value ke setiap individual key
             keys.forEach(key => {
                 if (!individualKeyMap[key]) {
                     individualKeyMap[key] = 0;
                 }
-                individualKeyMap[key] += value;
+                individualKeyMap[key] += pattern.value;
             });
         }
     });
@@ -582,7 +523,7 @@ function prosesData() {
         }))
         .sort((a, b) => b.value - a.value);
     
-    // Step 4: Kelompokkan berdasarkan digit length (HANYA KEY ANGKA)
+    // Step 4: Kelompokkan berdasarkan digit length
     const groups = {
         '4DIGIT': [],
         '3DIGIT': [],
@@ -686,7 +627,7 @@ function cleanAll() {
     document.getElementById('outputTotal').textContent = 'Total: 0';
     
     // Reset info message
-    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak angka dari key', 'default');
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka', 'default');
     
     // Sembunyikan error details
     document.getElementById('errorDetails').style.display = 'none';
