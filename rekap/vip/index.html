@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Data Otomatis</title>
+    <style>
+        /* Gaya CSS Anda di sini */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 REKAP DATA OTOMATIS</h1>
+            <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma</div>
+        </div>
+    
+        <div class="input-section">
+            <div class="textarea-container">
+                <textarea id="inputData" placeholder="Contoh:
+01*02#2000, 
+01#10000, 
+03*04#5000, 
+05#3000,
+12*13*14#7500" oninput="updateInputCounter()"></textarea>
+                <div class="input-counter" id="inputCounter">Total: 0</div>
+            </div>
+    
+            <div class="button-group">
+                <button class="btn-submit" onclick="prosesData()">
+                    <span>🚀</span>
+                    <span>PROSES DATA</span>
+                </button>
+                <button class="btn-copy" onclick="copyMarkdown()">
+                    <span>📋</span>
+                    <span>SALIN OUTPUT</span>
+                </button>
+                <button class="btn-clean" onclick="cleanAll()">
+                    <span>🗑️</span>
+                    <span>CLEAR</span>
+                </button>
+            </div>
+        </div>
+    
+        <div class="info" id="info">
+            💡 Masukkan data Anda dan klik "PROSES DATA"
+        </div>
+
+        <div class="output-section">
+            <div class="output-header">
+                <h3>📊 Hasil Output:</h3>
+                <div class="total-value" id="outputTotal">Total: 0</div>
+            </div>
+            <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi-fungsi JavaScript Anda di sini
+        function updateInputCounter() {
+            const input = document.getElementById('inputData').value.trim();
+            const total = calculateTotal(input);
+            document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
+        }
+
+        function calculateTotal(input) {
+            let total = 0;
+            if (input) {
+                const lines = input.split(',').map(line => line.trim()).filter(line => line);
+                const individualKeyMap = {};
+
+                lines.forEach(line => {
+                    if (line.includes('#')) {
+                        const parts = line.split('#');
+                        if (parts.length === 2 && parts[1].trim()) {
+                            const keyPart = parts[0].trim();
+                            const value = parseInt(parts[1].trim()) || 0;
+                            const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+
+                            if (keys.length > 0 && !isNaN(value)) {
+                                keys.forEach(key => {
+                                    if (!individualKeyMap[key]) {
+                                        individualKeyMap[key] = 0;
+                                    }
+                                    individualKeyMap[key] += value;
+                                });
+                            }
+                        }
+                    }
+                });
+
+                Object.values(individualKeyMap).forEach(value => {
+                    total += value;
+                });
+            }
+            return total;
+        }
+
+        function prosesData() {
+            const input = document.getElementById('inputData').value.trim();
+            if (!input) {
+                showInfo('Masukkan data terlebih dahulu!', 'error');
+                return;
+            }
+
+            const lines = input.split(',').map(line => line.trim()).filter(line => line);
+            const individualKeyMap = {};
+            let totalInputValue = 0;
+
+            lines.forEach(line => {
+                if (line.includes('#')) {
+                    const parts = line.split('#');
+                    if (parts.length === 2 && parts[1].trim()) {
+                        const keyPart = parts[0].trim();
+                        const value = parseInt(parts[1].trim()) || 0;
+                        const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+
+                        if (keys.length > 0 && !isNaN(value)) {
+                            keys.forEach(key => {
+                                if (!individualKeyMap[key]) {
+                                    individualKeyMap[key] = 0;
+                                }
+                                individualKeyMap[key] += value;
+                            });
+                        }
+                    }
+                }
+            });
+
+            if (Object.keys(individualKeyMap).length === 0) {
+                showInfo('Tidak ada data valid yang ditemukan!', 'error');
+                return;
+            }
+
+            Object.values(individualKeyMap).forEach(value => {
+                totalInputValue += value;
+            });
+
+            const valueMap = {};
+            Object.entries(individualKeyMap).forEach(([key, value]) => {
+                if (!valueMap[value]) {
+                    valueMap[value] = [];
+                }
+                valueMap[value].push(key);
+            });
+
+            const mergedData = Object.entries(valueMap)
+                .map(([value, keys]) => ({
+                    keys: keys.sort(),
+                    value: parseInt(value)
+                }))
+                .sort((a, b) => b.value - a.value);
+
+            const groups = {
+                '4DIGIT': [],
+                '3DIGIT': [],
+                '2DIGIT': []
+            };
+
+            mergedData.forEach(item => {
+                const keys4 = [];
+                const keys3 = [];
+                const keys2 = [];
+
+                item.keys.forEach(key => {
+                    const digitLength = key.replace(/[^0-9]/g, '').length;
+
+                    if (digitLength === 4) {
+                        keys4.push(key);
+                    } else if (digitLength === 3) {
+                        keys3.push(key);
+                    } else if (digitLength === 2) {
+                        keys2.push(key);
+                    }
+                });
+
+                if (keys4.length > 0) {
+                    groups['4DIGIT'].push({
+                        keys: keys4.sort(),
+                        value: item.value
+                    });
+                }
+                if (keys3.length > 0) {
+                    groups['3DIGIT'].push({
+                        keys: keys3.sort(),
+                        value: item.value
+                    });
+                }
+                if (keys2.length > 0) {
+                    groups['2DIGIT'].push({
+                        keys: keys2.sort(),
+                        value: item.value
+                    });
+                }
+            });
+
+            Object.keys(groups).forEach(group => {
+                groups[group].sort((a, b) => b.value - a.value);
+            });
+
+            generateMarkdown(groups, totalInputValue);
+            showInfo('Data berhasil diproses!', 'success');
+        }
+
+        function generateMarkdown(groups, totalInputValue) {
+            const markdownOutput = document.getElementById('markdownOutput');
+
+            let output = '';
+            let totalOutputValue = 0;
+
+            ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
+                if (groups[group] && groups[group].length > 0) {
+                    output += `${group}\n`;
+                    groups[group].forEach(entry => {
+                        output += `${entry.keys.join('*')}#${entry.value},\n`;
+                        totalOutputValue += entry.value * entry.keys.length;
+                    });
+                    output += '\n';
+                }
+            });
+
+            document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
+            markdownOutput.textContent = output || '// Tidak ada data yang diproses';
+        }
+
+        function copyMarkdown() {
+            const markdownOutput = document.getElementById('markdownOutput');
+            const textArea = document.createElement('textarea');
+            textArea.value = markdownOutput.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showInfo('Output berhasil disalin!', 'success');
+        }
+
+        function cleanAll() {
+            document.getElementById('inputData').value = '';
+            document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+            document.getElementById('inputCounter').textContent = 'Total: 0';
+            document.getElementById('outputTotal').textContent = 'Total: 0';
+            showInfo('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
+        }
+
+        function showInfo(message, type) {
+            const infoDiv = document.getElementById('info');
+            infoDiv.textContent = message;
+            infoDiv.className = 'info';
+            if (type === 'error') {
+                infoDiv.classList.add('error');
+            } else if (type === 'success') {
+                infoDiv.classList.add('success');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateInputCounter();
+        });
+    </script>
+</body>
+</html>
