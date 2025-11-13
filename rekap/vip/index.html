@@ -285,16 +285,7 @@ button:active {
 01#10000, 
 03*04#5000, 
 05#3000,
-12*13*14#7500
-
-Baris dengan value 2 digit akan diabaikan:
-30#10 ❌ (diabaikan)
-50#99 ❌ (diabaikan)
-
-Baris dengan huruf/simbol akan diabaikan:
-BAPAK ♑#500 ❌
-CM 8.0#50 ❌
-3790 X2X2#10 ❌" oninput="updateInputCounter()"></textarea>
+12*13*14#7500" oninput="updateInputCounter()"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
         </div>
         
@@ -373,18 +364,18 @@ function updateInputCounter() {
 }
 
 function validateLine(line) {
-    // Validasi 1: Harus mengandung #
+    // Validasi 1: Harus mengandung # dan diakhiri dengan value
     if (!line.includes('#')) {
         return {
             isValid: false,
-            reason: 'Tidak mengandung tanda #',
+            reason: 'Tidak diakhiri dengan #value',
             line: line
         };
     }
     
     const parts = line.split('#');
     
-    // Validasi 2: Harus tepat 2 bagian (key#value)
+    // Validasi 2: Harus tepat 2 bagian (key#value) dan tidak boleh ada # tambahan
     if (parts.length !== 2) {
         return {
             isValid: false,
@@ -420,7 +411,7 @@ function validateLine(line) {
     if (!valuePart) {
         return {
             isValid: false,
-            reason: 'Value tidak boleh kosong',
+            reason: 'Tidak diakhiri dengan value',
             line: line
         };
     }
@@ -628,7 +619,9 @@ function generateMarkdown(groups, totalInputValue) {
         if (groups[group] && groups[group].length > 0) {
             output += `${group}\n`;
             groups[group].forEach(entry => {
-                output += `${entry.keys.join('*')}#${entry.value},\n`;
+                // Pastikan output selalu diakhiri dengan #value
+                const line = `${entry.keys.join('*')}#${entry.value},`;
+                output += line + '\n';
                 // Hitung total output (value dikali jumlah keys)
                 totalOutputValue += entry.value * entry.keys.length;
             });
