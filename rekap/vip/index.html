@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rekap Data Otomatis</title>
 <style>
+/* CSS tetap sama seperti sebelumnya */
 * { 
     margin:0; 
     padding:0; 
@@ -275,17 +276,20 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma<br><strong>Key harus angka, Value minimal 3 digit (contoh: 100, 500, 1000)</strong></div>
+        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma<br><strong>Program akan otomatis mengekstrak angka dari key, Value minimal 3 digit</strong></div>
     </div>
     
     <div class="input-section">
         <div class="textarea-container">
             <textarea id="inputData" placeholder="Contoh:
-01*02#2000, 
-01#10000, 
-03*04#5000, 
-05#3000,
-12*13*14#7500" oninput="updateInputCounter()"></textarea>
+TAMBANG ♓ 087*079#2000,
+SURAT ♊ 97#15000,
+TOKET ♏ 03*30*35*37*73#3000,
+90*91*92*94#2000
+
+Program akan otomatis mengambil angka dari key:
+&quot;TAMBANG ♓ 087*079#2000&quot; → &quot;087*079#2000&quot;
+&quot;SURAT ♊ 97#15000&quot; → &quot;97#15000&quot;" oninput="updateInputCounter()"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
         </div>
         
@@ -306,7 +310,7 @@ button:active {
     </div>
     
     <div class="info" id="info">
-        💡 Masukkan data Anda dan klik "PROSES DATA" - Key harus angka, Value minimal 3 digit
+        💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak angka dari key
     </div>
 
     <div id="errorDetails" style="display: none;"></div>
@@ -321,6 +325,36 @@ button:active {
 </div>
 
 <script>
+function extractNumbersFromKey(keyPart) {
+    // Ekstrak hanya angka dan * dari key part
+    // Contoh: "TAMBANG ♓ 087*079" → "087*079"
+    // Contoh: "SURAT ♊ 97" → "97"
+    // Contoh: "TOKET ♏ 03*30*35*37*73" → "03*30*35*37*73"
+    
+    let cleanedKey = '';
+    let inNumberBlock = false;
+    
+    for (let i = 0; i < keyPart.length; i++) {
+        const char = keyPart[i];
+        
+        if (char === '*' || (char >= '0' && char <= '9')) {
+            cleanedKey += char;
+            inNumberBlock = true;
+        } else if (inNumberBlock && char === ' ') {
+            // Biarkan spasi di antara angka (untuk kasus seperti "087 079" → "087*079")
+            cleanedKey += '*';
+        } else if (inNumberBlock && char !== ' ' && !(char >= '0' && char <= '9')) {
+            // Stop jika menemukan karakter non-angka setelah blok angka
+            break;
+        }
+    }
+    
+    // Bersihkan hasil: hapus * di awal/akhir, dan ganti multiple * dengan single *
+    cleanedKey = cleanedKey.replace(/^\*+/, '').replace(/\*+$/, '').replace(/\*+/g, '*');
+    
+    return cleanedKey;
+}
+
 function updateInputCounter() {
     const input = document.getElementById('inputData').value.trim();
     let total = 0;
@@ -335,10 +369,12 @@ function updateInputCounter() {
             const validation = validateLine(line);
             if (validation.isValid) {
                 const parts = line.split('#');
-                const keyPart = parts[0].trim();
+                const rawKeyPart = parts[0].trim();
                 const value = parseInt(parts[1].trim()) || 0;
-                // Filter hanya key yang mengandung angka
-                const keys = keyPart.split('*')
+                
+                // Ekstrak hanya angka dari key
+                const cleanedKeyPart = extractNumbersFromKey(rawKeyPart);
+                const keys = cleanedKeyPart.split('*')
                     .map(k => k.trim())
                     .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
                 
@@ -384,30 +420,20 @@ function validateLine(line) {
         };
     }
     
-    const keyPart = parts[0].trim();
+    const rawKeyPart = parts[0].trim();
     const valuePart = parts[1].trim();
     
-    // Validasi 3: Key tidak boleh kosong
-    if (!keyPart) {
+    // Validasi 3: Key tidak boleh kosong setelah pembersihan
+    const cleanedKeyPart = extractNumbersFromKey(rawKeyPart);
+    if (!cleanedKeyPart) {
         return {
             isValid: false,
-            reason: 'Key tidak boleh kosong',
+            reason: 'Tidak ada angka yang ditemukan di key',
             line: line
         };
     }
     
-    // Validasi 4: Key harus hanya mengandung angka dan *
-    const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
-    const hasInvalidKey = keys.some(key => !/^\d+$/.test(key));
-    if (hasInvalidKey) {
-        return {
-            isValid: false,
-            reason: 'Key harus angka (0-9)',
-            line: line
-        };
-    }
-    
-    // Validasi 5: Value tidak boleh kosong
+    // Validasi 4: Value tidak boleh kosong
     if (!valuePart) {
         return {
             isValid: false,
@@ -416,7 +442,7 @@ function validateLine(line) {
         };
     }
     
-    // Validasi 6: Value harus angka
+    // Validasi 5: Value harus angka
     if (!/^\d+$/.test(valuePart)) {
         return {
             isValid: false,
@@ -427,7 +453,7 @@ function validateLine(line) {
     
     const value = parseInt(valuePart);
     
-    // Validasi 7: Value minimal 3 digit (>= 100)
+    // Validasi 6: Value minimal 3 digit (>= 100)
     if (value < 100) {
         return {
             isValid: false,
@@ -439,7 +465,8 @@ function validateLine(line) {
     return {
         isValid: true,
         reason: 'Valid',
-        line: line
+        line: line,
+        cleanedKey: cleanedKeyPart
     };
 }
 
@@ -508,11 +535,12 @@ function prosesData() {
     validLines.forEach(result => {
         const line = result.line;
         const parts = line.split('#');
-        const keyPart = parts[0].trim();
+        const rawKeyPart = parts[0].trim();
         const value = parseInt(parts[1].trim());
         
-        // Filter hanya key yang mengandung angka murni
-        const keys = keyPart.split('*')
+        // Ekstrak hanya angka dari key
+        const cleanedKeyPart = result.cleanedKey;
+        const keys = cleanedKeyPart.split('*')
             .map(k => k.trim())
             .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
         
@@ -658,7 +686,7 @@ function cleanAll() {
     document.getElementById('outputTotal').textContent = 'Total: 0';
     
     // Reset info message
-    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Key harus angka, Value minimal 3 digit', 'default');
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak angka dari key', 'default');
     
     // Sembunyikan error details
     document.getElementById('errorDetails').style.display = 'none';
