@@ -275,7 +275,7 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma<br><strong>Value minimal 3 digit (contoh: 100, 500, 1000)</strong></div>
+        <div class="subtitle">Masukkan data dalam format: <strong>key#value</strong> atau <strong>key*key#value</strong> dipisahkan dengan koma<br><strong>Key harus angka, Value minimal 3 digit (contoh: 100, 500, 1000)</strong></div>
     </div>
     
     <div class="input-section">
@@ -292,8 +292,9 @@ Baris dengan value 2 digit akan diabaikan:
 50#99 ❌ (diabaikan)
 
 Baris dengan huruf/simbol akan diabaikan:
-BAPAK ♑ ❌
-CM 8.0 #50 ❌" oninput="updateInputCounter()"></textarea>
+BAPAK ♑#500 ❌
+CM 8.0#50 ❌
+3790 X2X2#10 ❌" oninput="updateInputCounter()"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
         </div>
         
@@ -314,7 +315,7 @@ CM 8.0 #50 ❌" oninput="updateInputCounter()"></textarea>
     </div>
     
     <div class="info" id="info">
-        💡 Masukkan data Anda dan klik "PROSES DATA" - Value minimal 3 digit
+        💡 Masukkan data Anda dan klik "PROSES DATA" - Key harus angka, Value minimal 3 digit
     </div>
 
     <div id="errorDetails" style="display: none;"></div>
@@ -345,7 +346,10 @@ function updateInputCounter() {
                 const parts = line.split('#');
                 const keyPart = parts[0].trim();
                 const value = parseInt(parts[1].trim()) || 0;
-                const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+                // Filter hanya key yang mengandung angka
+                const keys = keyPart.split('*')
+                    .map(k => k.trim())
+                    .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
                 
                 if (keys.length > 0 && !isNaN(value) && value >= 100) {
                     // Distribusikan value ke setiap individual key dan hitung total
@@ -389,9 +393,30 @@ function validateLine(line) {
         };
     }
     
+    const keyPart = parts[0].trim();
     const valuePart = parts[1].trim();
     
-    // Validasi 3: Value tidak boleh kosong
+    // Validasi 3: Key tidak boleh kosong
+    if (!keyPart) {
+        return {
+            isValid: false,
+            reason: 'Key tidak boleh kosong',
+            line: line
+        };
+    }
+    
+    // Validasi 4: Key harus hanya mengandung angka dan *
+    const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+    const hasInvalidKey = keys.some(key => !/^\d+$/.test(key));
+    if (hasInvalidKey) {
+        return {
+            isValid: false,
+            reason: 'Key harus angka (0-9)',
+            line: line
+        };
+    }
+    
+    // Validasi 5: Value tidak boleh kosong
     if (!valuePart) {
         return {
             isValid: false,
@@ -400,7 +425,7 @@ function validateLine(line) {
         };
     }
     
-    // Validasi 4: Value harus angka
+    // Validasi 6: Value harus angka
     if (!/^\d+$/.test(valuePart)) {
         return {
             isValid: false,
@@ -411,21 +436,11 @@ function validateLine(line) {
     
     const value = parseInt(valuePart);
     
-    // Validasi 5: Value minimal 3 digit (>= 100)
+    // Validasi 7: Value minimal 3 digit (>= 100)
     if (value < 100) {
         return {
             isValid: false,
             reason: 'Value minimal 3 digit (≥100)',
-            line: line
-        };
-    }
-    
-    // Validasi 6: Key tidak boleh kosong
-    const keyPart = parts[0].trim();
-    if (!keyPart) {
-        return {
-            isValid: false,
-            reason: 'Key tidak boleh kosong',
             line: line
         };
     }
@@ -495,7 +510,7 @@ function prosesData() {
         showInfo('Data berhasil diproses! Semua data valid.', 'success');
     }
     
-    // Step 1: Kumpulkan value untuk setiap individual key
+    // Step 1: Kumpulkan value untuk setiap individual key (HANYA KEY ANGKA)
     const individualKeyMap = {};
     let totalInputValue = 0;
     
@@ -504,7 +519,11 @@ function prosesData() {
         const parts = line.split('#');
         const keyPart = parts[0].trim();
         const value = parseInt(parts[1].trim());
-        const keys = keyPart.split('*').map(k => k.trim()).filter(k => k);
+        
+        // Filter hanya key yang mengandung angka murni
+        const keys = keyPart.split('*')
+            .map(k => k.trim())
+            .filter(k => k && /^\d+$/.test(k)); // Hanya angka murni
         
         if (keys.length > 0 && !isNaN(value) && value >= 100) {
             // Distribusikan value ke setiap individual key
@@ -539,12 +558,12 @@ function prosesData() {
     // Step 3: Konversi ke array dan sort by value descending
     const mergedData = Object.entries(valueMap)
         .map(([value, keys]) => ({
-            keys: keys.sort(),
+            keys: keys.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})),
             value: parseInt(value)
         }))
         .sort((a, b) => b.value - a.value);
     
-    // Step 4: Kelompokkan berdasarkan digit length
+    // Step 4: Kelompokkan berdasarkan digit length (HANYA KEY ANGKA)
     const groups = {
         '4DIGIT': [],
         '3DIGIT': [],
@@ -557,32 +576,35 @@ function prosesData() {
         const keys2 = [];
         
         item.keys.forEach(key => {
-            const digitLength = key.replace(/[^0-9]/g, '').length;
-            
-            if (digitLength === 4) {
-                keys4.push(key);
-            } else if (digitLength === 3) {
-                keys3.push(key);
-            } else if (digitLength === 2) {
-                keys2.push(key);
+            // Pastikan key hanya angka
+            if (/^\d+$/.test(key)) {
+                const digitLength = key.length;
+                
+                if (digitLength === 4) {
+                    keys4.push(key);
+                } else if (digitLength === 3) {
+                    keys3.push(key);
+                } else if (digitLength === 2) {
+                    keys2.push(key);
+                }
             }
         });
         
         if (keys4.length > 0) {
             groups['4DIGIT'].push({
-                keys: keys4.sort(),
+                keys: keys4.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})),
                 value: item.value
             });
         }
         if (keys3.length > 0) {
             groups['3DIGIT'].push({
-                keys: keys3.sort(),
+                keys: keys3.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})),
                 value: item.value
             });
         }
         if (keys2.length > 0) {
             groups['2DIGIT'].push({
-                keys: keys2.sort(),
+                keys: keys2.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})),
                 value: item.value
             });
         }
@@ -643,7 +665,7 @@ function cleanAll() {
     document.getElementById('outputTotal').textContent = 'Total: 0';
     
     // Reset info message
-    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Value minimal 3 digit', 'default');
+    showInfo('💡 Masukkan data Anda dan klik "PROSES DATA" - Key harus angka, Value minimal 3 digit', 'default');
     
     // Sembunyikan error details
     document.getElementById('errorDetails').style.display = 'none';
