@@ -56,7 +56,7 @@ h1 {
     margin-bottom: 20px;
 }
 .theme-toggle button {
-    background: linear-gradient(135deg, #4a5568, #718096);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
     padding: 12px 24px;
@@ -128,7 +128,6 @@ h1 {
     border-radius: 12px;
     background: #f8fafc;
     transition: all 0.3s ease;
-    position: relative;
 }
 .input-box h3 {
     color: #2d3748;
@@ -186,7 +185,7 @@ button {
     gap: 6px;
 }
 .btn-primary { 
-    background:linear-gradient(135deg, #009688, #00796B);
+    background: linear-gradient(135deg, #009688, #00796B);
     color:white;
 }
 .btn-secondary { 
@@ -244,25 +243,6 @@ button:hover {
     border-radius: 12px;
     border-left: 4px solid #667eea;
     transition: all 0.3s ease;
-}
-
-.input-counter {
-    background: linear-gradient(135deg, #FFD700, #FFC400);
-    color: #333;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.output-counter {
-    background: linear-gradient(135deg, #FFD700, #FFC400);
-    color: #333;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* BBFS & Kombinasi Specific Styles */
@@ -329,15 +309,23 @@ button:hover {
 .output-title {
     font-weight:bold;
     color:#333;
-    font-size: 1.1rem;
     transition: all 0.3s ease;
 }
 .output-count {
-    background:#667eea;
-    color:white;
+    background: linear-gradient(135deg, #FFD700, #FFC400);
+    color: #333;
     padding:4px 8px;
     border-radius:12px;
     font-size:12px;
+}
+.input-count {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    background: linear-gradient(135deg, #FFD700, #FFC400);
+    padding: 6px 10px;
+    border-radius: 6px;
 }
 .loading {
     display:none;
@@ -421,7 +409,7 @@ body.dark-theme .output-title {
     color: #e2e8f0;
 }
 body.dark-theme .theme-toggle button {
-    background: linear-gradient(135deg, #2d3748, #4a5568);
+    background: linear-gradient(135deg, #4a5568, #718096);
 }
 body.dark-theme .tab-buttons {
     background: #4a5568;
@@ -429,11 +417,6 @@ body.dark-theme .tab-buttons {
 body.dark-theme .tab-btn.active {
     background: #2d3748;
     color: #667eea;
-}
-body.dark-theme .input-counter,
-body.dark-theme .output-counter {
-    background: linear-gradient(135deg, #d4af37, #b8941f);
-    color: #1a202c;
 }
 
 @media (max-width: 768px) {
@@ -451,13 +434,6 @@ body.dark-theme .output-counter {
     }
     .rekap-textarea {
         height: 150px;
-    }
-    .input-counter {
-        position: relative;
-        top: auto;
-        right: auto;
-        margin-top: 10px;
-        display: inline-block;
     }
 }
 </style>
@@ -496,7 +472,6 @@ body.dark-theme .output-counter {
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT DATA</h3>
                         <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
 SIWAR:
 01*02#1000, 
@@ -504,7 +479,10 @@ SIWAR:
 SURAT:
 03*04#5000, 
 05#10000," oninput="updateInputCounter()"></textarea>
-                        <div class="input-counter" id="inputCounter">Total: 0</div>
+                        <div class="input-count">
+                        Total: <span id="inputCounter">0</span>
+                        </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -525,15 +503,15 @@ SURAT:
             </div>
             
             <div class="info" id="info">
-                💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka
+                💡 Masukkan data Anda dan klik "PROSES DATA"
             </div>
 
             <div id="errorDetails" style="display: none;"></div>
 
             <div class="output-section">
                 <div class="stats">
-                    <div class="output-title">Hasil Output</div>
-                    <div class="output-counter" id="outputTotal">Total: 0</div>
+                    <div class="output-title">HASIL REKAP</div>
+                    <div class="output-count" id="outputTotal">Total: 0</div>
                 </div>
                 <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
             </div>
@@ -541,15 +519,11 @@ SURAT:
         
         <!-- TAB 2: GENERATOR BBFS -->
         <div id="tab2" class="tab-content">
-            <div class="warning">
-                ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
-            </div>
             
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
+                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit" maxlength="6">
                     </div>
                 </div>
                 
@@ -578,18 +552,14 @@ SURAT:
                 </div>
             </div>
             
-            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
+            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit</div>
 
             <div class="output-container">
                 <div class="output-header">
-                    <div class="output-title">Hasil Permutasi</div>
+                    <div class="output-title">HASIL PERMUTASI</div>
                     <div class="output-count" id="countOutput">0 hasil</div>
                 </div>
                 <div class="markdown-output" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
-                <div class="stats">
-                    <div id="timeInfo">Waktu: -</div>
-                    <div id="memoryInfo">Karakter: 0</div>
-                </div>
             </div>
         </div>
         
@@ -598,8 +568,7 @@ SURAT:
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
+                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma">
                     </div>
                 </div>
                 
@@ -643,8 +612,8 @@ SURAT:
 
             <div class="output-section">
                 <div class="stats">
-                    <div class="output-title">Hasil Kombinasi</div>
-                    <div class="output-counter" id="totalKombinasi">0 kombinasi</div>
+                    <div class="output-title">HASIL KOMBINASI</div>
+                    <div class="output-count" id="totalKombinasi">0 kombinasi</div>
                 </div>
                 <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
             </div>
@@ -698,12 +667,12 @@ function switchTab(tabName) {
 // =============================================
 // TAB 1: REKAP DATA FUNCTIONS
 // =============================================
-function extractValidPatterns(LINE) {
+function extractValidPatterns(line) {
     const patterns = [];
     const regex = /([0-9*]+)#(\d{3,})/g;
     
     let match;
-    while ((match = regex.exec(LINE)) !== null) {
+    while ((match = regex.exec(line)) !== null) {
         const fullPattern = match[0];
         const keyPart = match[1];
         const valuePart = match[2];
@@ -727,11 +696,11 @@ function updateInputCounter() {
     let total = 0;
     
     if (input) {
-        const lines = input.split(',').map(line => line.trim()).filter(line => LINE);
+        const lines = input.split(',').map(line => line.trim()).filter(line => line);
         const individualKeyMap = {};
         
         lines.forEach(line => {
-            const patterns = extractValidPatterns(LINE);
+            const patterns = extractValidPatterns(line);
             patterns.forEach(pattern => {
                 const keys = pattern.keyPart.split('*')
                     .map(k => k.trim())
@@ -754,8 +723,8 @@ function updateInputCounter() {
     document.getElementById('inputCounter').textContent = total.toLocaleString();
 }
 
-function validateLine(LINE) {
-    const patterns = extractValidPatterns(LINE);
+function validateLine(line) {
+    const patterns = extractValidPatterns(line);
     if (patterns.length === 0) {
         return { isValid: false, reason: 'Tidak ditemukan pattern angka#angka dengan value ≥100', line: line };
     }
@@ -786,8 +755,8 @@ function prosesData() {
         return;
     }
     
-    const lines = input.split(',').map(line => line.trim()).filter(line => LINE);
-    const validationResults = lines.map(line => validateLine(LINE));
+    const lines = input.split(',').map(line => line.trim()).filter(line => line);
+    const validationResults = lines.map(line => validateLine(line));
     const validLines = validationResults.filter(result => result.isValid);
     const invalidLines = validationResults.filter(result => !result.isValid);
     
@@ -872,8 +841,7 @@ function generateMarkdown(groups) {
     
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
-            const count = groups[group].reduce((sum, entry) => sum + entry.keys.length, 0);
-            output += `${group.replace('DIGIT', 'D')} (${count} LINE)\n`;
+            output += `${group}\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
                 totalOutputValue += entry.value * entry.keys.length;
@@ -941,7 +909,7 @@ function generatePermutasi() {
         const inputDigits = input.split('');
         
         selectedDigits.forEach(length => {
-            const groupKey = length + 'D';
+            const groupKey = length + 'DIGIT';
             groupedResults[groupKey] = new Set();
             const combinations = generateCombinations(inputDigits, length);
             
@@ -1005,8 +973,8 @@ function formatGroupedOutput(groupedResults) {
     const sortedGroups = Object.keys(groupedResults).sort((a, b) => parseInt(b) - parseInt(a));
     sortedGroups.forEach(group => {
         if (groupedResults[group].length > 0) {
-            output += `${group} (${groupedResults[group].length} LINE)\n`;
-            output += `${groupedResults[group].join('*')}*\n\n`;
+            output += `${group}\n`;
+            output += `${groupedResults[group].join('*')}*\n`;
         }
     });
     return output;
@@ -1123,19 +1091,19 @@ function generateKombinasi() {
     let total = 0;
     
     if (results['4D'].length > 0) {
-        output += `4D (${results['4D'].length} LINE)\n`;
+        output += `4D (${results['4D'].length} kombinasi):\n`;
         output += results['4D'].join('*') + '*\n\n';
         total += results['4D'].length;
     }
     
     if (results['3D'].length > 0) {
-        output += `3D (${results['3D'].length} LINE)\n`;
+        output += `3D (${results['3D'].length} kombinasi):\n`;
         output += results['3D'].join('*') + '*\n\n';
         total += results['3D'].length;
     }
     
     if (results['2D'].length > 0) {
-        output += `2D (${results['2D'].length} LINE)\n`;
+        output += `2D (${results['2D'].length} kombinasi):\n`;
         output += results['2D'].join('*') + '*\n';
         total += results['2D'].length;
     }
