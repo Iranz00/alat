@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tools Data - RAN</title>
+<title>Tools Data & Kombinasi</title>
 <style>
 * { 
     margin:0; 
@@ -185,7 +185,7 @@ button {
     gap: 6px;
 }
 .btn-primary { 
-    background: linear-gradient(135deg, #009688, #00796B);
+    background:linear-gradient(135deg, #4CAF50, #45a049);
     color:white;
 }
 .btn-secondary { 
@@ -312,27 +312,11 @@ button:hover {
     transition: all 0.3s ease;
 }
 .output-count {
-    background: linear-gradient(135deg, #FFD700, #FFC400);
-    color: #333;
+    background:#667eea;
+    color:white;
     padding:4px 8px;
     border-radius:12px;
     font-size:12px;
-}
-.total-box {
-    position: absolute;
-    right: 12px;
-    bottom: 8px;
-    background: linear-gradient(135deg, #FFD700, #FFC400);
-    color: #333;
-    font-size: 14px;
-    padding: 3px 10px;
-    border-radius: 6px;
-    display: inline-block;
-    width: auto;
-}
-.input-wrapper {
-    position: relative;
-}
 }
 .loading {
     display:none;
@@ -448,7 +432,8 @@ body.dark-theme .tab-btn.active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🛠️ TOOLS DATA 🛠️</h1>
+        <h1>🛠️ TOOLS DATA & KOMBINASI</h1>
+        <div class="subtitle">Dua tools dalam satu aplikasi - Rekap Data dan Generator Kombinasi</div>
     </div>
     
     <div class="theme-toggle">
@@ -470,7 +455,7 @@ body.dark-theme .tab-btn.active {
             </button>
             <button class="tab-btn" onclick="switchTab('tab3')">
                 <span>🔢</span>
-                <span>POLTAR 4D/3D/2D</span>
+                <span>KOMBINASI 4D/3D/2D</span>
             </button>
         </div>
         
@@ -479,18 +464,13 @@ body.dark-theme .tab-btn.active {
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                       <div class="input-wrapper">
+                        <h3>📥 INPUT DATA</h3>
                         <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
-SIWAR:
-01*02#1000, 
-01#2000, 
-SURAT:
-03*04#5000, 
-05#10000," oninput="updateInputCounter()"></textarea>
-    <div class="total-box">
-        Total: <span id="inputCounter">0</span>
-    </div>
-</div>
+TITIPAN ♍ CM 3.4 #6 503*530#1000,
+BAPAK ♑ 3790 X2X2 #10 9124 X2X2 #10 90*91*92*94#2000,
+TAMBANG ♓ 087*079#2000" oninput="updateInputCounter()"></textarea>
+                        <div style="text-align: right; margin-top: 10px; font-size: 14px; color: #666;">
+                            Total: <span id="inputCounter">0</span>
                         </div>
                     </div>
                 </div>
@@ -502,7 +482,7 @@ SURAT:
                     </button>
                     <button class="btn-secondary" onclick="copyMarkdown()">
                         <span>📋</span>
-                        <span>COPY OUTPUT</span>
+                        <span>SALIN OUTPUT</span>
                     </button>
                     <button class="btn-danger" onclick="cleanAll()">
                         <span>🗑️</span>
@@ -512,14 +492,14 @@ SURAT:
             </div>
             
             <div class="info" id="info">
-                💡 Masukkan data Anda dan klik "PROSES DATA"
+                💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka
             </div>
 
             <div id="errorDetails" style="display: none;"></div>
 
             <div class="output-section">
                 <div class="stats">
-                    <div class="output-title">HASIL REKAP</div>
+                    <div><strong>Hasil Output:</strong></div>
                     <div class="output-count" id="outputTotal">Total: 0</div>
                 </div>
                 <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
@@ -528,16 +508,20 @@ SURAT:
         
         <!-- TAB 2: GENERATOR BBFS -->
         <div id="tab2" class="tab-content">
+            <div class="warning">
+                ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
+            </div>
             
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit" maxlength="6">
+                        <h3>📥 INPUT ANGKA</h3>
+                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
                     </div>
                 </div>
                 
                 <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
+                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
                     <div class="checkbox-group" id="digitCheckboxes">
                         <!-- Checkbox akan di-generate otomatis oleh JavaScript -->
                     </div>
@@ -547,7 +531,7 @@ SURAT:
                 
                 <div class="button-group">
                     <button class="btn-primary" onclick="generatePermutasi()" id="btnGenerate">
-                        <span>🎲</span>
+                        <span>🚀</span>
                         <span>GENERATE</span>
                     </button>
                     <button class="btn-secondary" onclick="copyOutput()">
@@ -561,7 +545,7 @@ SURAT:
                 </div>
             </div>
             
-            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit</div>
+            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
 
             <div class="output-container">
                 <div class="output-header">
@@ -569,20 +553,25 @@ SURAT:
                     <div class="output-count" id="countOutput">0 hasil</div>
                 </div>
                 <div class="markdown-output" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
+                <div class="stats">
+                    <div id="timeInfo">Waktu: -</div>
+                    <div id="memoryInfo">Karakter: 0</div>
+                </div>
             </div>
         </div>
         
-        <!-- TAB 3: POLTAR 4D/3D/2D -->
+        <!-- TAB 3: KOMBINASI 4D/3D/2D -->
         <div id="tab3" class="tab-content">
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma">
+                        <h3>📥 INPUT KELOMPOK ANGKA</h3>
+                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan kelompok angka dipisahkan koma (contoh: 1234,5678,90ab,cdef)">
                     </div>
                 </div>
                 
                 <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
+                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
                     <div class="checkbox-group" id="kombinasiCheckboxes">
                         <div class="checkbox-item">
                             <input type="checkbox" id="kombinasi4D" value="4D" checked>
@@ -602,15 +591,15 @@ SURAT:
                 <div class="button-group">
                     <button class="btn-primary" onclick="generateKombinasi()">
                         <span>🎲</span>
-                        <span>GENERATE</span>
+                        <span>GENERATE KOMBINASI</span>
                     </button>
                     <button class="btn-secondary" onclick="copyKombinasi()">
                         <span>📋</span>
-                        <span>COPY OUTPUT</span>
+                        <span>SALIN HASIL</span>
                     </button>
                     <button class="btn-danger" onclick="clearKombinasi()">
                         <span>🗑️</span>
-                        <span>CLEAR</span>
+                        <span>RESET</span>
                     </button>
                 </div>
             </div>
@@ -621,7 +610,7 @@ SURAT:
 
             <div class="output-section">
                 <div class="stats">
-                    <div class="output-title">HASIL KOMBINASI</div>
+                    <div><strong>Hasil Kombinasi:</strong></div>
                     <div class="output-count" id="totalKombinasi">0 kombinasi</div>
                 </div>
                 <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
