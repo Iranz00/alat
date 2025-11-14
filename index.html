@@ -14,25 +14,25 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
     min-height: 100vh;
-    padding: 20px;
+    padding: 10px;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     transition: all 0.3s ease;
 }
 .container { 
-    max-width:1200px; 
-    width:100%;
+    width: 98%;
+    max-width: 98%;
     margin:0 auto; 
     background:white; 
     border-radius:20px; 
-    padding:30px; 
+    padding:25px; 
     box-shadow:0 20px 40px rgba(0,0,0,0.15);
     transition: all 0.3s ease;
 }
 .header { 
     text-align:center; 
-    margin-bottom:25px; 
+    margin-bottom:20px; 
 }
 h1 { 
     color:#2d3748; 
@@ -668,7 +668,7 @@ function toggleTheme() {
         localStorage.setItem('theme', 'dark');
     } else {
         themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
-        localStorage.setItem('theme', 'light');
+        localStorage.setItem('theme', 'theme');
     }
 }
 
