@@ -746,8 +746,9 @@ function updateInputCounter() {
             total += value;
         });
     }
+    
     document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
-}}
+}
 
 function validateLine(line) {
     const patterns = extractValidPatterns(line);
