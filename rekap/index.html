@@ -19,6 +19,7 @@ body {
     align-items: flex-start;
     justify-content: center;
     overflow-x: hidden;
+    transition: all 0.3s ease;
 }
 .container { 
     max-width:900px; 
@@ -28,6 +29,7 @@ body {
     border-radius:20px; 
     padding:30px; 
     box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
 }
 .header { 
     text-align:center; 
@@ -42,6 +44,7 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    transition: all 0.3s ease;
 }
 .subtitle { 
     text-align:center; 
@@ -49,6 +52,30 @@ h1 {
     font-size:15px; 
     margin-bottom:25px;
     line-height:1.5;
+    transition: all 0.3s ease;
+}
+.theme-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.theme-toggle button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.theme-toggle button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 .input-section {
     margin-bottom:20px;
@@ -79,8 +106,8 @@ textarea:focus {
     position: absolute;
     bottom: 10px;
     right: 15px;
-    background: #667eea;
-    color: white;
+    background: linear-gradient(135deg, #FFD700, #FFC400);
+    color: #333;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 14px;
@@ -108,7 +135,7 @@ button {
     gap: 6px;
 }
 .btn-submit { 
-    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    background: linear-gradient(135deg, #009688, #00796B);
     color:white;
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
 }
@@ -191,6 +218,7 @@ button:active {
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.3s ease;
 }
 .output-header {
     display: flex;
@@ -199,8 +227,8 @@ button:active {
     margin-bottom: 12px;
 }
 .total-value {
-    background: #667eea;
-    color: white;
+    background: linear-gradient(135deg, #FFD700, #FFC400);
+    color: #333;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 14px;
@@ -234,6 +262,84 @@ button:active {
 .markdown-output::-webkit-scrollbar-thumb:hover {
     background:#718096;
 }
+
+/* Dark Theme Styles */
+body.dark-theme {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
+body.dark-theme .container {
+    background: #2d3748;
+    color: #e2e8f0;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+body.dark-theme h1 {
+    color: #e2e8f0;
+}
+
+body.dark-theme .subtitle {
+    color: #a0aec0;
+}
+
+body.dark-theme textarea {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+}
+
+body.dark-theme textarea:focus {
+    border-color: #667eea;
+    background: #4a5568;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+body.dark-theme .info {
+    background: #4a5568;
+    border-left-color: #667eea;
+    color: #e2e8f0;
+}
+
+body.dark-theme .info.success {
+    background: #2d5c2d;
+    border-left-color: #4CAF50;
+    color: #e8f5e8;
+}
+
+body.dark-theme .info.error {
+    background: #5c2d2d;
+    border-left-color: #f44336;
+    color: #ffebee;
+}
+
+body.dark-theme .info.warning {
+    background: #5c4d2d;
+    border-left-color: #ff9800;
+    color: #fff3e0;
+}
+
+body.dark-theme .error-details {
+    background: #5c2d2d;
+    border-color: #f44336;
+}
+
+body.dark-theme .error-line {
+    color: #ffebee;
+}
+
+body.dark-theme .error-reason {
+    background: #7a3d3d;
+    color: #ffebee;
+}
+
+body.dark-theme .output-section h3 {
+    color: #e2e8f0;
+}
+
+body.dark-theme .theme-toggle button {
+    background: linear-gradient(135deg, #4a5568, #718096);
+}
+
 @media (max-width: 768px) {
     body {
         padding: 10px;
@@ -276,6 +382,13 @@ button:active {
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
         <div class="subtitle">Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br><strong>Contoh: 503*530#1000, 90*91*92*94#2000</strong></div>
+    </div>
+    
+    <div class="theme-toggle">
+        <button id="themeButton" onclick="toggleTheme()">
+            <span>🌙</span>
+            <span>Mode Gelap</span>
+        </button>
     </div>
     
     <div class="input-section">
@@ -322,6 +435,33 @@ SURAT:
 </div>
 
 <script>
+// Theme Toggle Function
+function toggleTheme() {
+    const body = document.body;
+    const themeButton = document.getElementById('themeButton');
+    
+    body.classList.toggle('dark-theme');
+    
+    if (body.classList.contains('dark-theme')) {
+        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Load saved theme
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeButton = document.getElementById('themeButton');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+    }
+}
+
 function extractValidPatterns(line) {
     // Mencari semua pattern: angka*angka#angka atau angka#angka dengan value minimal 3 digit
     const patterns = [];
@@ -647,8 +787,9 @@ function showInfo(message, type) {
     }
 }
 
-// Initialize counter on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    loadTheme();
     updateInputCounter();
 });
 </script>
