@@ -57,9 +57,9 @@ h1 {
     position: relative;
     margin-bottom: 15px;
 }
-.input-wrapper {
+textarea { 
     width:100%; 
-    height:180px; 
+    height:150px; 
     padding:20px; 
     border:2px solid #e2e8f0; 
     border-radius:12px; 
@@ -68,33 +68,48 @@ h1 {
     font-family: 'Courier New', monospace;
     transition: all 0.3s ease;
     background: #f8fafc;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    line-height:1.5;
 }
-.input-wrapper:focus { 
+textarea:focus { 
     border-color:#667eea; 
     outline:none;
     background: white;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
-.input-wrapper .symbol-asterisk {
+.preview-container {
+    width:100%; 
+    min-height:80px; 
+    max-height:150px;
+    padding:15px; 
+    border:2px solid #e2e8f0; 
+    border-radius:12px; 
+    font-size:14px; 
+    font-family: 'Courier New', monospace;
+    background: #f8fafc;
+    overflow-y: auto;
+    line-height:1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 10px;
+}
+.preview-container .symbol-asterisk {
     color: #2196F3;
     font-weight: bold;
 }
-.input-wrapper .symbol-hash {
+.preview-container .symbol-hash {
     color: #f44336;
     font-weight: bold;
 }
-.input-wrapper .value-number {
+.preview-container .value-number {
     color: #4CAF50;
     font-weight: bold;
 }
-.input-wrapper .text-purple {
+.preview-container .text-purple {
     color: #9C27B0;
 }
-.input-wrapper .number-key {
+.preview-container .number-key {
     color: #FF9800;
+    font-weight: bold;
 }
 .input-counter {
     position: absolute;
@@ -273,8 +288,12 @@ button:active {
     button {
         min-width: calc(50% - 6px);
     }
-    .input-wrapper {
-        height:150px;
+    textarea {
+        height:120px;
+    }
+    .preview-container {
+        min-height:60px;
+        max-height:120px;
     }
     .markdown-output {
         max-height:300px;
@@ -296,14 +315,24 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Masukkan data - Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br><strong>Warna: *<span style="color:#2196F3">Biru</span> #<span style="color:#f44336">Merah</span> Value<span style="color:#4CAF50">Hijau</span> Huruf<span style="color:#9C27B0">Ungu</span></strong></div>
+        <div class="subtitle">Masukkan data - Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br>
+        <strong>Warna: *<span style="color:#2196F3">Biru</span> #<span style="color:#f44336">Merah</span> Value<span style="color:#4CAF50">Hijau</span> Huruf<span style="color:#9C27B0">Ungu</span> Angka<span style="color:#FF9800">Orange</span></strong></div>
     </div>
     
     <div class="input-section">
         <div class="textarea-container">
-            <div id="inputDisplay" class="input-wrapper" contenteditable="true" oninput="handleInput()" onkeydown="handleKeyDown(event)" placeholder="Masukkan data di sini..."></div>
-            <textarea id="inputData" style="display:none;"></textarea>
+            <textarea id="inputData" placeholder="CONTOH:
+SIWAR:
+01*02#1000, 
+01#2000, 
+SURAT:
+03*04#5000, 
+05#3000," oninput="updatePreview()"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
+        </div>
+        
+        <div class="preview-container" id="colorPreview">
+            // Preview berwarna akan muncul di sini...
         </div>
         
         <div class="button-group">
@@ -339,85 +368,34 @@ button:active {
 
 <script>
 function highlightText(text) {
+    if (!text.trim()) {
+        return '<span style="color:#999">// Preview berwarna akan muncul di sini...</span>';
+    }
+    
     // Highlight pattern dengan warna
     return text
-        // Highlight angka dalam key (orange)
-        .replace(/(\d+)(?=[^*#\n]*#)/g, '<span class="number-key">$1</span>')
+        // Highlight angka dalam key (orange) - angka sebelum # yang valid
+        .replace(/(\b\d+\b)(?=[^*#\n]*#\d{3,})/g, '<span class="number-key">$1</span>')
         // Highlight * (biru)
         .replace(/\*/g, '<span class="symbol-asterisk">*</span>')
-        // Highlight # (merah)
-        .replace(/#/g, '<span class="symbol-hash">#</span>')
-        // Highlight value numbers (hijau) - angka setelah # dan sebelum koma/baris baru
-        .replace(/#(\d{3,})(?=[,\s]|$)/g, '#<span class="value-number">$1</span>')
+        // Highlight # (merah) - hanya yang diikuti angka 3 digit atau lebih
+        .replace(/#(?=\d{3,}\b)/g, '<span class="symbol-hash">#</span>')
+        // Highlight value numbers (hijau) - angka setelah # dan minimal 3 digit
+        .replace(/#(\d{3,})\b/g, '#<span class="value-number">$1</span>')
         // Highlight huruf/teks (ungu) - kata yang mengandung huruf
         .replace(/([a-zA-Z\u00C0-\u024F\u1E00-\u1EFF]+[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s]*)/g, '<span class="text-purple">$1</span>');
 }
 
-function handleInput() {
-    const display = document.getElementById('inputDisplay');
+function updatePreview() {
     const textarea = document.getElementById('inputData');
+    const preview = document.getElementById('colorPreview');
+    const text = textarea.value;
     
-    // Simpan cursor position
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const cursorPosition = range.startOffset;
+    // Update preview dengan warna
+    preview.innerHTML = highlightText(text);
     
-    // Get plain text
-    const plainText = display.innerText || display.textContent;
-    textarea.value = plainText;
-    
-    // Apply highlighting
-    const highlightedHTML = highlightText(plainText);
-    display.innerHTML = highlightedHTML;
-    
-    // Restore cursor position
-    try {
-        const newRange = document.createRange();
-        const textNodes = getTextNodes(display);
-        let currentPos = 0;
-        
-        for (const node of textNodes) {
-            const length = node.textContent.length;
-            if (currentPos + length >= cursorPosition) {
-                newRange.setStart(node, cursorPosition - currentPos);
-                newRange.setEnd(node, cursorPosition - currentPos);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
-                break;
-            }
-            currentPos += length;
-        }
-    } catch (e) {
-        // Jika gagal restore cursor, set ke akhir
-        display.focus();
-    }
-    
+    // Update counter
     updateInputCounter();
-}
-
-function getTextNodes(element) {
-    const textNodes = [];
-    const walker = document.createTreeWalker(
-        element,
-        NodeFilter.SHOW_TEXT,
-        null,
-        false
-    );
-    
-    let node;
-    while (node = walker.nextNode()) {
-        textNodes.push(node);
-    }
-    
-    return textNodes;
-}
-
-function handleKeyDown(event) {
-    // Handle Enter key untuk new line
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        document.execCommand('insertLineBreak');
-    }
 }
 
 function extractValidPatterns(line) {
@@ -718,10 +696,10 @@ function copyMarkdown() {
 
 function cleanAll() {
     // Hapus input data
-    const display = document.getElementById('inputDisplay');
     const textarea = document.getElementById('inputData');
-    display.innerHTML = '';
+    const preview = document.getElementById('colorPreview');
     textarea.value = '';
+    preview.innerHTML = '<span style="color:#999">// Preview berwarna akan muncul di sini...</span>';
     
     // Reset output ke default
     document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
@@ -752,14 +730,6 @@ function showInfo(message, type) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Set placeholder for contenteditable div
-    const display = document.getElementById('inputDisplay');
-    display.innerHTML = '<span style="color:#999">Masukkan data di sini...</span>';
-    display.addEventListener('focus', function() {
-        if (this.textContent === 'Masukkan data di sini...') {
-            this.innerHTML = '';
-        }
-    });
     updateInputCounter();
 });
 </script>
