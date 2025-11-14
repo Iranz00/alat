@@ -18,6 +18,7 @@ body {
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    transition: all 0.3s ease;
 }
 .container { 
     max-width:1200px; 
@@ -27,6 +28,7 @@ body {
     border-radius:20px; 
     padding:30px; 
     box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
 }
 .header { 
     text-align:center; 
@@ -37,6 +39,7 @@ h1 {
     margin-bottom:8px; 
     font-size:2.2rem;
     font-weight:700;
+    transition: all 0.3s ease;
 }
 .subtitle { 
     text-align:center; 
@@ -44,6 +47,32 @@ h1 {
     font-size:15px; 
     margin-bottom:25px;
     line-height:1.5;
+    transition: all 0.3s ease;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.theme-toggle button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.theme-toggle button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 /* Tab Styles */
@@ -98,25 +127,44 @@ h1 {
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     background: #f8fafc;
+    transition: all 0.3s ease;
 }
 .input-box h3 {
     color: #2d3748;
     margin-bottom: 15px;
     font-size: 1.1rem;
+    transition: all 0.3s ease;
 }
-textarea, input { 
+
+/* REKAP DATA - Textarea Lebar */
+.rekap-textarea {
     width:100%; 
+    height:180px; 
     padding:15px; 
     border:2px solid #e2e8f0; 
     border-radius:8px; 
     font-size:16px; 
     font-family: 'Courier New', monospace;
     resize: vertical;
+    transition: all 0.3s ease;
 }
+
+/* BBFS & KOMBINASI - Input Sempit */
+.bbfs-input, .kombinasi-input {
+    width:100%; 
+    padding:12px; 
+    border:2px solid #e2e8f0; 
+    border-radius:8px; 
+    font-size:16px; 
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+}
+
 textarea:focus, input:focus { 
     border-color:#667eea; 
     outline:none;
 }
+
 .button-group { 
     display:flex; 
     gap:12px; 
@@ -160,6 +208,7 @@ button:hover {
     text-align:center;
     font-weight:500;
     border-left:4px solid #2196F3;
+    transition: all 0.3s ease;
 }
 .info.success {
     background:#e8f5e8;
@@ -193,21 +242,24 @@ button:hover {
     background: #f8fafc;
     border-radius: 12px;
     border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
 }
 
-/* BBFS Specific Styles */
+/* BBFS & Kombinasi Specific Styles */
 .digit-selection {
     background:#f8f9fa;
     padding:15px;
     border-radius:10px;
     margin-bottom:15px;
     border:2px solid #e9ecef;
+    transition: all 0.3s ease;
 }
 .digit-selection h3 {
     margin-bottom:10px;
     color:#333;
     font-size:14px;
     text-align:center;
+    transition: all 0.3s ease;
 }
 .checkbox-group {
     display:flex;
@@ -228,6 +280,7 @@ button:hover {
     font-size:14px;
     color:#333;
     cursor:pointer;
+    transition: all 0.3s ease;
 }
 .warning {
     background:#fff3cd;
@@ -238,12 +291,14 @@ button:hover {
     text-align:center;
     font-size:14px;
     border:1px solid #ffeaa7;
+    transition: all 0.3s ease;
 }
 .output-container {
     border:2px solid #ddd;
     border-radius:10px;
     padding:15px;
     background:#f9f9f9;
+    transition: all 0.3s ease;
 }
 .output-header {
     display:flex;
@@ -254,6 +309,7 @@ button:hover {
 .output-title {
     font-weight:bold;
     color:#333;
+    transition: all 0.3s ease;
 }
 .output-count {
     background:#667eea;
@@ -269,6 +325,91 @@ button:hover {
     margin:10px 0;
 }
 
+/* Dark Theme Styles */
+body.dark-theme {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+body.dark-theme .container {
+    background: #2d3748;
+    color: #e2e8f0;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+body.dark-theme h1 {
+    color: #e2e8f0;
+}
+body.dark-theme .subtitle {
+    color: #a0aec0;
+}
+body.dark-theme .input-box {
+    background: #4a5568;
+    border-color: #718096;
+}
+body.dark-theme .input-box h3 {
+    color: #e2e8f0;
+}
+body.dark-theme .rekap-textarea,
+body.dark-theme .bbfs-input,
+body.dark-theme .kombinasi-input {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+}
+body.dark-theme .rekap-textarea:focus,
+body.dark-theme .bbfs-input:focus,
+body.dark-theme .kombinasi-input:focus {
+    border-color: #667eea;
+    background: #4a5568;
+}
+body.dark-theme .info {
+    background: #4a5568;
+    border-left-color: #667eea;
+    color: #e2e8f0;
+}
+body.dark-theme .info.success {
+    background: #2d5c2d;
+    border-left-color: #4CAF50;
+}
+body.dark-theme .info.error {
+    background: #5c2d2d;
+    border-left-color: #f44336;
+}
+body.dark-theme .stats {
+    background: #4a5568;
+    color: #e2e8f0;
+}
+body.dark-theme .digit-selection {
+    background: #4a5568;
+    border-color: #718096;
+}
+body.dark-theme .digit-selection h3 {
+    color: #e2e8f0;
+}
+body.dark-theme .checkbox-item label {
+    color: #e2e8f0;
+}
+body.dark-theme .warning {
+    background: #5c4d2d;
+    color: #ffebee;
+    border-color: #856404;
+}
+body.dark-theme .output-container {
+    background: #4a5568;
+    border-color: #718096;
+}
+body.dark-theme .output-title {
+    color: #e2e8f0;
+}
+body.dark-theme .theme-toggle button {
+    background: linear-gradient(135deg, #4a5568, #718096);
+}
+body.dark-theme .tab-buttons {
+    background: #4a5568;
+}
+body.dark-theme .tab-btn.active {
+    background: #2d3748;
+    color: #667eea;
+}
+
 @media (max-width: 768px) {
     .input-group {
         grid-template-columns: 1fr;
@@ -282,6 +423,9 @@ button:hover {
     .tab-buttons {
         flex-direction: column;
     }
+    .rekap-textarea {
+        height: 150px;
+    }
 }
 </style>
 </head>
@@ -290,6 +434,13 @@ button:hover {
     <div class="header">
         <h1>🛠️ TOOLS DATA & KOMBINASI</h1>
         <div class="subtitle">Dua tools dalam satu aplikasi - Rekap Data dan Generator Kombinasi</div>
+    </div>
+    
+    <div class="theme-toggle">
+        <button id="themeButton" onclick="toggleTheme()">
+            <span>🌙</span>
+            <span>Mode Gelap</span>
+        </button>
     </div>
     
     <div class="tab-container">
@@ -304,7 +455,7 @@ button:hover {
             </button>
             <button class="tab-btn" onclick="switchTab('tab3')">
                 <span>🔢</span>
-                <span>KOMBINASI 4D/3D/2D</span>
+                <span>POLTAR 4D/3D/2D</span>
             </button>
         </div>
         
@@ -314,7 +465,7 @@ button:hover {
                 <div class="input-group">
                     <div class="input-box">
                         <h3>📥 INPUT DATA</h3>
-                        <textarea id="inputData" placeholder="CONTOH:
+                        <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
 SIWAR:
 01*02#1000, 
 01#2000, 
@@ -334,7 +485,7 @@ SURAT:
                     </button>
                     <button class="btn-secondary" onclick="copyMarkdown()">
                         <span>📋</span>
-                        <span>SALIN OUTPUT</span>
+                        <span>COPY OUTPUT</span>
                     </button>
                     <button class="btn-danger" onclick="cleanAll()">
                         <span>🗑️</span>
@@ -368,7 +519,7 @@ SURAT:
                 <div class="input-group">
                     <div class="input-box">
                         <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputAngka" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
+                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
                     </div>
                 </div>
                 
@@ -383,7 +534,7 @@ SURAT:
                 
                 <div class="button-group">
                     <button class="btn-primary" onclick="generatePermutasi()" id="btnGenerate">
-                        <span>🚀</span>
+                        <span>🎲</span>
                         <span>GENERATE</span>
                     </button>
                     <button class="btn-secondary" onclick="copyOutput()">
@@ -417,23 +568,41 @@ SURAT:
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT KELOMPOK ANGKA</h3>
-                        <textarea id="inputKelompok" placeholder="Masukkan kelompok angka dipisahkan koma&#10;Contoh 4D: 1234,5678,90ab,cdef&#10;Contoh 3D: 123,456,789&#10;Contoh 2D: 12,34,56" rows="4"></textarea>
+                        <h3>📥 INPUT ANGKA</h3>
+                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan kelompok angka dipisahkan koma (contoh: 1234,5678,90ab,cdef)">
+                    </div>
+                </div>
+                
+                <div class="digit-selection">
+                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
+                    <div class="checkbox-group" id="kombinasiCheckboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kombinasi4D" value="4D" checked>
+                            <label for="kombinasi4D">4D</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kombinasi3D" value="3D" checked>
+                            <label for="kombinasi3D">3D</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kombinasi2D" value="2D" checked>
+                            <label for="kombinasi2D">2D</label>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="button-group">
                     <button class="btn-primary" onclick="generateKombinasi()">
                         <span>🎲</span>
-                        <span>GENERATE KOMBINASI</span>
+                        <span>GENERATE</span>
                     </button>
                     <button class="btn-secondary" onclick="copyKombinasi()">
                         <span>📋</span>
-                        <span>SALIN HASIL</span>
+                        <span>COPY OUTPUT</span>
                     </button>
                     <button class="btn-danger" onclick="clearKombinasi()">
                         <span>🗑️</span>
-                        <span>RESET</span>
+                        <span>CLEAR</span>
                     </button>
                 </div>
             </div>
@@ -455,20 +624,43 @@ SURAT:
 
 <script>
 // =============================================
+// THEME TOGGLE
+// =============================================
+function toggleTheme() {
+    const body = document.body;
+    const themeButton = document.getElementById('themeButton');
+    
+    body.classList.toggle('dark-theme');
+    
+    if (body.classList.contains('dark-theme')) {
+        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeButton = document.getElementById('themeButton');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+    }
+}
+
+// =============================================
 // TAB MANAGEMENT
 // =============================================
 function switchTab(tabName) {
-    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
-    
-    // Remove active class from all buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
-    // Show selected tab and activate button
     document.getElementById(tabName).classList.add('active');
     event.currentTarget.classList.add('active');
 }
@@ -586,7 +778,7 @@ function prosesData() {
         return;
     }
     
-    // Process data (sama seperti sebelumnya)
+    // Process data
     const individualKeyMap = {};
     allValidPatterns.forEach(pattern => {
         const keys = pattern.keyPart.split('*')
@@ -601,7 +793,6 @@ function prosesData() {
         }
     });
     
-    // Continue dengan logic pengelompokan yang sudah ada
     const valueMap = {};
     Object.entries(individualKeyMap).forEach(([key, value]) => {
         if (!valueMap[value]) valueMap[value] = [];
@@ -867,6 +1058,17 @@ function generateKombinasi() {
         return;
     }
     
+    // Get selected digit types
+    const selectedTypes = [];
+    if (document.getElementById('kombinasi4D').checked) selectedTypes.push('4D');
+    if (document.getElementById('kombinasi3D').checked) selectedTypes.push('3D');
+    if (document.getElementById('kombinasi2D').checked) selectedTypes.push('2D');
+    
+    if (selectedTypes.length === 0) {
+        showInfoKombinasi('Pilih minimal satu jenis kombinasi!', 'error');
+        return;
+    }
+    
     const groups = input.split(',').map(g => g.trim()).filter(g => g);
     const results = {
         '4D': [],
@@ -874,22 +1076,16 @@ function generateKombinasi() {
         '2D': []
     };
     
-    // Generate berdasarkan jumlah kelompok
-    if (groups.length >= 4) {
-        // 4D dari semua 4 kelompok pertama
+    // Generate berdasarkan jumlah kelompok dan pilihan user
+    if (groups.length >= 4 && selectedTypes.includes('4D')) {
         results['4D'] = generateCartesian(groups.slice(0, 4));
-        // 3D dari kelompok 2,3,4
-        results['3D'] = generateCartesian(groups.slice(1, 4));
-        // 2D dari kelompok 3,4
-        results['2D'] = generateCartesian(groups.slice(2, 4));
-    } else if (groups.length === 3) {
-        // 3D dari semua 3 kelompok
-        results['3D'] = generateCartesian(groups);
-        // 2D dari kelompok 2,3
-        results['2D'] = generateCartesian(groups.slice(1));
-    } else if (groups.length === 2) {
-        // 2D dari semua 2 kelompok
-        results['2D'] = generateCartesian(groups);
+    }
+    if (groups.length >= 3 && selectedTypes.includes('3D')) {
+        results['3D'] = groups.length >= 4 ? generateCartesian(groups.slice(1, 4)) : generateCartesian(groups);
+    }
+    if (groups.length >= 2 && selectedTypes.includes('2D')) {
+        results['2D'] = groups.length >= 4 ? generateCartesian(groups.slice(2, 4)) : 
+                      groups.length >= 3 ? generateCartesian(groups.slice(1)) : generateCartesian(groups);
     }
     
     let output = '';
@@ -947,6 +1143,9 @@ function clearKombinasi() {
     document.getElementById('inputKelompok').value = '';
     document.getElementById('outputKombinasi').textContent = '// Hasil kombinasi akan muncul di sini...';
     document.getElementById('totalKombinasi').textContent = '0 kombinasi';
+    document.querySelectorAll('#kombinasiCheckboxes input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
     showInfoKombinasi('💡 Masukkan kelompok angka dipisahkan koma', 'default');
 }
 
@@ -974,6 +1173,9 @@ function copyToClipboard(text) {
 // INITIALIZATION
 // =============================================
 document.addEventListener('DOMContentLoaded', function() {
+    // Load saved theme
+    loadTheme();
+    
     // Initialize BBFS digit checkboxes
     document.getElementById('inputAngka').addEventListener('input', function(e) {
         const value = e.target.value;
@@ -987,6 +1189,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Support Enter key untuk generate
     document.getElementById('inputAngka').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') generatePermutasi();
+    });
+    
+    // Support Enter key untuk kombinasi
+    document.getElementById('inputKelompok').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') generateKombinasi();
     });
     
     // Initialize dengan 0 digit
