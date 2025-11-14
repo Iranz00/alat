@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tools Data & Kombinasi</title>
+<title>POLTAR 4D/3D/2D - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -21,7 +21,7 @@ body {
     transition: all 0.3s ease;
 }
 .container { 
-    max-width:1200px; 
+    max-width:800px; 
     width:100%;
     margin:0 auto; 
     background:white; 
@@ -75,45 +75,7 @@ h1 {
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
-/* Tab Styles */
-.tab-container {
-    margin-bottom: 20px;
-}
-.tab-buttons {
-    display: flex;
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 5px;
-    margin-bottom: 20px;
-}
-.tab-btn {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.tab-btn.active {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    color: #667eea;
-}
-.tab-content {
-    display: none;
-}
-.tab-content.active {
-    display: block;
-}
-
-/* Common Styles */
+/* Input Section */
 .input-section {
     margin-bottom:20px;
 }
@@ -135,22 +97,7 @@ h1 {
     font-size: 1.1rem;
     transition: all 0.3s ease;
 }
-
-/* REKAP DATA - Textarea Lebar */
-.rekap-textarea {
-    width:100%; 
-    height:180px; 
-    padding:15px; 
-    border:2px solid #e2e8f0; 
-    border-radius:8px; 
-    font-size:16px; 
-    font-family: 'Courier New', monospace;
-    resize: vertical;
-    transition: all 0.3s ease;
-}
-
-/* BBFS & KOMBINASI - Input Sempit */
-.bbfs-input, .kombinasi-input {
+.input-kombinasi {
     width:100%; 
     padding:12px; 
     border:2px solid #e2e8f0; 
@@ -159,93 +106,12 @@ h1 {
     font-family: 'Courier New', monospace;
     transition: all 0.3s ease;
 }
-
-textarea:focus, input:focus { 
+.input-kombinasi:focus { 
     border-color:#667eea; 
     outline:none;
 }
 
-.button-group { 
-    display:flex; 
-    gap:12px; 
-    margin-bottom:20px;
-}
-button { 
-    flex: 1; 
-    padding: 16px 12px;
-    border:none; 
-    border-radius:12px; 
-    font-size:15px; 
-    font-weight:600; 
-    cursor:pointer; 
-    transition:all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-.btn-primary { 
-    background:linear-gradient(135deg, #4CAF50, #45a049);
-    color:white;
-}
-.btn-secondary { 
-    background:linear-gradient(135deg, #2196F3, #1976D2);
-    color:white;
-}
-.btn-danger {
-    background:linear-gradient(135deg, #f44336, #f44336);
-    color:white;
-}
-button:hover { 
-    transform:translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-.info { 
-    background:#e3f2fd; 
-    padding:18px; 
-    border-radius:12px; 
-    margin-bottom:20px; 
-    text-align:center;
-    font-weight:500;
-    border-left:4px solid #2196F3;
-    transition: all 0.3s ease;
-}
-.info.success {
-    background:#e8f5e8;
-    border-left-color:#4CAF50;
-    color:#2e7d32;
-}
-.info.error {
-    background:#ffebee;
-    border-left-color:#f44336;
-    color:#c62828;
-}
-.markdown-output { 
-    background:#1a202c; 
-    color:#e2e8f0; 
-    padding:25px; 
-    border-radius:12px; 
-    margin-top:10px; 
-    font-family:'Courier New', monospace; 
-    white-space:pre-wrap; 
-    max-height:500px;
-    overflow-y:auto; 
-    line-height:1.5;
-    font-size:14px;
-}
-.stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 15px;
-    background: #f8fafc;
-    border-radius: 12px;
-    border-left: 4px solid #667eea;
-    transition: all 0.3s ease;
-}
-
-/* BBFS & Kombinasi Specific Styles */
+/* Digit Selection */
 .digit-selection {
     background:#f8f9fa;
     padding:15px;
@@ -282,47 +148,90 @@ button:hover {
     cursor:pointer;
     transition: all 0.3s ease;
 }
-.warning {
-    background:#fff3cd;
-    color:#856404;
-    padding:10px;
-    border-radius:5px;
-    margin-bottom:15px;
-    text-align:center;
-    font-size:14px;
-    border:1px solid #ffeaa7;
-    transition: all 0.3s ease;
+
+/* Button Group */
+.button-group { 
+    display:flex; 
+    gap:12px; 
+    margin-bottom:20px;
 }
-.output-container {
-    border:2px solid #ddd;
-    border-radius:10px;
-    padding:15px;
-    background:#f9f9f9;
-    transition: all 0.3s ease;
+button { 
+    flex: 1; 
+    padding: 16px 12px;
+    border:none; 
+    border-radius:12px; 
+    font-size:15px; 
+    font-weight:600; 
+    cursor:pointer; 
+    transition:all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
-.output-header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:10px;
-}
-.output-title {
-    font-weight:bold;
-    color:#333;
-    transition: all 0.3s ease;
-}
-.output-count {
-    background:#667eea;
+.btn-primary { 
+    background:linear-gradient(135deg, #4CAF50, #45a049);
     color:white;
-    padding:4px 8px;
-    border-radius:12px;
-    font-size:12px;
 }
-.loading {
-    display:none;
+.btn-secondary { 
+    background:linear-gradient(135deg, #2196F3, #1976D2);
+    color:white;
+}
+.btn-danger {
+    background:linear-gradient(135deg, #f44336, #f44336);
+    color:white;
+}
+button:hover { 
+    transform:translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Info & Stats */
+.info { 
+    background:#e3f2fd; 
+    padding:18px; 
+    border-radius:12px; 
+    margin-bottom:20px; 
     text-align:center;
-    color:#667eea;
-    margin:10px 0;
+    font-weight:500;
+    border-left:4px solid #2196F3;
+    transition: all 0.3s ease;
+}
+.info.success {
+    background:#e8f5e8;
+    border-left-color:#4CAF50;
+    color:#2e7d32;
+}
+.info.error {
+    background:#ffebee;
+    border-left-color:#f44336;
+    color:#c62828;
+}
+.stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+/* Output */
+.markdown-output { 
+    background:#1a202c; 
+    color:#e2e8f0; 
+    padding:25px; 
+    border-radius:12px; 
+    margin-top:10px; 
+    font-family:'Courier New', monospace; 
+    white-space:pre-wrap; 
+    max-height:500px;
+    overflow-y:auto; 
+    line-height:1.5;
+    font-size:14px;
 }
 
 /* Dark Theme Styles */
@@ -347,16 +256,12 @@ body.dark-theme .input-box {
 body.dark-theme .input-box h3 {
     color: #e2e8f0;
 }
-body.dark-theme .rekap-textarea,
-body.dark-theme .bbfs-input,
-body.dark-theme .kombinasi-input {
+body.dark-theme .input-kombinasi {
     background: #4a5568;
     border-color: #718096;
     color: #e2e8f0;
 }
-body.dark-theme .rekap-textarea:focus,
-body.dark-theme .bbfs-input:focus,
-body.dark-theme .kombinasi-input:focus {
+body.dark-theme .input-kombinasi:focus {
     border-color: #667eea;
     background: #4a5568;
 }
@@ -387,44 +292,19 @@ body.dark-theme .digit-selection h3 {
 body.dark-theme .checkbox-item label {
     color: #e2e8f0;
 }
-body.dark-theme .warning {
-    background: #5c4d2d;
-    color: #ffebee;
-    border-color: #856404;
-}
-body.dark-theme .output-container {
-    background: #4a5568;
-    border-color: #718096;
-}
-body.dark-theme .output-title {
-    color: #e2e8f0;
-}
 body.dark-theme .theme-toggle button {
     background: linear-gradient(135deg, #4a5568, #718096);
 }
-body.dark-theme .tab-buttons {
-    background: #4a5568;
-}
-body.dark-theme .tab-btn.active {
-    background: #2d3748;
-    color: #667eea;
-}
 
 @media (max-width: 768px) {
-    .input-group {
-        grid-template-columns: 1fr;
-    }
     .button-group {
         flex-wrap: wrap;
     }
     button {
         min-width: calc(50% - 6px);
     }
-    .tab-buttons {
-        flex-direction: column;
-    }
-    .rekap-textarea {
-        height: 150px;
+    .checkbox-group {
+        gap: 10px;
     }
 }
 </style>
@@ -432,8 +312,8 @@ body.dark-theme .tab-btn.active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🛠️ TOOLS DATA & KOMBINASI</h1>
-        <div class="subtitle">Dua tools dalam satu aplikasi - Rekap Data dan Generator Kombinasi</div>
+        <h1>🔢 GENERATOR KOMBINASI 4D/3D/2D</h1>
+        <div class="subtitle">Generate semua kemungkinan kombinasi dari kelompok angka yang dimasukkan</div>
     </div>
     
     <div class="theme-toggle">
@@ -443,182 +323,62 @@ body.dark-theme .tab-btn.active {
         </button>
     </div>
     
-    <div class="tab-container">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('tab1')">
-                <span>📊</span>
-                <span>REKAP DATA</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab2')">
-                <span>🎰</span>
-                <span>GENERATOR BBFS</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab3')">
-                <span>🔢</span>
-                <span>POLTAR 4D/3D/2D</span>
-            </button>
-        </div>
-        
-        <!-- TAB 1: REKAP DATA -->
-        <div id="tab1" class="tab-content active">
-            <div class="input-section">
-                <div class="input-group">
-                    <div class="input-box">
-                        <h3>📥 INPUT DATA</h3>
-                        <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
-SIWAR:
-01*02#1000, 
-01#2000, 
-SURAT:
-03*04#5000, 
-05#10000," oninput="updateInputCounter()"></textarea>
-                        <div style="text-align: right; margin-top: 10px; font-size: 14px; color: #666;">
-                            Total: <span id="inputCounter">0</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn-primary" onclick="prosesData()">
-                        <span>🚀</span>
-                        <span>PROSES DATA</span>
-                    </button>
-                    <button class="btn-secondary" onclick="copyMarkdown()">
-                        <span>📋</span>
-                        <span>COPY OUTPUT</span>
-                    </button>
-                    <button class="btn-danger" onclick="cleanAll()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="info">
-                💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka
-            </div>
-
-            <div id="errorDetails" style="display: none;"></div>
-
-            <div class="output-section">
-                <div class="stats">
-                    <div><strong>Hasil Output:</strong></div>
-                    <div class="output-count" id="outputTotal">Total: 0</div>
-                </div>
-                <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+    <div class="input-section">
+        <div class="input-group">
+            <div class="input-box">
+                <input type="text" id="inputKelompok" class="input-kombinasi" 
+                       placeholder="Masukkan angka dipisahkan koma (contoh: 134,568,256,189)"
+                       onkeypress="if(event.key === 'Enter') generateKombinasi()">
             </div>
         </div>
         
-        <!-- TAB 2: GENERATOR BBFS -->
-        <div id="tab2" class="tab-content">
-            <div class="warning">
-                ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
-            </div>
-            
-            <div class="input-section">
-                <div class="input-group">
-                    <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
-                    </div>
+        <div class="digit-selection">
+            <h3>📊 PILIH JENIS KOMBINASI:</h3>
+            <div class="checkbox-group" id="kombinasiCheckboxes">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="kombinasi4D" value="4D" checked>
+                    <label for="kombinasi4D">4D</label>
                 </div>
-                
-                <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
-                    <div class="checkbox-group" id="digitCheckboxes">
-                        <!-- Checkbox akan di-generate otomatis oleh JavaScript -->
-                    </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="kombinasi3D" value="3D" checked>
+                    <label for="kombinasi3D">3D</label>
                 </div>
-                
-                <div class="loading" id="loading">⏳ Sedang memproses... Harap tunggu!</div>
-                
-                <div class="button-group">
-                    <button class="btn-primary" onclick="generatePermutasi()" id="btnGenerate">
-                        <span>🎲</span>
-                        <span>GENERATE</span>
-                    </button>
-                    <button class="btn-secondary" onclick="copyOutput()">
-                        <span>📋</span>
-                        <span>COPY OUTPUT</span>
-                    </button>
-                    <button class="btn-danger" onclick="clearAllBBFS()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
-
-            <div class="output-container">
-                <div class="output-header">
-                    <div class="output-title">HASIL PERMUTASI</div>
-                    <div class="output-count" id="countOutput">0 hasil</div>
-                </div>
-                <div class="markdown-output" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
-                <div class="stats">
-                    <div id="timeInfo">Waktu: -</div>
-                    <div id="memoryInfo">Karakter: 0</div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="kombinasi2D" value="2D" checked>
+                    <label for="kombinasi2D">2D</label>
                 </div>
             </div>
         </div>
         
-        <!-- TAB 3: KOMBINASI 4D/3D/2D -->
-        <div id="tab3" class="tab-content">
-            <div class="input-section">
-                <div class="input-group">
-                    <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan kelompok angka dipisahkan koma (contoh: 1234,5678,90ab,cdef)">
-                    </div>
-                </div>
-                
-                <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE:</h3>
-                    <div class="checkbox-group" id="kombinasiCheckboxes">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi4D" value="4D" checked>
-                            <label for="kombinasi4D">4D</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi3D" value="3D" checked>
-                            <label for="kombinasi3D">3D</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi2D" value="2D" checked>
-                            <label for="kombinasi2D">2D</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn-primary" onclick="generateKombinasi()">
-                        <span>🎲</span>
-                        <span>GENERATE</span>
-                    </button>
-                    <button class="btn-secondary" onclick="copyKombinasi()">
-                        <span>📋</span>
-                        <span>COPY OUTPUT</span>
-                    </button>
-                    <button class="btn-danger" onclick="clearKombinasi()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="infoKombinasi">
-                💡 Masukkan kelompok angka dipisahkan koma. Program akan generate kombinasi 4D, 3D, dan 2D otomatis.
-            </div>
-
-            <div class="output-section">
-                <div class="stats">
-                    <div><strong>Hasil Kombinasi:</strong></div>
-                    <div class="output-count" id="totalKombinasi">0 kombinasi</div>
-                </div>
-                <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
-            </div>
+        <div class="button-group">
+            <button class="btn-primary" onclick="generateKombinasi()">
+                <span>🎲</span>
+                <span>GENERATE KOMBINASI</span>
+            </button>
+            <button class="btn-secondary" onclick="copyKombinasi()">
+                <span>📋</span>
+                <span>SALIN HASIL</span>
+            </button>
+            <button class="btn-danger" onclick="clearKombinasi()">
+                <span>🗑️</span>
+                <span>RESET</span>
+            </button>
         </div>
+    </div>
+    
+    <div class="info" id="infoKombinasi">
+        💡 <strong>Cara penggunaan:</strong><br>
+        • Masukkan kelompok angka dipisahkan koma<br>
+        • Pilih jenis kombinasi yang ingin digenerate<br>
+        • Program akan otomatis generate 4D, 3D, dan 2D
+    </div>
+
+    <div class="output-section">
+        <div class="stats">
+            <div><strong>HASIL KOMBINASI:</strong></div>
+            <div id="totalKombinasi">0 kombinasi</div>
+        </div>
+        <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
     </div>
 </div>
 
@@ -652,409 +412,12 @@ function loadTheme() {
 }
 
 // =============================================
-// TAB MANAGEMENT
-// =============================================
-function switchTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById(tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
-}
-
-// =============================================
-// TAB 1: REKAP DATA FUNCTIONS
-// =============================================
-function extractValidPatterns(line) {
-    const patterns = [];
-    const regex = /([0-9*]+)#(\d{3,})/g;
-    
-    let match;
-    while ((match = regex.exec(line)) !== null) {
-        const fullPattern = match[0];
-        const keyPart = match[1];
-        const valuePart = match[2];
-        const value = parseInt(valuePart);
-        
-        if (value >= 100 && /[0-9]/.test(keyPart)) {
-            patterns.push({
-                fullPattern: fullPattern,
-                keyPart: keyPart,
-                value: value,
-                originalLine: line
-            });
-        }
-    }
-    
-    return patterns;
-}
-
-function updateInputCounter() {
-    const input = document.getElementById('inputData').value.trim();
-    let total = 0;
-    
-    if (input) {
-        const lines = input.split(',').map(line => line.trim()).filter(line => line);
-        const individualKeyMap = {};
-        
-        lines.forEach(line => {
-            const patterns = extractValidPatterns(line);
-            patterns.forEach(pattern => {
-                const keys = pattern.keyPart.split('*')
-                    .map(k => k.trim())
-                    .filter(k => k && /^\d+$/.test(k));
-                
-                if (keys.length > 0 && !isNaN(pattern.value)) {
-                    keys.forEach(key => {
-                        if (!individualKeyMap[key]) individualKeyMap[key] = 0;
-                        individualKeyMap[key] += pattern.value;
-                    });
-                }
-            });
-        });
-        
-        Object.values(individualKeyMap).forEach(value => {
-            total += value;
-        });
-    }
-    
-    document.getElementById('inputCounter').textContent = total.toLocaleString();
-}
-
-function validateLine(line) {
-    const patterns = extractValidPatterns(line);
-    if (patterns.length === 0) {
-        return { isValid: false, reason: 'Tidak ditemukan pattern angka#angka dengan value ≥100', line: line };
-    }
-    return { isValid: true, reason: 'Valid', line: line, patterns: patterns };
-}
-
-function showErrorDetails(invalidLines) {
-    const errorDetails = document.getElementById('errorDetails');
-    if (invalidLines.length === 0) {
-        errorDetails.style.display = 'none';
-        return;
-    }
-    
-    let errorHTML = `<div class="info error"><strong>⚠️ ${invalidLines.length} Data Tidak Valid:</strong><br>`;
-    invalidLines.forEach(item => {
-        errorHTML += `"${item.line}" - ${item.reason}<br>`;
-    });
-    errorHTML += `</div>`;
-    errorDetails.innerHTML = errorHTML;
-    errorDetails.style.display = 'block';
-}
-
-function prosesData() {
-    const input = document.getElementById('inputData').value.trim();
-    if (!input) {
-        showInfoRekap('Masukkan data terlebih dahulu!', 'error');
-        document.getElementById('errorDetails').style.display = 'none';
-        return;
-    }
-    
-    const lines = input.split(',').map(line => line.trim()).filter(line => line);
-    const validationResults = lines.map(line => validateLine(line));
-    const validLines = validationResults.filter(result => result.isValid);
-    const invalidLines = validationResults.filter(result => !result.isValid);
-    
-    showErrorDetails(invalidLines);
-    
-    if (validLines.length === 0) {
-        showInfoRekap('Tidak ada data valid yang ditemukan!', 'error');
-        return;
-    }
-    
-    const allValidPatterns = [];
-    validLines.forEach(result => {
-        allValidPatterns.push(...result.patterns);
-    });
-    
-    if (allValidPatterns.length === 0) {
-        showInfoRekap('Tidak ada data valid yang ditemukan!', 'error');
-        return;
-    }
-    
-    // Process data
-    const individualKeyMap = {};
-    allValidPatterns.forEach(pattern => {
-        const keys = pattern.keyPart.split('*')
-            .map(k => k.trim())
-            .filter(k => k && /^\d+$/.test(k));
-        
-        if (keys.length > 0 && !isNaN(pattern.value)) {
-            keys.forEach(key => {
-                if (!individualKeyMap[key]) individualKeyMap[key] = 0;
-                individualKeyMap[key] += pattern.value;
-            });
-        }
-    });
-    
-    const valueMap = {};
-    Object.entries(individualKeyMap).forEach(([key, value]) => {
-        if (!valueMap[value]) valueMap[value] = [];
-        valueMap[value].push(key);
-    });
-    
-    const mergedData = Object.entries(valueMap)
-        .map(([value, keys]) => ({
-            keys: keys.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})),
-            value: parseInt(value)
-        }))
-        .sort((a, b) => b.value - a.value);
-    
-    const groups = { '4DIGIT': [], '3DIGIT': [], '2DIGIT': [] };
-    mergedData.forEach(item => {
-        const keys4 = [], keys3 = [], keys2 = [];
-        item.keys.forEach(key => {
-            if (/^\d+$/.test(key)) {
-                const digitLength = key.length;
-                if (digitLength === 4) keys4.push(key);
-                else if (digitLength === 3) keys3.push(key);
-                else if (digitLength === 2) keys2.push(key);
-            }
-        });
-        if (keys4.length > 0) groups['4DIGIT'].push({ keys: keys4.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})), value: item.value });
-        if (keys3.length > 0) groups['3DIGIT'].push({ keys: keys3.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})), value: item.value });
-        if (keys2.length > 0) groups['2DIGIT'].push({ keys: keys2.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})), value: item.value });
-    });
-    
-    Object.keys(groups).forEach(group => {
-        groups[group].sort((a, b) => b.value - a.value);
-    });
-    
-    generateMarkdown(groups);
-    
-    if (invalidLines.length > 0 && validLines.length > 0) {
-        showInfoRekap(`Data berhasil diproses! ${allValidPatterns.length} pattern valid, ${invalidLines.length} tidak valid.`, 'warning');
-    } else {
-        showInfoRekap(`Data berhasil diproses! ${allValidPatterns.length} pattern valid.`, 'success');
-    }
-}
-
-function generateMarkdown(groups) {
-    const markdownOutput = document.getElementById('markdownOutput');
-    let output = '';
-    let totalOutputValue = 0;
-    
-    ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
-        if (groups[group] && groups[group].length > 0) {
-            output += `${group}\n`;
-            groups[group].forEach(entry => {
-                output += `${entry.keys.join('*')}#${entry.value},\n`;
-                totalOutputValue += entry.value * entry.keys.length;
-            });
-            output += '\n';
-        }
-    });
-    
-    document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
-    markdownOutput.textContent = output || '// Tidak ada data yang diproses';
-}
-
-function copyMarkdown() {
-    const markdownOutput = document.getElementById('markdownOutput');
-    copyToClipboard(markdownOutput.textContent);
-    showInfoRekap('Output berhasil disalin!', 'success');
-}
-
-function cleanAll() {
-    document.getElementById('inputData').value = '';
-    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
-    document.getElementById('outputTotal').textContent = 'Total: 0';
-    document.getElementById('inputCounter').textContent = '0';
-    document.getElementById('errorDetails').style.display = 'none';
-    showInfoRekap('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
-}
-
-function showInfoRekap(message, type) {
-    const infoDiv = document.getElementById('info');
-    infoDiv.textContent = message;
-    infoDiv.className = 'info';
-    if (type === 'error') infoDiv.classList.add('error');
-    else if (type === 'success') infoDiv.classList.add('success');
-    else if (type === 'warning') infoDiv.classList.add('error');
-}
-
-// =============================================
-// TAB 2: BBFS FUNCTIONS 
-// =============================================
-let selectedDigits = [];
-
-function generatePermutasi() {
-    const input = document.getElementById('inputAngka').value.trim();
-    if (!input || !/^\d+$/.test(input)) {
-        showInfoBBFS('Input harus berupa angka!', 'error');
-        return;
-    }
-    
-    const digitCount = input.length;
-    if (digitCount < 2 || digitCount > 6) {
-        showInfoBBFS('Masukkan 2-6 digit angka!', 'error');
-        return;
-    }
-    
-    if (selectedDigits.length === 0) {
-        showInfoBBFS('Pilih minimal satu digit!', 'error');
-        return;
-    }
-    
-    document.getElementById('btnGenerate').disabled = true;
-    document.getElementById('loading').style.display = 'block';
-    
-    setTimeout(() => {
-        const groupedResults = {};
-        const inputDigits = input.split('');
-        
-        selectedDigits.forEach(length => {
-            const groupKey = length + 'DIGIT';
-            groupedResults[groupKey] = new Set();
-            const combinations = generateCombinations(inputDigits, length);
-            
-            combinations.forEach(combination => {
-                const permutations = generateAllPermutations(combination.join(''));
-                permutations.forEach(perm => groupedResults[groupKey].add(perm));
-            });
-        });
-        
-        Object.keys(groupedResults).forEach(group => {
-            groupedResults[group] = Array.from(groupedResults[group]).sort();
-        });
-        
-        const output = formatGroupedOutput(groupedResults);
-        const totalResults = calculateTotalResults(groupedResults);
-        
-        document.getElementById('outputPermutasi').textContent = output;
-        document.getElementById('countOutput').textContent = `${totalResults} hasil`;
-        
-        document.getElementById('btnGenerate').disabled = false;
-        document.getElementById('loading').style.display = 'none';
-        showInfoBBFS(`Berhasil generate ${totalResults} permutasi!`, 'success');
-    }, 10);
-}
-
-function generateCombinations(arr, length) {
-    const results = [];
-    function combine(start, current) {
-        if (current.length === length) {
-            results.push([...current]);
-            return;
-        }
-        for (let i = start; i < arr.length; i++) {
-            current.push(arr[i]);
-            combine(i + 1, current);
-            current.pop();
-        }
-    }
-    combine(0, []);
-    return results;
-}
-
-function generateAllPermutations(str) {
-    const results = [];
-    function permute(arr, memo = []) {
-        if (arr.length === 0) results.push(memo.join(''));
-        else {
-            for (let i = 0; i < arr.length; i++) {
-                const current = arr.slice();
-                const next = current.splice(i, 1);
-                permute(current, memo.concat(next));
-            }
-        }
-    }
-    permute(str.split(''));
-    return results;
-}
-
-function formatGroupedOutput(groupedResults) {
-    let output = '';
-    const sortedGroups = Object.keys(groupedResults).sort((a, b) => parseInt(b) - parseInt(a));
-    sortedGroups.forEach(group => {
-        if (groupedResults[group].length > 0) {
-            output += `${group}\n`;
-            output += `${groupedResults[group].join('*')}*\n`;
-        }
-    });
-    return output;
-}
-
-function calculateTotalResults(groupedResults) {
-    return Object.values(groupedResults).reduce((sum, group) => sum + group.length, 0);
-}
-
-function copyOutput() {
-    copyToClipboard(document.getElementById('outputPermutasi').textContent);
-    showInfoBBFS('Output berhasil disalin!', 'success');
-}
-
-function clearAllBBFS() {
-    document.getElementById('inputAngka').value = '';
-    document.getElementById('outputPermutasi').textContent = '// Hasil akan muncul di sini dengan format kelompok digit';
-    document.getElementById('countOutput').textContent = '0 hasil';
-    document.querySelectorAll('#digitCheckboxes input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    selectedDigits = [];
-    showInfoBBFS('Semua data telah direset!', 'info');
-}
-
-function showInfoBBFS(message, type) {
-    const infoDiv = document.getElementById('infoBBFS');
-    infoDiv.textContent = message;
-    infoDiv.className = 'info';
-    if (type === 'error') infoDiv.classList.add('error');
-    else if (type === 'success') infoDiv.classList.add('success');
-}
-
-function updateDigitCheckboxes(digitCount) {
-    const checkboxContainer = document.getElementById('digitCheckboxes');
-    checkboxContainer.innerHTML = '';
-    selectedDigits = [];
-    
-    if (digitCount >= 2 && digitCount <= 6) {
-        for (let i = 2; i <= digitCount; i++) {
-            const checkboxItem = document.createElement('div');
-            checkboxItem.className = 'checkbox-item';
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `digit${i}`;
-            checkbox.value = i;
-            checkbox.checked = true;
-            checkbox.addEventListener('change', handleDigitSelection);
-            
-            const label = document.createElement('label');
-            label.htmlFor = `digit${i}`;
-            label.textContent = `${i}D`;
-            
-            checkboxItem.appendChild(checkbox);
-            checkboxItem.appendChild(label);
-            checkboxContainer.appendChild(checkboxItem);
-            selectedDigits.push(i);
-        }
-    }
-}
-
-function handleDigitSelection(event) {
-    const digit = parseInt(event.target.value);
-    if (event.target.checked) {
-        if (!selectedDigits.includes(digit)) selectedDigits.push(digit);
-    } else {
-        selectedDigits = selectedDigits.filter(d => d !== digit);
-    }
-    selectedDigits.sort((a, b) => a - b);
-}
-
-// =============================================
-// TAB 3: KOMBINASI FUNCTIONS
+// KOMBINASI FUNCTIONS
 // =============================================
 function generateKombinasi() {
     const input = document.getElementById('inputKelompok').value.trim();
     if (!input) {
-        showInfoKombinasi('Masukkan kelompok angka terlebih dahulu!', 'error');
+        showInfo('Masukkan kelompok angka terlebih dahulu!', 'error');
         return;
     }
     
@@ -1065,11 +428,17 @@ function generateKombinasi() {
     if (document.getElementById('kombinasi2D').checked) selectedTypes.push('2D');
     
     if (selectedTypes.length === 0) {
-        showInfoKombinasi('Pilih minimal satu jenis kombinasi!', 'error');
+        showInfo('Pilih minimal satu jenis kombinasi!', 'error');
         return;
     }
     
     const groups = input.split(',').map(g => g.trim()).filter(g => g);
+    
+    if (groups.length < 2) {
+        showInfo('Masukkan minimal 2 kelompok angka!', 'error');
+        return;
+    }
+    
     const results = {
         '4D': [],
         '3D': [], 
@@ -1110,8 +479,8 @@ function generateKombinasi() {
     }
     
     document.getElementById('outputKombinasi').textContent = output || 'Tidak ada kombinasi yang dihasilkan';
-    document.getElementById('totalKombinasi').textContent = `${total} kombinasi`;
-    showInfoKombinasi(`Berhasil generate ${total} kombinasi!`, 'success');
+    document.getElementById('totalKombinasi').textContent = `${total.toLocaleString()} kombinasi`;
+    showInfo(`Berhasil generate ${total.toLocaleString()} kombinasi!`, 'success');
 }
 
 function generateCartesian(arrays) {
@@ -1135,8 +504,14 @@ function generateCartesian(arrays) {
 }
 
 function copyKombinasi() {
-    copyToClipboard(document.getElementById('outputKombinasi').textContent);
-    showInfoKombinasi('Hasil kombinasi berhasil disalin!', 'success');
+    const output = document.getElementById('outputKombinasi').textContent;
+    if (!output || output === '// Hasil kombinasi akan muncul di sini...' || output === 'Tidak ada kombinasi yang dihasilkan') {
+        showInfo('Tidak ada hasil untuk disalin!', 'error');
+        return;
+    }
+    
+    copyToClipboard(output);
+    showInfo('Hasil kombinasi berhasil disalin!', 'success');
 }
 
 function clearKombinasi() {
@@ -1146,15 +521,18 @@ function clearKombinasi() {
     document.querySelectorAll('#kombinasiCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = true;
     });
-    showInfoKombinasi('💡 Masukkan kelompok angka dipisahkan koma', 'default');
+    showInfo('Semua data telah direset!', 'info');
 }
 
-function showInfoKombinasi(message, type) {
+function showInfo(message, type) {
     const infoDiv = document.getElementById('infoKombinasi');
     infoDiv.textContent = message;
     infoDiv.className = 'info';
-    if (type === 'error') infoDiv.classList.add('error');
-    else if (type === 'success') infoDiv.classList.add('success');
+    if (type === 'error') {
+        infoDiv.classList.add('error');
+    } else if (type === 'success') {
+        infoDiv.classList.add('success');
+    }
 }
 
 // =============================================
@@ -1176,28 +554,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved theme
     loadTheme();
     
-    // Initialize BBFS digit checkboxes
-    document.getElementById('inputAngka').addEventListener('input', function(e) {
-        const value = e.target.value;
-        const digitCount = value.length;
-        if (digitCount > 6) {
-            e.target.value = value.slice(0, 6);
-        }
-        updateDigitCheckboxes(Math.min(digitCount, 6));
-    });
-    
     // Support Enter key untuk generate
-    document.getElementById('inputAngka').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') generatePermutasi();
-    });
-    
-    // Support Enter key untuk kombinasi
     document.getElementById('inputKelompok').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') generateKombinasi();
     });
-    
-    // Initialize dengan 0 digit
-    updateDigitCheckboxes(0);
 });
 </script>
 </body>
