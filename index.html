@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tools Data & Kombinasi</title>
+<title>Tools Data - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -878,7 +878,7 @@ function generateMarkdown(groups) {
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
             const count = groups[group].reduce((sum, entry) => sum + entry.keys.length, 0);
-            output += `${group.replace('DIGIT', 'D')} (${count} line):\n`;
+            output += `${group.replace('DIGIT', 'D')} ${count} line\n`;
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
                 totalOutputValue += entry.value * entry.keys.length;
@@ -1010,7 +1010,7 @@ function formatGroupedOutput(groupedResults) {
     const sortedGroups = Object.keys(groupedResults).sort((a, b) => parseInt(b) - parseInt(a));
     sortedGroups.forEach(group => {
         if (groupedResults[group].length > 0) {
-            output += `${group} (${groupedResults[group].length} line):\n`;
+            output += `${group} ${groupedResults[group].length} line\n`;
             output += `${groupedResults[group].join('*')}*\n\n`;
         }
     });
@@ -1128,19 +1128,19 @@ function generateKombinasi() {
     let total = 0;
     
     if (results['4D'].length > 0) {
-        output += `4D (${results['4D'].length} line):\n`;
+        output += `4D ${results['4D'].length} line\n`;
         output += results['4D'].join('*') + '*\n\n';
         total += results['4D'].length;
     }
     
     if (results['3D'].length > 0) {
-        output += `3D (${results['3D'].length} line):\n`;
+        output += `3D ${results['3D'].length} line\n`;
         output += results['3D'].join('*') + '*\n\n';
         total += results['3D'].length;
     }
     
     if (results['2D'].length > 0) {
-        output += `2D (${results['2D'].length} line):\n`;
+        output += `2D ${results['2D'].length} line\n`;
         output += results['2D'].join('*') + '*\n';
         total += results['2D'].length;
     }
