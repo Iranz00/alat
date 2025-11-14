@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rekap Data Otomatis - RAN</title>
+<title>Rekap Data Otomatis</title>
 <style>
 * { 
     margin:0; 
@@ -57,7 +57,7 @@ h1 {
     position: relative;
     margin-bottom: 15px;
 }
-textarea { 
+.input-wrapper {
     width:100%; 
     height:180px; 
     padding:20px; 
@@ -68,12 +68,33 @@ textarea {
     font-family: 'Courier New', monospace;
     transition: all 0.3s ease;
     background: #f8fafc;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
-textarea:focus { 
+.input-wrapper:focus { 
     border-color:#667eea; 
     outline:none;
     background: white;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.input-wrapper .symbol-asterisk {
+    color: #2196F3;
+    font-weight: bold;
+}
+.input-wrapper .symbol-hash {
+    color: #f44336;
+    font-weight: bold;
+}
+.input-wrapper .value-number {
+    color: #4CAF50;
+    font-weight: bold;
+}
+.input-wrapper .text-purple {
+    color: #9C27B0;
+}
+.input-wrapper .number-key {
+    color: #FF9800;
 }
 .input-counter {
     position: absolute;
@@ -252,7 +273,7 @@ button:active {
     button {
         min-width: calc(50% - 6px);
     }
-    textarea {
+    .input-wrapper {
         height:150px;
     }
     .markdown-output {
@@ -275,18 +296,13 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🧮 REKAP DATA OTOMATIS</h1>
-        <div class="subtitle">Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br><strong>Contoh: 503*530#1000, 90*91*92*94#2000</strong></div>
+        <div class="subtitle">Masukkan data - Program akan otomatis mengekstrak pattern: <strong>angka#angka</strong> dengan value minimal 3 digit<br><strong>Warna: *<span style="color:#2196F3">Biru</span> #<span style="color:#f44336">Merah</span> Value<span style="color:#4CAF50">Hijau</span> Huruf<span style="color:#9C27B0">Ungu</span></strong></div>
     </div>
     
     <div class="input-section">
         <div class="textarea-container">
-            <textarea id="inputData" placeholder="CONTOH:
-SIWAR:
-01*02#1000, 
-01#2000, 
-SURAT:
-03*04#5000, 
-05#3000," oninput="updateInputCounter()"></textarea>
+            <div id="inputDisplay" class="input-wrapper" contenteditable="true" oninput="handleInput()" onkeydown="handleKeyDown(event)" placeholder="Masukkan data di sini..."></div>
+            <textarea id="inputData" style="display:none;"></textarea>
             <div class="input-counter" id="inputCounter">Total: 0</div>
         </div>
         
@@ -322,6 +338,88 @@ SURAT:
 </div>
 
 <script>
+function highlightText(text) {
+    // Highlight pattern dengan warna
+    return text
+        // Highlight angka dalam key (orange)
+        .replace(/(\d+)(?=[^*#\n]*#)/g, '<span class="number-key">$1</span>')
+        // Highlight * (biru)
+        .replace(/\*/g, '<span class="symbol-asterisk">*</span>')
+        // Highlight # (merah)
+        .replace(/#/g, '<span class="symbol-hash">#</span>')
+        // Highlight value numbers (hijau) - angka setelah # dan sebelum koma/baris baru
+        .replace(/#(\d{3,})(?=[,\s]|$)/g, '#<span class="value-number">$1</span>')
+        // Highlight huruf/teks (ungu) - kata yang mengandung huruf
+        .replace(/([a-zA-Z\u00C0-\u024F\u1E00-\u1EFF]+[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s]*)/g, '<span class="text-purple">$1</span>');
+}
+
+function handleInput() {
+    const display = document.getElementById('inputDisplay');
+    const textarea = document.getElementById('inputData');
+    
+    // Simpan cursor position
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const cursorPosition = range.startOffset;
+    
+    // Get plain text
+    const plainText = display.innerText || display.textContent;
+    textarea.value = plainText;
+    
+    // Apply highlighting
+    const highlightedHTML = highlightText(plainText);
+    display.innerHTML = highlightedHTML;
+    
+    // Restore cursor position
+    try {
+        const newRange = document.createRange();
+        const textNodes = getTextNodes(display);
+        let currentPos = 0;
+        
+        for (const node of textNodes) {
+            const length = node.textContent.length;
+            if (currentPos + length >= cursorPosition) {
+                newRange.setStart(node, cursorPosition - currentPos);
+                newRange.setEnd(node, cursorPosition - currentPos);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                break;
+            }
+            currentPos += length;
+        }
+    } catch (e) {
+        // Jika gagal restore cursor, set ke akhir
+        display.focus();
+    }
+    
+    updateInputCounter();
+}
+
+function getTextNodes(element) {
+    const textNodes = [];
+    const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    let node;
+    while (node = walker.nextNode()) {
+        textNodes.push(node);
+    }
+    
+    return textNodes;
+}
+
+function handleKeyDown(event) {
+    // Handle Enter key untuk new line
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.execCommand('insertLineBreak');
+    }
+}
+
 function extractValidPatterns(line) {
     // Mencari semua pattern: angka*angka#angka atau angka#angka dengan value minimal 3 digit
     const patterns = [];
@@ -351,7 +449,8 @@ function extractValidPatterns(line) {
 }
 
 function updateInputCounter() {
-    const input = document.getElementById('inputData').value.trim();
+    const textarea = document.getElementById('inputData');
+    const input = textarea.value.trim();
     let total = 0;
     
     if (input) {
@@ -438,7 +537,8 @@ function showErrorDetails(invalidLines) {
 }
 
 function prosesData() {
-    const input = document.getElementById('inputData').value.trim();
+    const textarea = document.getElementById('inputData');
+    const input = textarea.value.trim();
     if (!input) {
         showInfo('Masukkan data terlebih dahulu!', 'error');
         document.getElementById('errorDetails').style.display = 'none';
@@ -618,7 +718,10 @@ function copyMarkdown() {
 
 function cleanAll() {
     // Hapus input data
-    document.getElementById('inputData').value = '';
+    const display = document.getElementById('inputDisplay');
+    const textarea = document.getElementById('inputData');
+    display.innerHTML = '';
+    textarea.value = '';
     
     // Reset output ke default
     document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
@@ -647,8 +750,16 @@ function showInfo(message, type) {
     }
 }
 
-// Initialize counter on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Set placeholder for contenteditable div
+    const display = document.getElementById('inputDisplay');
+    display.innerHTML = '<span style="color:#999">Masukkan data di sini...</span>';
+    display.addEventListener('focus', function() {
+        if (this.textContent === 'Masukkan data di sini...') {
+            this.innerHTML = '';
+        }
+    });
     updateInputCounter();
 });
 </script>
