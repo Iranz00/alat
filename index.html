@@ -318,14 +318,21 @@ button:hover {
     border-radius:12px;
     font-size:12px;
 }
-.input-count {
-    text-align: right;
-    margin-top: 10px;
-    font-size: 14px;
-    color: #333;
+.total-box {
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
     background: linear-gradient(135deg, #FFD700, #FFC400);
-    padding: 6px 10px;
+    color: #333;
+    font-size: 14px;
+    padding: 3px 10px;
     border-radius: 6px;
+    display: inline-block;
+    width: auto;
+}
+.input-wrapper {
+    position: relative;
+}
 }
 .loading {
     display:none;
@@ -472,6 +479,7 @@ body.dark-theme .tab-btn.active {
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
+                       <div class="input-wrapper">
                         <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
 SIWAR:
 01*02#1000, 
@@ -479,9 +487,10 @@ SIWAR:
 SURAT:
 03*04#5000, 
 05#10000," oninput="updateInputCounter()"></textarea>
-                        <div class="input-count">
-                        Total: <span id="inputCounter">0</span>
-                        </div>
+    <div class="total-box">
+        Total: <span id="inputCounter">0</span>
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
