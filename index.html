@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tools Data & Kombinasi</title>
+<title>Tools Data - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -165,19 +165,7 @@ textarea:focus, input:focus {
     border-color:#667eea; 
     outline:none;
 }
-.textarea-counter {
-    position: absolute;
-    bottom: 10px;
-    left: 15px;
-    background: linear-gradient(135deg, #FFD700, #FFC400);
-    color: #333;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 10;
-}
+
 .button-group { 
     display:flex; 
     gap:12px; 
@@ -513,11 +501,17 @@ body.dark-theme .output-counter {
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-    <h3>📥 INPUT DATA</h3>
-    <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:..." oninput="updateInputCounter()"></textarea>
-    <!-- Pindahkan counter ke sini -->
-    <div class="textarea-counter" id="inputCounter">0</div>
-</div>
+                        <h3>📥 INPUT DATA</h3>
+                        <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
+SIWAR:
+01*02#1000, 
+01#2000, 
+SURAT:
+03*04#5000, 
+05#10000," oninput="updateInputCounter()">
+                        <div class="input-counter" id="inputCounter">0</div>
+</textarea>
+                    </div>
                 </div>
                 
                 <div class="button-group">
