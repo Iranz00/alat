@@ -12,7 +12,7 @@
 }
 body { 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
     padding: 10px;
     display: flex;
@@ -746,9 +746,8 @@ function updateInputCounter() {
             total += value;
         });
     }
-    
-    document.getElementById('inputCounter').textContent = total.toLocaleString();
-}
+    document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
+}}
 
 function validateLine(line) {
     const patterns = extractValidPatterns(line);
