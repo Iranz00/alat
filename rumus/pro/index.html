@@ -321,7 +321,7 @@ button:active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KALKULATOR KEY MISTIK</h1>
+        <h1>🔮 KALKULATOR KEY</h1>
         <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
@@ -479,6 +479,7 @@ const mistikTables = {
 
 let dataHistory = [];
 let currentFormula = '';
+let originalInputData = []; // Simpan data input asli untuk warna
 
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
@@ -500,8 +501,8 @@ function calculateFormula() {
         // Calculate AI untuk setiap angka
         const results = calculateAIForAll(currentFormula);
         
-        // Display result dalam format yang diminta
-        displayResult(results, currentFormula);
+        // Display result dalam format baru dengan warna
+        displayResultWithColor(results, currentFormula);
         showInfo('Perhitungan berhasil!', 'success');
         
     } catch (error) {
@@ -513,6 +514,7 @@ function calculateFormula() {
 function parseInputData(inputData) {
     dataHistory = [];
     currentFormula = '';
+    originalInputData = [];
     
     const lines = inputData.split('\n').filter(line => line.trim());
     let foundSeparator = false;
@@ -554,13 +556,26 @@ function parseInputData(inputData) {
                     ekor: ekor,
                     jumlah: jumlah
                 });
+                
+                // Simpan data input asli untuk warna
+                const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)/);
+                if (originalMatch) {
+                    originalInputData.push({
+                        number: originalMatch[1],
+                        ai: originalMatch[2] || ''
+                    });
+                } else {
+                    originalInputData.push({
+                        number: number,
+                        ai: ''
+                    });
+                }
             }
         }
     }
     
-    // PERBAIKAN: JANGAN DI-REVERSE! 
     // dataHistory[0] = terlama (paling atas), dataHistory[terakhir] = terbaru (paling bawah)
-    dataHistory = tempData; // Hapus .reverse()
+    dataHistory = tempData;
     
     // Update tampilan rumus yang terdeteksi
     document.getElementById('detectedFormula').textContent = currentFormula || 'Tidak ada rumus';
@@ -572,9 +587,6 @@ function parseInputData(inputData) {
             `Butuh ${maxDayNeeded} hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
     }
     
-    console.log('Parsed data:', dataHistory);
-    console.log('Detected formula:', currentFormula);
-    
     return {
         data: dataHistory,
         formula: currentFormula
@@ -582,12 +594,8 @@ function parseInputData(inputData) {
 }
 
 function findMaxDayInFormula(formula) {
-    let maxDay = 1; // Minimal hari 1 (hari ini)
-    
-    // Process final conversion like .(ml) first
+    let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-    
-    // Cari semua komponen dalam rumus
     const components = workingFormula.split(/[+\-]/);
     
     components.forEach(component => {
@@ -605,17 +613,9 @@ function findMaxDayInFormula(formula) {
 
 function calculateAIForAll(formula) {
     const results = [];
-    
-    // Cari hari maksimum yang dibutuhkan dalam rumus
     const maxDayNeeded = findMaxDayInFormula(formula);
-    console.log(`Hari maksimum yang dibutuhkan: ${maxDayNeeded}`);
     
-    // Untuk setiap angka dalam dataHistory, hitung AI-nya
-    // dataHistory[0] = terlama, dataHistory[terakhir] = terbaru
     for (let i = 0; i < dataHistory.length; i++) {
-        // Cek apakah data ini memiliki cukup riwayat untuk rumus
-        // i = index data saat ini (0 = terlama, terakhir = terbaru)
-        // Data terlama (index kecil) tidak punya data sebelumnya
         if (i >= maxDayNeeded - 1) {
             const aiResult = calculateSingleAI(formula, i);
             results.push({
@@ -624,7 +624,6 @@ function calculateAIForAll(formula) {
                 canCalculate: true
             });
         } else {
-            // Data tidak memiliki cukup riwayat
             results.push({
                 number: dataHistory[i].number,
                 ai: '',
@@ -638,14 +637,11 @@ function calculateAIForAll(formula) {
 
 function calculateSingleAI(formula, currentDayIndex) {
     let workingFormula = formula;
-    
-    // Process final conversion like .(ml)
     const finalConversion = workingFormula.match(/\.\((\w+)\)/);
     if (finalConversion) {
         workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
     }
     
-    // Process components dengan support + dan -
     const components = workingFormula.split(/([+\-])/);
     let total = 0;
     let currentOperator = '+';
@@ -669,12 +665,10 @@ function calculateSingleAI(formula, currentDayIndex) {
         }
     }
     
-    // Handle negative results
     if (total < 0) {
         total = Math.abs(total);
     }
     
-    // Apply final conversion if exists
     if (finalConversion) {
         const table = finalConversion[1].toUpperCase();
         const converted = convertMistik(total.toString(), table);
@@ -686,20 +680,15 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    // Examples: K1mb, J10m9, A25, C30, etc.
     const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
     }
     
-    const type = match[1]; // A, K, C, E, J
-    const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa, dst
-    const conversion = match[3]; // mb, m9, ml, etc.
+    const type = match[1];
+    const dayOffset = parseInt(match[2]);
+    const conversion = match[3];
     
-    // PERBAIKAN: Hitung index data yang benar
-    // currentDayIndex = index data yang sedang dihitung (0 = terlama, terakhir = terbaru)
-    // dayOffset = berapa hari mundur dari data yang sedang dihitung
-    // Untuk data terlama (index 0), tidak bisa akses data sebelumnya
     const targetDayIndex = currentDayIndex - (dayOffset - 1);
     
     if (targetDayIndex < 0) {
@@ -718,7 +707,6 @@ function processComponent(component, currentDayIndex) {
         default: throw new Error(`Tipe tidak dikenal: ${type}`);
     }
     
-    // Apply conversion if exists
     if (conversion) {
         const table = conversion.toUpperCase();
         value = parseInt(convertMistik(value.toString(), table));
@@ -732,7 +720,6 @@ function convertMistik(number, table) {
         throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
     }
     
-    // Ensure single digit
     const digit = reduceToSingleDigit(parseInt(number)).toString();
     
     if (mistikTables[table][digit] === undefined) {
@@ -750,44 +737,67 @@ function reduceToSingleDigit(num) {
     return result;
 }
 
-function displayResult(results, formula) {
+function displayResultWithColor(results, formula) {
     const output = document.getElementById('resultOutput');
     let outputText = '';
     
-    // PERBAIKAN: Tampilkan dalam urutan yang sama dengan input (terlama -> terbaru)
-    // results array: index 0 = terlama, index terakhir = terbaru
-    // Tampilkan dari index 0 ke index terakhir (terlama dulu, terbaru terakhir)
+    // Tampilkan dalam format HTML dengan span untuk warna
+    output.innerHTML = '';
+    
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
+        const originalData = originalInputData[i];
+        
         if (result.canCalculate) {
-            outputText += `${result.number} = ${result.ai} ai\n`;
+            const lineDiv = document.createElement('div');
+            lineDiv.innerHTML = `${result.number} = ${formatAIWithColor(result.ai, originalData.ai)} ai`;
+            output.appendChild(lineDiv);
         } else {
-            outputText += `${result.number} = \n`;
+            const lineDiv = document.createElement('div');
+            lineDiv.textContent = `${result.number} = `;
+            output.appendChild(lineDiv);
         }
     }
     
-    outputText += '======\n';
-    outputText += formula;
+    // Tambahkan separator dan formula
+    const separatorDiv = document.createElement('div');
+    separatorDiv.textContent = '======';
+    output.appendChild(separatorDiv);
     
-    output.textContent = outputText;
+    const formulaDiv = document.createElement('div');
+    formulaDiv.textContent = formula;
+    output.appendChild(formulaDiv);
+}
+
+function formatAIWithColor(calculatedAI, originalAI) {
+    // Format: semua digit 0-9, dengan highlight pada digit yang sesuai originalAI
+    const allDigits = '0123456789';
+    let result = '';
+    
+    for (let i = 0; i < allDigits.length; i++) {
+        const digit = allDigits[i];
+        
+        // Cek apakah digit ini ada di originalAI dan sama dengan calculatedAI
+        if (originalAI && originalAI.includes(digit) && digit === calculatedAI.toString()) {
+            result += `<span style="color: #FF6B6B; font-weight: bold; background: yellow; padding: 2px 4px; border-radius: 3px;">${digit}</span>`;
+        } else {
+            result += digit;
+        }
+    }
+    
+    return result;
 }
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
-// Format:
-// 3062 = 2 ai  ← (paling lama)
-// 0405 = 5 ai  
-// ...
-// 4467 = 7 ai  ← (hari ini)
-// ======
-// E1`;
+    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini<br>// Format:<br>// 3062 = 2345678901 ai<br>// 0405 = 5678901234 ai<br>// ...<br>// 4467 = 7890123456 ai<br>// ======<br>// E1`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
     document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
     dataHistory = [];
     currentFormula = '';
+    originalInputData = [];
 }
 
 function showInfo(message, type) {
@@ -801,7 +811,6 @@ function showInfo(message, type) {
     }
 }
 
-// Update info input real-time
 function updateInputInfo() {
     const input = document.getElementById('inputData').value.trim();
     const parsed = parseInputData(input);
@@ -811,7 +820,6 @@ function updateInputInfo() {
     document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
 }
 
-// Copy output ke clipboard
 function copyOutput() {
     const outputText = document.getElementById('resultOutput').textContent;
     
@@ -823,7 +831,6 @@ function copyOutput() {
     navigator.clipboard.writeText(outputText).then(() => {
         showCopyNotification();
     }).catch(err => {
-        // Fallback untuk browser yang tidak support clipboard API
         const textArea = document.createElement('textarea');
         textArea.value = outputText;
         document.body.appendChild(textArea);
@@ -834,7 +841,6 @@ function copyOutput() {
     });
 }
 
-// Gunakan output sebagai input baru
 function useOutputAsInput() {
     const outputText = document.getElementById('resultOutput').textContent;
     
@@ -858,12 +864,10 @@ function showCopyNotification() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Update input info real-time
     document.getElementById('inputData').addEventListener('input', updateInputInfo);
-    updateInputInfo(); // Initialize
+    updateInputInfo();
 });
 
-// Support Enter key untuk calculate (Ctrl+Enter)
 document.getElementById('inputData').addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
         calculateFormula();
