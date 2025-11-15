@@ -713,16 +713,14 @@ function copyOutput() {
     const lines = outputElement.innerHTML.split('\n');
     let currentBlock = '';
     let blocks = [];
+    let waitingForFormula = false;
     
     for (let line of lines) {
         line = line.trim();
         
         if (line === '======') {
-            // Akhir dari satu blok rumus
-            if (currentBlock) {
-                blocks.push(currentBlock + '======');
-                currentBlock = '';
-            }
+            waitingForFormula = true;
+            currentBlock += '======\n';
             continue;
         }
         
@@ -731,7 +729,17 @@ function copyOutput() {
             continue;
         }
         
-        // Process line dengan angka atau rumus
+        if (waitingForFormula && line && !line.includes('//')) {
+            // Ini adalah rumus setelah ======
+            currentBlock += line + '\n';
+            waitingForFormula = false;
+            // Selesaikan blok ini dan simpan
+            blocks.push(currentBlock.trim());
+            currentBlock = '';
+            continue;
+        }
+        
+        // Process line dengan angka
         const numberMatch = line.match(/(\d{4})\s*=/);
         if (numberMatch) {
             const number = numberMatch[1];
@@ -752,12 +760,12 @@ function copyOutput() {
             } else {
                 currentBlock += `${number} = \n`;
             }
-        } else if (line && !line.includes('//') && !line.includes('======')) {
-            // Ini adalah rumus, tambahkan ke blok sebelumnya
-            if (blocks.length > 0) {
-                blocks[blocks.length - 1] += line + '\n';
-            }
         }
+    }
+    
+    // Jika ada blok yang belum selesai
+    if (currentBlock.trim()) {
+        blocks.push(currentBlock.trim());
     }
     
     // Gabungkan semua blok dengan SATU baris kosong antara blok
