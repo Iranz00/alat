@@ -393,7 +393,9 @@ A9ty+C6ty.(m9)"></textarea>
 // ... dan seterusnya untuk setiap rumus</div>
             <br>
             <div class="button-group-double">
-                <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
+    <button class="btn-copy" onclick="copyOutput()">📋 SALIN PER - RUMUS</button>
+    <button class="btn-copy" onclick="copyMultiFormulaOutput()">📋 SALIN MULTI RUMUS</button>
+</div>
             </div>
         </div>
     </div>
@@ -787,6 +789,56 @@ function copyOutput() {
         document.execCommand('copy');
         document.body.removeChild(textArea);
         showCopyNotification();
+    });
+}
+
+function copyMultiFormulaOutput() {
+    let copyText = '';
+    
+    // Calculate semua rumus dulu
+    const allFormulaResults = [];
+    for (let i = 0; i < currentFormulas.length; i++) {
+        const results = calculateAIForSingleFormula(currentFormulas[i]);
+        allFormulaResults.push(results);
+    }
+    
+    // Generate output multi-rumus
+    for (let i = 0; i < dataHistory.length; i++) {
+        const number = dataHistory[i].number;
+        let multiAI = '';
+        
+        // Gabungkan AI dari semua rumus
+        for (let j = 0; j < allFormulaResults.length; j++) {
+            const result = allFormulaResults[j][i];
+            if (j > 0) multiAI += ' . ';
+            
+            if (result.canCalculate) {
+                multiAI += result.ai.toString().padStart(2, '0');
+            } else {
+                multiAI += 'Xx';
+            }
+        }
+        
+        copyText += `${number} = ${multiAI} ai\n`;
+    }
+    
+    // Tambahkan separator dan semua rumus
+    copyText += '======\n';
+    currentFormulas.forEach((formula, index) => {
+        copyText += `${formula}\n`;
+    });
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(copyText).then(() => {
+        showInfo('Output multi-rumus berhasil disalin!', 'success');
+    }).catch(err => {
+        const textArea = document.createElement('textarea');
+        textArea.value = copyText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showInfo('Output multi-rumus berhasil disalin!', 'success');
     });
 }
 
