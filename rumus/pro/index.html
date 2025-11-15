@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Mistik</title>
+<title>Kalkulator Key - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -321,7 +321,7 @@ button:active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KALKULATOR KEY MISTIK</h1>
+        <h1>🔮 KALKULATOR KEY</h1>
         <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
@@ -799,6 +799,46 @@ function displayResultWithColor(results, formula) {
     output.appendChild(formulaDiv);
 }
 
+// Fungsi baru untuk mendapatkan output text-only (hanya angka yang di-highlight)
+function getTextOutput() {
+    const output = document.getElementById('resultOutput');
+    const lines = output.querySelectorAll('div');
+    let textOutput = '';
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        if (line.textContent.includes('======')) {
+            // Ini separator
+            textOutput += '======\n';
+            if (lines[i + 1]) {
+                textOutput += lines[i + 1].textContent + '\n';
+                i++; // Skip formula line
+            }
+        } else if (line.innerHTML.includes('<span')) {
+            // Line dengan highlight - ekstrak hanya angka yang di-highlight
+            const number = line.textContent.split(' = ')[0];
+            const spanElements = line.querySelectorAll('span');
+            let highlightedDigits = '';
+            
+            spanElements.forEach(span => {
+                highlightedDigits += span.textContent;
+            });
+            
+            if (highlightedDigits) {
+                textOutput += `${number} = ${highlightedDigits} ai\n`;
+            } else {
+                textOutput += `${number} = \n`;
+            }
+        } else {
+            // Line tanpa highlight
+            textOutput += line.textContent + '\n';
+        }
+    }
+    
+    return textOutput.trim();
+}
+
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini<br>// Format:<br>// 3062 = 2345678901 ai<br>// 0405 = 5678901234 ai<br>// ...<br>// 4467 = 7890123456 ai<br>// ======<br>// E1`;
@@ -832,18 +872,18 @@ function updateInputInfo() {
 }
 
 function copyOutput() {
-    const outputText = document.getElementById('resultOutput').textContent;
+    const textOutput = getTextOutput();
     
-    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
+    if (!textOutput || textOutput.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa disalin!', 'error');
         return;
     }
     
-    navigator.clipboard.writeText(outputText).then(() => {
+    navigator.clipboard.writeText(textOutput).then(() => {
         showCopyNotification();
     }).catch(err => {
         const textArea = document.createElement('textarea');
-        textArea.value = outputText;
+        textArea.value = textOutput;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');
@@ -853,14 +893,14 @@ function copyOutput() {
 }
 
 function useOutputAsInput() {
-    const outputText = document.getElementById('resultOutput').textContent;
+    const textOutput = getTextOutput();
     
-    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
+    if (!textOutput || textOutput.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa digunakan!', 'error');
         return;
     }
     
-    document.getElementById('inputData').value = outputText;
+    document.getElementById('inputData').value = textOutput;
     updateInputInfo();
     showInfo('Output berhasil digunakan sebagai input baru!', 'success');
 }
