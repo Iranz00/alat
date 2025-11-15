@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Mistik</title>
+<title>Key Kalkulator - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -321,7 +321,7 @@ button:active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KALKULATOR KEY MISTIK</h1>
+        <h1>🔮 KEY KALKULATOR</h1>
         <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
@@ -330,21 +330,7 @@ button:active {
             <div class="section-title">📥 INPUT DATA & RUMUS</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai  ← (paling lama)&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        ← (hari ini)&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">3062 = 45 e
-0405 = 78 e
-3127 = 89 e
-9279 = 12 e
-4371 = 45 e
-6765 = 34 e
-5473 = 12 e
-1781 = 01 e
-5090 = 45 k
-9348 = 67 e
-4086 = 89 e
-0478 = 67 e
-4467 = 
-======
-E1</textarea>
+                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        &#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()"></textarea>
                 <div class="input-info" id="inputInfo">13 angka + 1 rumus terdeteksi</div>
             </div>
             
@@ -501,7 +487,15 @@ function calculateFormula() {
         const allResults = [];
         for (const formula of currentFormulas) {
             const results = calculateAIForAll(formula);
-            allResults.push({ formula, results });
+            
+            // Analisis pola warna untuk rumus ini
+            const colorPattern = analyzeColorPattern(results);
+            
+            allResults.push({ 
+                formula, 
+                results,
+                colorPattern 
+            });
         }
         
         displayMultiResultWithColor(allResults);
@@ -572,6 +566,53 @@ function parseInputData(inputData) {
     }
     
     return { data: dataHistory, formulas: currentFormulas };
+}
+
+function analyzeColorPattern(results) {
+    // Analisis data yang punya originalAI untuk cari pola warna
+    const dataWithOriginalAI = results.filter(r => r.originalAI && r.originalAI !== '');
+    
+    if (dataWithOriginalAI.length === 0) {
+        return null; // Tidak ada pola jika tidak ada data dengan originalAI
+    }
+    
+    // Analisis posisi digit yang consistently berwarna
+    const positionCount = {};
+    const allDigits = '0123456789';
+    
+    dataWithOriginalAI.forEach(result => {
+        if (result.canCalculate) {
+            const rotatedDigits = getRotatedDigits(result.ai, allDigits);
+            const originalAIDigits = result.originalAI.split('');
+            
+            originalAIDigits.forEach(digit => {
+                const position = rotatedDigits.indexOf(digit);
+                if (position !== -1) {
+                    positionCount[position] = (positionCount[position] || 0) + 1;
+                }
+            });
+        }
+    });
+    
+    // Cari posisi dengan frekuensi tertinggi (paling konsisten)
+    const sortedPositions = Object.entries(positionCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2) // Ambil 2 posisi paling konsisten
+        .map(entry => parseInt(entry[0]));
+    
+    return sortedPositions.length > 0 ? sortedPositions : null;
+}
+
+function getRotatedDigits(calculatedAI, allDigits) {
+    let rotatedDigits = '';
+    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    
+    for (let i = 0; i < allDigits.length; i++) {
+        const actualIndex = (startIndex + i) % allDigits.length;
+        rotatedDigits += allDigits[actualIndex];
+    }
+    
+    return rotatedDigits;
 }
 
 function findMaxDayInFormula(formula) {
@@ -701,23 +742,26 @@ function reduceToSingleDigit(num) {
     return result;
 }
 
-function formatAIWithColor(calculatedAI, originalAI) {
-    // Selalu buat rotasi digit lengkap
-    let rotatedDigits = '';
+function formatAIWithPattern(calculatedAI, originalAI, colorPattern) {
     const allDigits = '0123456789';
-    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    const rotatedDigits = getRotatedDigits(calculatedAI, allDigits);
     
-    for (let i = 0; i < allDigits.length; i++) {
-        const actualIndex = (startIndex + i) % allDigits.length;
-        rotatedDigits += allDigits[actualIndex];
-    }
-    
-    // Beri warna pada digit yang sesuai dengan originalAI
     let result = '';
+    
     for (let i = 0; i < rotatedDigits.length; i++) {
         const digit = rotatedDigits[i];
+        let shouldHighlight = false;
         
-        if (originalAI && originalAI.includes(digit)) {
+        // Prioritaskan originalAI jika ada
+        if (originalAI && originalAI !== '') {
+            shouldHighlight = originalAI.includes(digit);
+        } 
+        // Jika tidak ada originalAI, gunakan colorPattern
+        else if (colorPattern && colorPattern.includes(i)) {
+            shouldHighlight = true;
+        }
+        
+        if (shouldHighlight) {
             result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
         } else {
             result += digit;
@@ -732,7 +776,7 @@ function displayMultiResultWithColor(allResults) {
     output.innerHTML = '';
     
     // Untuk setiap rumus, tampilkan semua data
-    for (const { formula, results } of allResults) {
+    for (const { formula, results, colorPattern } of allResults) {
         const blockDiv = document.createElement('div');
         blockDiv.style.marginBottom = '25px';
         
@@ -742,7 +786,7 @@ function displayMultiResultWithColor(allResults) {
             const lineDiv = document.createElement('div');
             
             if (result.canCalculate) {
-                const formattedAI = formatAIWithColor(result.ai, result.originalAI);
+                const formattedAI = formatAIWithPattern(result.ai, result.originalAI, colorPattern);
                 lineDiv.innerHTML = `${result.number} = ${formattedAI} ai`;
             } else {
                 lineDiv.textContent = `${result.number} = `;
