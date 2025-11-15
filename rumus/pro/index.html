@@ -842,10 +842,10 @@ function copyMultiFormulaOutput() {
     
     // Ambil data langsung dari output salin1 yang sudah ditampilkan
     const outputElement = document.getElementById('resultOutput');
-    const outputText = outputElement.textContent || outputElement.innerText;
+    const outputHTML = outputElement.innerHTML;
     
-    // Parse output salin1 untuk mendapatkan semua data AI
-    const parsedData = parseSalin1ForMultiFormula(outputText);
+    // Parse output salin1 untuk mendapatkan angka yang di-highlight
+    const parsedData = parseSalin1ForMultiFormula(outputHTML);
     
     // Generate output multi-rumus
     for (let i = 0; i < dataHistory.length; i++) {
@@ -884,8 +884,8 @@ function copyMultiFormulaOutput() {
     });
 }
 
-function parseSalin1ForMultiFormula(outputText) {
-    const lines = outputText.split('\n');
+function parseSalin1ForMultiFormula(outputHTML) {
+    const lines = outputHTML.split('\n');
     const numbers = [];
     const aiData = {}; // { number: [ai1, ai2, ai3, ...] }
     let currentFormulaIndex = -1;
@@ -904,10 +904,20 @@ function parseSalin1ForMultiFormula(outputText) {
         }
         
         // Process line dengan angka
-        const match = line.match(/(\d{4}) = (\d+) ai/);
-        if (match) {
-            const number = match[1];
-            const ai = match[2];
+        const numberMatch = line.match(/(\d{4}) =/);
+        if (numberMatch) {
+            const number = numberMatch[1];
+            
+            // Ekstrak angka yang di-highlight (warna merah)
+            const highlightedMatches = line.match(/<span[^>]*>(\d)<\/span>/g);
+            let highlightedDigits = '';
+            
+            if (highlightedMatches) {
+                highlightedDigits = highlightedMatches.map(span => {
+                    const match = span.match(/<span[^>]*>(\d)<\/span>/);
+                    return match ? match[1] : '';
+                }).join('');
+            }
             
             // Initialize array untuk number ini
             if (!aiData[number]) {
@@ -915,8 +925,8 @@ function parseSalin1ForMultiFormula(outputText) {
                 numbers.push(number);
             }
             
-            // Simpan AI untuk rumus saat ini
-            aiData[number][currentFormulaIndex] = ai;
+            // Simpan angka yang di-highlight untuk rumus saat ini
+            aiData[number][currentFormulaIndex] = highlightedDigits || 'Xx';
         }
     }
     
