@@ -330,34 +330,31 @@ button:active {
             <div class="section-title">📥 INPUT DATA & RUMUS</div>
             
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai  ← (paling lama)&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        ← (hari ini)&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">6874 = 49 ai
-0489 = 49 ai
-2843 = 27 ai
-3752 = 94 ai
-8644 = 72 ai
-2962 = 27 ai
-6937 = 05 ai
-0559 = 49 ai
-8445 = 94 ai
-2429 = 27 ai
-5879 = 38 ai
-9158 = 49 ai
-5364 = 49 ai
-2190 = 50 ai
-3358 = 05 ai
-1452 = 
+                <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai  ← (paling lama)&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        ← (hari ini)&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">3062 = 45 e
+0405 = 78 e
+3127 = 89 e
+9279 = 12 e
+4371 = 45 e
+6765 = 34 e
+5473 = 12 e
+1781 = 01 e
+5090 = 45 k
+9348 = 67 e
+4086 = 89 e
+0478 = 67 e
+4467 = 
 ======
-C8ix+E2ml.(ml)</textarea>
-                <div class="input-info" id="inputInfo">16 angka + 1 rumus terdeteksi</div>
+E1</textarea>
+                <div class="input-info" id="inputInfo">13 angka + 1 rumus terdeteksi</div>
             </div>
             
             <div class="formula-display">
                 <div class="formula-label">RUMUS TERDETEKSI:</div>
-                <div id="detectedFormula">C8ix+E2ml.(ml)</div>
+                <div id="detectedFormula">E1</div>
             </div>
 
             <div class="history-info" id="historyInfo">
-                Butuh 8 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.
+                Butuh 1 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.
             </div>
             
             <div class="button-group">
@@ -390,12 +387,12 @@ C8ix+E2ml.(ml)</textarea>
             <div class="result-box" id="resultOutput">
 // Hasil perhitungan akan muncul di sini
 // Format:
-// 6874 = 9 ai  ← (paling lama)
-// 0489 = 3 ai  
+// 3062 = 2 ai  ← (paling lama)
+// 0405 = 5 ai  
 // ...
-// 1452 =       ← (hari ini)
+// 4467 = 7 ai  ← (hari ini)
 // ======
-// C8ix+E2ml.(ml)
+// E1
             </div>
         </div>
     </div>
@@ -756,15 +753,17 @@ function displayResult(results, formula) {
     const output = document.getElementById('resultOutput');
     let outputText = '';
     
-    // Tampilkan dalam urutan yang sama dengan input (terlama -> terbaru)
-    // results sudah dalam urutan: index 0 = terlama, index terakhir = terbaru
-    results.forEach(result => {
+    // PERBAIKAN: Tampilkan dalam urutan yang sama dengan input (terlama -> terbaru)
+    // results array: index 0 = terlama, index terakhir = terbaru
+    // Tampilkan dari index 0 ke index terakhir (terlama dulu, terbaru terakhir)
+    for (let i = 0; i < results.length; i++) {
+        const result = results[i];
         if (result.canCalculate) {
             outputText += `${result.number} = ${result.ai} ai\n`;
         } else {
-            outputText += `${result.number} = \t\n`;
+            outputText += `${result.number} = \n`;
         }
-    });
+    }
     
     outputText += '======\n';
     outputText += formula;
@@ -776,12 +775,12 @@ function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
 // Format:
-// 6874 = 9 ai  ← (paling lama)
-// 0489 = 3 ai  
+// 3062 = 2 ai  ← (paling lama)
+// 0405 = 5 ai  
 // ...
-// 1452 =       ← (hari ini)
+// 4467 = 7 ai  ← (hari ini)
 // ======
-// C8ix+E2ml.(ml)`;
+// E1`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
