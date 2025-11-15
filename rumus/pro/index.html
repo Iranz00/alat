@@ -581,6 +581,28 @@ function parseInputData(inputData) {
     };
 }
 
+function findMaxDayInFormula(formula) {
+    let maxDay = 1; // Minimal hari 1 (hari ini)
+    
+    // Process final conversion like .(ml) first
+    let workingFormula = formula.replace(/\.\((\w+)\)/, '');
+    
+    // Cari semua komponen dalam rumus
+    const components = workingFormula.split(/[+\-]/);
+    
+    components.forEach(component => {
+        const match = component.trim().match(/^([AKCEJ])(\d+)/);
+        if (match) {
+            const day = parseInt(match[2]);
+            if (day > maxDay) {
+                maxDay = day;
+            }
+        }
+    });
+    
+    return maxDay;
+}
+
 function calculateAIForAll(formula) {
     const results = [];
     
@@ -612,6 +634,55 @@ function calculateAIForAll(formula) {
     }
     
     return results;
+}
+
+function calculateSingleAI(formula, currentDayIndex) {
+    let workingFormula = formula;
+    
+    // Process final conversion like .(ml)
+    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+    if (finalConversion) {
+        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+    }
+    
+    // Process components dengan support + dan -
+    const components = workingFormula.split(/([+\-])/);
+    let total = 0;
+    let currentOperator = '+';
+    
+    for (let i = 0; i < components.length; i++) {
+        const component = components[i].trim();
+        
+        if (component === '+' || component === '-') {
+            currentOperator = component;
+            continue;
+        }
+        
+        if (component) {
+            const value = processComponent(component, currentDayIndex);
+            
+            if (currentOperator === '+') {
+                total += value;
+            } else if (currentOperator === '-') {
+                total -= value;
+            }
+        }
+    }
+    
+    // Handle negative results
+    if (total < 0) {
+        total = Math.abs(total);
+    }
+    
+    // Apply final conversion if exists
+    if (finalConversion) {
+        const table = finalConversion[1].toUpperCase();
+        const converted = convertMistik(total.toString(), table);
+        total = parseInt(converted);
+    }
+    
+    const finalResult = reduceToSingleDigit(total);
+    return finalResult;
 }
 
 function processComponent(component, currentDayIndex) {
