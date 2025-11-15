@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Key Kalkulator - Multi Rumus Terpisah</title>
+<title>Key Kalkulator - Multi Rumus dengan Rotasi</title>
 <style>
 /* CSS tetap sama seperti sebelumnya */
 * { 
@@ -338,7 +338,7 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KEY KALKULATOR MULTI RUMUS</h1>
-        <div class="subtitle">Hitung multiple rumus mistik dengan output terpisah per rumus</div>
+        <div class="subtitle">Hitung multiple rumus mistik dengan rotasi angka dan highlight</div>
     </div>
 
     <div class="grid-container">
@@ -375,23 +375,23 @@ A9ty+C6ty.(m9)"></textarea>
         <div class="output-section">
             <div class="section-title">📤 HASIL OUTPUT</div>
             <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Format output terpisah per rumus:
+// Format dengan rotasi angka dan highlight:
 // 
-// 8603 = 30 ai
-// 2436 = 74 ai
+// 8603 = 2345678901 ai
+// 2436 = 3456789012 ai  
 // ...
-// 4467 = 
+// 4467 = 0123456789 ai
 // ======
 // A3mb-A5m9.(ty)
 // 
-// 8603 = 35 ai  
-// 2436 = 80 ai
+// 8603 = 3456789012 ai
+// 2436 = 4567890123 ai
 // ...
-// 4467 = 
+// 4467 = 1234567890 ai  
 // ======
 // A8mb+E5ml.(ml)
 // 
-// ... dan seterusnya</div>
+// ... dan seterusnya untuk setiap rumus</div>
             
             <div class="button-group-double">
                 <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
@@ -417,16 +417,6 @@ A9ty+C6ty.(m9)"></textarea>
             <div class="table-title">Tabel MB</div>
             <div class="table-content">0→8 1→7 2→6<br>3→9 4→5 5→4<br>6→2 7→1 8→0<br>9→3</div>
         </div>
-    </div>
-
-    <div class="explanation">
-        <h3>📝 Cara Penggunaan Multi-Rumus</h3>
-        <ul>
-            <li><strong>Format Input:</strong> Data angka + multiple rumus dipisah garis "======"</li>
-            <li><strong>Output:</strong> Hasil setiap rumus ditampilkan dalam blok terpisah</li>
-            <li><strong>Contoh:</strong> 5 rumus input → 5 blok output terpisah</li>
-            <li><strong>Rumus:</strong> Diproses secara berurutan, output mengikuti format asli</li>
-        </ul>
     </div>
 </div>
 
@@ -470,8 +460,8 @@ function calculateFormula() {
             return;
         }
         
-        // Calculate AI untuk setiap rumus dan tampilkan output terpisah
-        displaySeparateFormulaResults(currentFormulas);
+        // Calculate dan tampilkan hasil untuk semua rumus
+        displayAllFormulaResults(currentFormulas);
         showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
         
     } catch (error) {
@@ -526,8 +516,8 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                // Simpan data input asli
-                const originalMatch = line.match(/(\d{4})\s*=\s*([\d\s\.]+)/);
+                // Simpan data input asli untuk highlight
+                const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)/);
                 if (originalMatch) {
                     originalInputData.push({
                         number: originalMatch[1],
@@ -575,27 +565,30 @@ function updateFormulaDisplay() {
     }
 }
 
-function displaySeparateFormulaResults(formulas) {
+function displayAllFormulaResults(formulas) {
     const output = document.getElementById('resultOutput');
     let outputHTML = '';
     
-    // Untuk setiap rumus, buat blok output terpisah
+    // Untuk setiap rumus, buat blok output terpisah dengan rotasi angka
     for (let i = 0; i < formulas.length; i++) {
         const formula = formulas[i];
         
-        // Calculate hasil untuk rumus ini saja
+        // Calculate hasil untuk rumus ini
         const results = calculateAIForSingleFormula(formula);
         
-        // Tambahkan blok output untuk rumus ini
-        outputHTML += generateFormulaBlock(results, formula, i + 1);
+        // Generate output dengan rotasi angka dan highlight
+        const formulaOutput = generateRotatedOutput(results, formula);
+        
+        // Tambahkan ke output utama
+        outputHTML += formulaOutput;
         
         // Tambahkan pemisah antar rumus (kecuali untuk rumus terakhir)
         if (i < formulas.length - 1) {
-            outputHTML += '\n';
+            outputHTML += '\n\n';
         }
     }
     
-    output.textContent = outputHTML;
+    output.innerHTML = outputHTML;
 }
 
 function calculateAIForSingleFormula(formula) {
@@ -622,24 +615,57 @@ function calculateAIForSingleFormula(formula) {
     return results;
 }
 
-function generateFormulaBlock(results, formula, formulaIndex) {
-    let block = '';
+function generateRotatedOutput(results, formula) {
+    let output = '';
     
-    // Tambahkan data hasil perhitungan
+    // Tambahkan data hasil perhitungan dengan rotasi angka
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
+        const originalData = originalInputData[i];
+        
         if (result.canCalculate) {
-            block += `${result.number} = ${result.ai} ai\n`;
+            const rotatedDigits = formatAIWithColor(result.ai, originalData.ai);
+            output += `${result.number} = ${rotatedDigits} ai\n`;
         } else {
-            block += `${result.number} = \n`;
+            output += `${result.number} = \n`;
         }
     }
     
     // Tambahkan separator dan rumus
-    block += '======\n';
-    block += formula;
+    output += '======\n';
+    output += formula;
     
-    return block;
+    return output;
+}
+
+function formatAIWithColor(calculatedAI, originalAI) {
+    // calculatedAI adalah angka 0-9 (hasil perhitungan)
+    // Buat urutan digit dimulai dari calculatedAI
+    let rotatedDigits = '';
+    const allDigits = '0123456789';
+    
+    // Mulai dari calculatedAI dan putar
+    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    
+    for (let i = 0; i < allDigits.length; i++) {
+        const actualIndex = (startIndex + i) % allDigits.length;
+        rotatedDigits += allDigits[actualIndex];
+    }
+    
+    // Sekarang beri warna pada digit yang sesuai dengan originalAI
+    let result = '';
+    for (let i = 0; i < rotatedDigits.length; i++) {
+        const digit = rotatedDigits[i];
+        
+        // Cek apakah digit ini ada di originalAI
+        if (originalAI && originalAI.includes(digit)) {
+            result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
+        } else {
+            result += digit;
+        }
+    }
+    
+    return result;
 }
 
 // Fungsi-fungsi helper yang tetap sama
@@ -765,24 +791,24 @@ function reduceToSingleDigit(num) {
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
-// Format output terpisah per rumus:
+    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
+// Format dengan rotasi angka dan highlight:
 // 
-// 8603 = 30 ai
-// 2436 = 74 ai
+// 8603 = 2345678901 ai
+// 2436 = 3456789012 ai  
 // ...
-// 4467 = 
+// 4467 = 0123456789 ai
 // ======
 // A3mb-A5m9.(ty)
 // 
-// 8603 = 35 ai  
-// 2436 = 80 ai
+// 8603 = 3456789012 ai
+// 2436 = 4567890123 ai
 // ...
-// 4467 = 
+// 4467 = 1234567890 ai  
 // ======
 // A8mb+E5ml.(ml)
 // 
-// ... dan seterusnya`;
+// ... dan seterusnya untuk setiap rumus`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
@@ -813,7 +839,8 @@ function updateInputInfo() {
 }
 
 function copyOutput() {
-    const outputText = document.getElementById('resultOutput').textContent;
+    const outputElement = document.getElementById('resultOutput');
+    const outputText = outputElement.textContent || outputElement.innerText;
     
     if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa disalin!', 'error');
@@ -834,7 +861,8 @@ function copyOutput() {
 }
 
 function useOutputAsInput() {
-    const outputText = document.getElementById('resultOutput').textContent;
+    const outputElement = document.getElementById('resultOutput');
+    const outputText = outputElement.textContent || outputElement.innerText;
     
     if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa digunakan!', 'error');
