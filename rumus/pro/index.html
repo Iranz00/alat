@@ -654,6 +654,7 @@ function calculateAIForSingleFormula(formula) {
 
 function generateRotatedOutput(results, formula, highlightData) {
     let output = '';
+    let inheritedPositions = null;
     
     // Tambahkan data hasil perhitungan dengan rotasi angka dan highlight YANG BENAR
     for (let i = 0; i < results.length; i++) {
@@ -661,10 +662,14 @@ function generateRotatedOutput(results, formula, highlightData) {
         
         if (result.canCalculate) {
             const highlightAI = highlightData[i] || '';
-            const rotatedDigits = formatAIWithColor(result.ai, highlightAI);
-            output += `${result.number} = ${rotatedDigits} ai\n`;
+            const rotatedResult = formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
+            output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
+            
+            // Wariskan posisi highlight untuk angka berikutnya
+            inheritedPositions = rotatedResult.highlightPositions;
         } else {
             output += `${result.number} = \n`;
+            inheritedPositions = null; // Reset jika tidak bisa kalkulasi
         }
     }
     
@@ -675,15 +680,10 @@ function generateRotatedOutput(results, formula, highlightData) {
     return output;
 }
 
-function formatAIWithColor(calculatedAI, highlightAI) {
-    // calculatedAI adalah angka 0-9 (hasil perhitungan)
-    // highlightAI adalah angka 2-digit yang digunakan untuk highlight
-    
+function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPositions) {
     // Buat urutan digit dimulai dari calculatedAI
     let rotatedDigits = '';
     const allDigits = '0123456789';
-    
-    // Mulai dari calculatedAI dan putar
     const startIndex = allDigits.indexOf(calculatedAI.toString());
     
     for (let i = 0; i < allDigits.length; i++) {
@@ -691,22 +691,104 @@ function formatAIWithColor(calculatedAI, highlightAI) {
         rotatedDigits += allDigits[actualIndex];
     }
     
-    // Sekarang beri warna pada digit yang sesuai dengan highlightAI
+    // Tentukan posisi highlight
+    let highlightPositions = inheritedPositions;
+    
+    // Jika ada highlightAI dari input, tentukan posisinya
+    if (highlightAI && highlightAI.length === 2 && !inheritedPositions) {
+        highlightPositions = [];
+        for (let i = 0; i < highlightAI.length; i++) {
+            const digit = highlightAI[i];
+            const position = rotatedDigits.indexOf(digit);
+            if (position !== -1) {
+                highlightPositions.push(position);
+            }
+        }
+        // Urutkan posisi
+        highlightPositions.sort((a, b) => a - b);
+    }
+    
+    // Beri warna berdasarkan posisi highlight
     let result = '';
     for (let i = 0; i < rotatedDigits.length; i++) {
         const digit = rotatedDigits[i];
         
-        // Cek apakah digit ini ada di highlightAI (2-digit)
-        if (highlightAI && highlightAI.includes(digit)) {
+        if (highlightPositions && highlightPositions.includes(i)) {
             result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
         } else {
             result += digit;
         }
     }
     
-    return result;
+    return {
+        rotatedDigits: result,
+        highlightPositions: highlightPositions
+    };
 }
 
+function copyOutput() {
+    const outputElement = document.getElementById('resultOutput');
+    let copyText = '';
+    
+    // Parse output HTML untuk ekstrak hanya angka highlight
+    const lines = outputElement.innerHTML.split('\n');
+    
+    for (let line of lines) {
+        line = line.trim();
+        
+        // Skip separator dan rumus
+        if (line === '======' || line.startsWith('R') || line.includes('//')) {
+            if (line === '======' || line.startsWith('R')) {
+                copyText += line + '\n';
+            }
+            continue;
+        }
+        
+        // Process line dengan angka
+        const numberMatch = line.match(/(\d{4})\s*=/);
+        if (numberMatch) {
+            const number = numberMatch[1];
+            
+            // Ekstrak angka yang di-highlight (warna merah)
+            const highlightedMatches = line.match(/<span[^>]*>(\d)<\/span>/g);
+            let highlightedDigits = '';
+            
+            if (highlightedMatches) {
+                highlightedDigits = highlightedMatches.map(span => {
+                    const match = span.match(/<span[^>]*>(\d)<\/span>/);
+                    return match ? match[1] : '';
+                }).join('');
+            }
+            
+            if (highlightedDigits) {
+                copyText += `${number} = ${highlightedDigits} ai\n`;
+            } else {
+                copyText += `${number} = \n`;
+            }
+        }
+    }
+    
+    if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
+        showInfo('Tidak ada output yang bisa disalin!', 'error');
+        return;
+    }
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(copyText).then(() => {
+        showCopyNotification();
+    }).catch(err => {
+        // Fallback untuk browser lama
+        const textArea = document.createElement('textarea');
+        textArea.value = copyText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyNotification();
+    });
+}
+
+// ... (fungsi-fungsi helper lainnya tetap sama)
 function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
@@ -874,28 +956,6 @@ function updateInputInfo() {
     const formulaCount = currentFormulas.length;
     
     document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
-}
-
-function copyOutput() {
-    const outputElement = document.getElementById('resultOutput');
-    const outputText = outputElement.textContent || outputElement.innerText;
-    
-    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
-        showInfo('Tidak ada output yang bisa disalin!', 'error');
-        return;
-    }
-    
-    navigator.clipboard.writeText(outputText).then(() => {
-        showCopyNotification();
-    }).catch(err => {
-        const textArea = document.createElement('textarea');
-        textArea.value = outputText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showCopyNotification();
-    });
 }
 
 function useOutputAsInput() {
