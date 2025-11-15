@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Key Kalkulator - Multi Rumus</title>
+<title>Key Kalkulator - Multi Rumus Terpisah</title>
 <style>
 /* CSS tetap sama seperti sebelumnya */
 * { 
@@ -310,6 +310,12 @@ button:active {
     color: #FFD700;
     font-weight: bold;
 }
+.rumus-separator {
+    margin: 15px 0;
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -332,7 +338,7 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KEY KALKULATOR MULTI RUMUS</h1>
-        <div class="subtitle">Hitung multiple rumus mistik sekaligus dengan output gabungan</div>
+        <div class="subtitle">Hitung multiple rumus mistik dengan output terpisah per rumus</div>
     </div>
 
     <div class="grid-container">
@@ -369,17 +375,23 @@ A9ty+C6ty.(m9)"></textarea>
         <div class="output-section">
             <div class="section-title">📤 HASIL OUTPUT</div>
             <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Format multi-rumus:
-// 8603 = 30 . 35 . 36 . 35 . 23 ai
-// 2436 = 74 . 80 . 70 . 80 . 01 ai
+// Format output terpisah per rumus:
+// 
+// 8603 = 30 ai
+// 2436 = 74 ai
 // ...
-// 4467 = R1 . R2 . R3 . R4 . R5 ai
+// 4467 = 
 // ======
-// R1: A3mb-A5m9.(ty)
-// R2: A8mb+E5ml.(ml)
-// R3: A4ml+C1ml
-// R4: A5-A7ix
-// R5: A9ty+C6ty.(m9)</div>
+// A3mb-A5m9.(ty)
+// 
+// 8603 = 35 ai  
+// 2436 = 80 ai
+// ...
+// 4467 = 
+// ======
+// A8mb+E5ml.(ml)
+// 
+// ... dan seterusnya</div>
             
             <div class="button-group-double">
                 <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
@@ -411,9 +423,9 @@ A9ty+C6ty.(m9)"></textarea>
         <h3>📝 Cara Penggunaan Multi-Rumus</h3>
         <ul>
             <li><strong>Format Input:</strong> Data angka + multiple rumus dipisah garis "======"</li>
-            <li><strong>Output:</strong> Hasil semua rumus digabung dengan titik (.) dalam satu baris</li>
-            <li><strong>Contoh:</strong> "8603 = 30 . 35 . 36 . 35 . 23 ai" → R1=30, R2=35, R3=36, R4=35, R5=23</li>
-            <li><strong>Rumus:</strong> Diproses secara berurutan, R1 sampai R5</li>
+            <li><strong>Output:</strong> Hasil setiap rumus ditampilkan dalam blok terpisah</li>
+            <li><strong>Contoh:</strong> 5 rumus input → 5 blok output terpisah</li>
+            <li><strong>Rumus:</strong> Diproses secara berurutan, output mengikuti format asli</li>
         </ul>
     </div>
 </div>
@@ -458,11 +470,8 @@ function calculateFormula() {
             return;
         }
         
-        // Calculate AI untuk setiap rumus
-        const results = calculateAIForAll(currentFormulas);
-        
-        // Display result dalam format multi-rumus
-        displayMultiFormulaResult(results, currentFormulas);
+        // Calculate AI untuk setiap rumus dan tampilkan output terpisah
+        displaySeparateFormulaResults(currentFormulas);
         showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
         
     } catch (error) {
@@ -517,7 +526,7 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                // Simpan data input asli untuk warna
+                // Simpan data input asli
                 const originalMatch = line.match(/(\d{4})\s*=\s*([\d\s\.]+)/);
                 if (originalMatch) {
                     originalInputData.push({
@@ -566,59 +575,71 @@ function updateFormulaDisplay() {
     }
 }
 
-function calculateAIForAll(formulas) {
+function displaySeparateFormulaResults(formulas) {
+    const output = document.getElementById('resultOutput');
+    let outputHTML = '';
+    
+    // Untuk setiap rumus, buat blok output terpisah
+    for (let i = 0; i < formulas.length; i++) {
+        const formula = formulas[i];
+        
+        // Calculate hasil untuk rumus ini saja
+        const results = calculateAIForSingleFormula(formula);
+        
+        // Tambahkan blok output untuk rumus ini
+        outputHTML += generateFormulaBlock(results, formula, i + 1);
+        
+        // Tambahkan pemisah antar rumus (kecuali untuk rumus terakhir)
+        if (i < formulas.length - 1) {
+            outputHTML += '\n';
+        }
+    }
+    
+    output.textContent = outputHTML;
+}
+
+function calculateAIForSingleFormula(formula) {
     const results = [];
+    const maxDayNeeded = findMaxDayInFormula(formula);
     
     for (let i = 0; i < dataHistory.length; i++) {
-        const formulaResults = [];
-        
-        for (let j = 0; j < formulas.length; j++) {
-            const formula = formulas[j];
-            const maxDayNeeded = findMaxDayInFormula(formula);
-            
-            if (i >= maxDayNeeded - 1) {
-                const aiResult = calculateSingleAI(formula, i);
-                formulaResults.push(aiResult);
-            } else {
-                formulaResults.push('');
-            }
+        if (i >= maxDayNeeded - 1) {
+            const aiResult = calculateSingleAI(formula, i);
+            results.push({
+                number: dataHistory[i].number,
+                ai: aiResult,
+                canCalculate: true
+            });
+        } else {
+            results.push({
+                number: dataHistory[i].number,
+                ai: '',
+                canCalculate: false
+            });
         }
-        
-        results.push({
-            number: dataHistory[i].number,
-            formulaResults: formulaResults
-        });
     }
     
     return results;
 }
 
-function displayMultiFormulaResult(results, formulas) {
-    const output = document.getElementById('resultOutput');
+function generateFormulaBlock(results, formula, formulaIndex) {
+    let block = '';
     
-    // Clear output dan buat dalam format HTML
-    let outputHTML = '';
-    
+    // Tambahkan data hasil perhitungan
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
-        const formulaResults = result.formulaResults.filter(r => r !== '');
-        
-        if (formulaResults.length > 0) {
-            // Gabungkan semua hasil rumus dengan titik
-            const combinedResults = result.formulaResults.map(r => r === '' ? '?' : r).join(' . ');
-            outputHTML += `${result.number} = ${combinedResults} ai\n`;
+        if (result.canCalculate) {
+            block += `${result.number} = ${result.ai} ai\n`;
         } else {
-            outputHTML += `${result.number} = \n`;
+            block += `${result.number} = \n`;
         }
     }
     
-    // Tambahkan separator dan semua rumus
-    outputHTML += '======\n';
-    formulas.forEach((formula, index) => {
-        outputHTML += `R${index + 1}: ${formula}\n`;
-    });
+    // Tambahkan separator dan rumus
+    block += '======\n';
+    block += formula;
     
-    output.textContent = outputHTML;
+    return block;
 }
 
 // Fungsi-fungsi helper yang tetap sama
@@ -745,17 +766,23 @@ function reduceToSingleDigit(num) {
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').textContent = `// Hasil perhitungan akan muncul di sini
-// Format multi-rumus:
-// 8603 = 30 . 35 . 36 . 35 . 23 ai
-// 2436 = 74 . 80 . 70 . 80 . 01 ai
+// Format output terpisah per rumus:
+// 
+// 8603 = 30 ai
+// 2436 = 74 ai
 // ...
-// 4467 = R1 . R2 . R3 . R4 . R5 ai
+// 4467 = 
 // ======
-// R1: A3mb-A5m9.(ty)
-// R2: A8mb+E5ml.(ml)
-// R3: A4ml+C1ml
-// R4: A5-A7ix
-// R5: A9ty+C6ty.(m9)`;
+// A3mb-A5m9.(ty)
+// 
+// 8603 = 35 ai  
+// 2436 = 80 ai
+// ...
+// 4467 = 
+// ======
+// A8mb+E5ml.(ml)
+// 
+// ... dan seterusnya`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
