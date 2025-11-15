@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Key Kalkulator - Multi Rumus dengan Rotasi</title>
+<title>Key Kalkulator Multi Rumus - RAN</title>
 <style>
-/* CSS tetap sama seperti sebelumnya */
+/* CSS */
 * { 
     margin:0; 
     padding:0; 
@@ -141,7 +141,7 @@ button {
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 .btn-copy { 
-    background:linear-gradient(135deg, #2196F3, #1976D2);
+    background:linear-gradient(135deg, #FF9800, #F57C00);
     color:white;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
@@ -395,29 +395,32 @@ A9ty+C6ty.(m9)"></textarea>
             
             <div class="button-group-double">
                 <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
-                <button class="btn-import" onclick="useOutputAsInput()">🔄 PAKAI SEBAGAI INPUT</button>
             </div>
         </div>
     </div>
 
     <div class="tables-grid">
-        <div class="table-container">
-            <div class="table-title">Tabel IX</div>
-            <div class="table-content">0→5 1→6 2→7<br>3→8 4→9 5→0<br>6→1 7→2 8→3<br>9→4</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">Tabel TY</div>
-            <div class="table-content">0→7 1→4 2→9<br>3→6 4→1 5→8<br>6→3 7→0 8→5<br>9→2</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">Tabel ML</div>
-            <div class="table-content">0→1 1→0 2→5<br>3→8 4→7 5→2<br>6→9 7→4 8→3<br>9→6</div>
-        </div>
-        <div class="table-container">
-            <div class="table-title">Tabel MB</div>
-            <div class="table-content">0→8 1→7 2→6<br>3→9 4→5 5→4<br>6→2 7→1 8→0<br>9→3</div>
-        </div>
+    <div class="table-container">
+        <div class="table-title">⟨I X⟩</div>
+        <div class="table-content">0«»5<br>1«»6<br>2«»7<br>3«»8<br>4«»9</div>
     </div>
+    <div class="table-container">
+        <div class="table-title">⟨M B⟩</div>
+        <div class="table-content">0«»8<br>1«»7<br>2«»6<br>3«»9<br>4«»5</div>
+    </div>
+    <div class="table-container">
+        <div class="table-title">⟨M L⟩</div>
+        <div class="table-content">0«»1<br>2«»5<br>3«»8<br>4«»7<br>6«»9</div>
+    </div>
+    <div class="table-container">
+        <div class="table-title">⟨M 9⟩</div>
+        <div class="table-content">0«»9<br>1«»8<br>2«»7<br>3«»6<br>4«»5</div>
+    </div>
+    <div class="table-container">
+        <div class="table-title">⟨T Y⟩</div>
+        <div class="table-content">0«»7<br>1«»4<br>2«»9<br>3«»6<br>5«»8</div>
+    </div>
+</div>
 </div>
 
 <div class="copy-notification" id="copyNotification">
