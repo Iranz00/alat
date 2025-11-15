@@ -795,7 +795,7 @@ function copyOutput() {
 function copyMultiFormulaOutput() {
     let copyText = '';
     
-    // Calculate semua rumus dulu
+    // Calculate semua rumus dulu untuk mendapatkan hasil 4467
     const allFormulaResults = [];
     for (let i = 0; i < currentFormulas.length; i++) {
         const results = calculateAIForSingleFormula(currentFormulas[i]);
@@ -808,15 +808,28 @@ function copyMultiFormulaOutput() {
         let multiAI = '';
         
         // Gabungkan AI dari semua rumus
-        for (let j = 0; j < allFormulaResults.length; j++) {
-            const result = allFormulaResults[j][i];
+        for (let j = 0; j < currentFormulas.length; j++) {
             if (j > 0) multiAI += ' . ';
             
-            if (result.canCalculate) {
-                multiAI += result.ai.toString().padStart(2, '0');
-            } else {
-                multiAI += 'Xx';
+            let aiValue = 'Xx';
+            
+            if (j === 0) {
+                // Rumus pertama: ambil dari input asli
+                aiValue = originalInputData[i].ai || 'Xx';
+            } else if (j < highlightPatterns.length && i < highlightPatterns[j].length) {
+                // Rumus selanjutnya: ambil dari highlightPatterns
+                aiValue = highlightPatterns[j][i] || 'Xx';
             }
+            
+            // Jika tidak ada data di input (seperti 4467), gunakan hasil kalkulasi
+            if (aiValue === 'Xx' || aiValue === '') {
+                const result = allFormulaResults[j][i];
+                if (result.canCalculate) {
+                    aiValue = result.ai.toString().padStart(2, '0');
+                }
+            }
+            
+            multiAI += aiValue;
         }
         
         copyText += `${number} = ${multiAI} ai\n`;
