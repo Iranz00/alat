@@ -795,12 +795,18 @@ function copyOutput() {
 function copyMultiFormulaOutput() {
     let copyText = '';
     
-    // Ambil data dari output yang sudah ditampilkan (salin1)
-    const outputElement = document.getElementById('resultOutput');
-    const outputHTML = outputElement.innerHTML;
+    // Data dari input asli untuk rumus pertama
+    const inputAI = originalInputData.map(item => item.ai || 'Xx');
     
-    // Parse output untuk extract AI dari setiap rumus
-    const rumusData = parseOutputForMultiFormula(outputHTML);
+    // Data dari highlightPatterns untuk rumus selanjutnya
+    const patternAI = [];
+    for (let i = 1; i < currentFormulas.length; i++) {
+        if (i < highlightPatterns.length) {
+            patternAI.push(highlightPatterns[i]);
+        } else {
+            patternAI.push(Array(dataHistory.length).fill('Xx'));
+        }
+    }
     
     // Generate output multi-rumus
     for (let i = 0; i < dataHistory.length; i++) {
@@ -813,17 +819,23 @@ function copyMultiFormulaOutput() {
             
             let aiValue = 'Xx';
             
-            // Coba ambil dari input asli dulu
-            if (j === 0 && originalInputData[i].ai) {
-                aiValue = originalInputData[i].ai;
+            if (j === 0) {
+                // Rumus pertama: dari input asli
+                aiValue = inputAI[i];
+            } else {
+                // Rumus selanjutnya: dari highlightPatterns
+                const patternIndex = j - 1;
+                if (patternIndex < patternAI.length && i < patternAI[patternIndex].length) {
+                    aiValue = patternAI[patternIndex][i];
+                }
             }
-            // Jika tidak ada, ambil dari output yang sudah dihitung
-            else if (rumusData[j] && rumusData[j][i]) {
-                aiValue = rumusData[j][i];
-            }
-            // Jika masih tidak ada, gunakan Xx
-            else {
-                aiValue = 'Xx';
+            
+            // Untuk 4467 yang kosong, hitung hasilnya
+            if (aiValue === 'Xx' || aiValue === '') {
+                const results = calculateAIForSingleFormula(currentFormulas[j]);
+                if (results[i].canCalculate) {
+                    aiValue = results[i].ai.toString().padStart(2, '0');
+                }
             }
             
             multiAI += aiValue;
