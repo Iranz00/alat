@@ -321,7 +321,7 @@ button:active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KALKULATOR KEY</h1>
+        <h1>🔮 KALKULATOR KEY MISTIK</h1>
         <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
@@ -737,26 +737,56 @@ function reduceToSingleDigit(num) {
     return result;
 }
 
+function formatAIWithColor(calculatedAI, originalAI) {
+    // calculatedAI adalah angka 0-9 (hasil perhitungan)
+    // Buat urutan digit dimulai dari calculatedAI
+    let rotatedDigits = '';
+    const allDigits = '0123456789';
+    
+    // Mulai dari calculatedAI dan putar
+    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    
+    for (let i = 0; i < allDigits.length; i++) {
+        const actualIndex = (startIndex + i) % allDigits.length;
+        rotatedDigits += allDigits[actualIndex];
+    }
+    
+    // Sekarang beri warna pada digit yang sesuai dengan originalAI
+    let result = '';
+    for (let i = 0; i < rotatedDigits.length; i++) {
+        const digit = rotatedDigits[i];
+        
+        // Cek apakah digit ini ada di originalAI
+        if (originalAI && originalAI.includes(digit)) {
+            result += `<span style="color: #FF6B6B; font-weight: bold; background: yellow; padding: 2px 4px; border-radius: 3px;">${digit}</span>`;
+        } else {
+            result += digit;
+        }
+    }
+    
+    return result;
+}
+
 function displayResultWithColor(results, formula) {
     const output = document.getElementById('resultOutput');
-    let outputText = '';
     
-    // Tampilkan dalam format HTML dengan span untuk warna
+    // Clear output dan buat dalam format HTML
     output.innerHTML = '';
     
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
         const originalData = originalInputData[i];
         
+        const lineDiv = document.createElement('div');
+        
         if (result.canCalculate) {
-            const lineDiv = document.createElement('div');
-            lineDiv.innerHTML = `${result.number} = ${formatAIWithColor(result.ai, originalData.ai)} ai`;
-            output.appendChild(lineDiv);
+            const formattedAI = formatAIWithColor(result.ai, originalData.ai);
+            lineDiv.innerHTML = `${result.number} = ${formattedAI} ai`;
         } else {
-            const lineDiv = document.createElement('div');
             lineDiv.textContent = `${result.number} = `;
-            output.appendChild(lineDiv);
         }
+        
+        output.appendChild(lineDiv);
     }
     
     // Tambahkan separator dan formula
@@ -767,25 +797,6 @@ function displayResultWithColor(results, formula) {
     const formulaDiv = document.createElement('div');
     formulaDiv.textContent = formula;
     output.appendChild(formulaDiv);
-}
-
-function formatAIWithColor(calculatedAI, originalAI) {
-    // Format: semua digit 0-9, dengan highlight pada digit yang sesuai originalAI
-    const allDigits = '0123456789';
-    let result = '';
-    
-    for (let i = 0; i < allDigits.length; i++) {
-        const digit = allDigits[i];
-        
-        // Cek apakah digit ini ada di originalAI dan sama dengan calculatedAI
-        if (originalAI && originalAI.includes(digit) && digit === calculatedAI.toString()) {
-            result += `<span style="color: #FF6B6B; font-weight: bold; background: yellow; padding: 2px 4px; border-radius: 3px;">${digit}</span>`;
-        } else {
-            result += digit;
-        }
-    }
-    
-    return result;
 }
 
 function clearAll() {
