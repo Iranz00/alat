@@ -773,7 +773,7 @@ function copyOutput() {
     }
     
     // Gabungkan semua blok dengan jarak baris
-    copyText = formulaBlocks.join('\n');
+    copyText = formulaBlocks.join('\n\n');
     
     if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa disalin!', 'error');
