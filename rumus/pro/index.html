@@ -709,32 +709,20 @@ function copyOutput() {
     const outputElement = document.getElementById('resultOutput');
     let copyText = '';
     
-    // Parse output HTML untuk ekstrak hanya angka highlight
+    // Parse output HTML
     const lines = outputElement.innerHTML.split('\n');
-    let inFormulaSection = false;
-    let currentFormulaBlock = '';
-    let formulaBlocks = [];
+    let currentBlock = '';
+    let blocks = [];
     
     for (let line of lines) {
         line = line.trim();
         
-        // Deteksi section rumus
         if (line === '======') {
-            if (currentFormulaBlock) {
-                formulaBlocks.push(currentFormulaBlock);
-                currentFormulaBlock = '';
+            // Akhir dari satu blok rumus
+            if (currentBlock) {
+                blocks.push(currentBlock + '======');
+                currentBlock = '';
             }
-            inFormulaSection = true;
-            currentFormulaBlock += line + '\n';
-            continue;
-        }
-        
-        if (inFormulaSection) {
-            // Ini adalah rumus
-            if (line && !line.includes('//')) {
-                currentFormulaBlock += line + '\n';
-            }
-            inFormulaSection = false;
             continue;
         }
         
@@ -743,12 +731,12 @@ function copyOutput() {
             continue;
         }
         
-        // Process line dengan angka
+        // Process line dengan angka atau rumus
         const numberMatch = line.match(/(\d{4})\s*=/);
         if (numberMatch) {
             const number = numberMatch[1];
             
-            // Ekstrak angka yang di-highlight (warna merah)
+            // Ekstrak angka yang di-highlight
             const highlightedMatches = line.match(/<span[^>]*>(\d)<\/span>/g);
             let highlightedDigits = '';
             
@@ -760,20 +748,20 @@ function copyOutput() {
             }
             
             if (highlightedDigits) {
-                currentFormulaBlock += `${number} = ${highlightedDigits} ai\n`;
+                currentBlock += `${number} = ${highlightedDigits} ai\n`;
             } else {
-                currentFormulaBlock += `${number} = \n`;
+                currentBlock += `${number} = \n`;
+            }
+        } else if (line && !line.includes('//') && !line.includes('======')) {
+            // Ini adalah rumus, tambahkan ke blok sebelumnya
+            if (blocks.length > 0) {
+                blocks[blocks.length - 1] += line + '\n';
             }
         }
     }
     
-    // Tambahkan blok terakhir
-    if (currentFormulaBlock) {
-        formulaBlocks.push(currentFormulaBlock);
-    }
-    
-    // Gabungkan semua blok dengan jarak baris
-    copyText = formulaBlocks.join('\n\n');
+    // Gabungkan semua blok dengan SATU baris kosong antara blok
+    copyText = blocks.join('\n\n');
     
     if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa disalin!', 'error');
@@ -784,7 +772,6 @@ function copyOutput() {
     navigator.clipboard.writeText(copyText).then(() => {
         showCopyNotification();
     }).catch(err => {
-        // Fallback untuk browser lama
         const textArea = document.createElement('textarea');
         textArea.value = copyText;
         document.body.appendChild(textArea);
