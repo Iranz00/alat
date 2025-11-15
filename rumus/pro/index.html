@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Key - RAN</title>
+<title>Key Kalkulator - RAN</title>
 <style>
 * { 
     margin:0; 
@@ -321,7 +321,7 @@ button:active {
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KALKULATOR KEY</h1>
+        <h1>🔮 KEY KALKULATOR</h1>
         <div class="subtitle">Hitung rumus mistik dengan auto-detect rumus dari input data</div>
     </div>
     
@@ -331,20 +331,7 @@ button:active {
             
             <div class="data-input">
                 <textarea id="inputData" placeholder="Masukkan data dengan format:&#10;6874 = 49 ai  ← (paling lama)&#10;0489 = 49 ai  &#10;2843 = 27 ai  &#10;...&#10;1452 =        ← (hari ini)&#10;======&#10;C8ix+E2ml.(ml)" oninput="updateInputInfo()">3062 = 45 e
-0405 = 78 e
-3127 = 89 e
-9279 = 12 e
-4371 = 45 e
-6765 = 34 e
-5473 = 12 e
-1781 = 01 e
-5090 = 45 k
-9348 = 67 e
-4086 = 89 e
-0478 = 67 e
-4467 = 
-======
-E1</textarea>
+</textarea>
                 <div class="input-info" id="inputInfo">13 angka + 1 rumus terdeteksi</div>
             </div>
             
@@ -478,8 +465,8 @@ const mistikTables = {
 };
 
 let dataHistory = [];
-let currentFormula = '';
-let originalInputData = []; // Simpan data input asli untuk warna
+let currentFormulas = []; // Ubah ke array untuk multi-rumus
+let originalInputData = [];
 
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
@@ -493,17 +480,21 @@ function calculateFormula() {
         // Parse data input dan extract rumus
         const parsedData = parseInputData(inputData);
         
-        if (!currentFormula) {
+        if (currentFormulas.length === 0) {
             showInfo('Tidak ada rumus yang terdeteksi! Pastikan ada rumus setelah garis "======"', 'error');
             return;
         }
         
-        // Calculate AI untuk setiap angka
-        const results = calculateAIForAll(currentFormula);
+        // Calculate AI untuk setiap rumus
+        const allResults = [];
+        for (const formula of currentFormulas) {
+            const results = calculateAIForAll(formula);
+            allResults.push({ formula, results });
+        }
         
-        // Display result dalam format baru dengan warna
-        displayResultWithColor(results, currentFormula);
-        showInfo('Perhitungan berhasil!', 'success');
+        // Display result untuk semua rumus
+        displayMultiResultWithColor(allResults);
+        showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
@@ -513,7 +504,7 @@ function calculateFormula() {
 
 function parseInputData(inputData) {
     dataHistory = [];
-    currentFormula = '';
+    currentFormulas = []; // Reset ke array kosong
     originalInputData = [];
     
     const lines = inputData.split('\n').filter(line => line.trim());
@@ -529,10 +520,10 @@ function parseInputData(inputData) {
             continue;
         }
         
-        // Jika sudah menemukan separator, line berikutnya adalah rumus
+        // Jika sudah menemukan separator, semua line berikutnya adalah rumus
         if (foundSeparator && line) {
-            currentFormula = line;
-            break;
+            currentFormulas.push(line); // Tambah ke array rumus
+            continue;
         }
         
         // Sebelum separator, proses data angka
@@ -542,10 +533,10 @@ function parseInputData(inputData) {
                 const number = numberMatch[1];
                 
                 // Extract components - Semua single digit
-                const as = number[0];           // digit pertama
-                const cop = number[1];          // digit kedua
-                const kepala = number[2];       // digit ketiga
-                const ekor = number[3];         // digit terakhir
+                const as = number[0];
+                const cop = number[1];
+                const kepala = number[2];
+                const ekor = number[3];
                 const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
                 
                 tempData.push({
@@ -574,22 +565,23 @@ function parseInputData(inputData) {
         }
     }
     
-    // dataHistory[0] = terlama (paling atas), dataHistory[terakhir] = terbaru (paling bawah)
     dataHistory = tempData;
     
     // Update tampilan rumus yang terdeteksi
-    document.getElementById('detectedFormula').textContent = currentFormula || 'Tidak ada rumus';
+    const formulaText = currentFormulas.length > 0 ? 
+        `${currentFormulas.length} rumus terdeteksi` : 'Tidak ada rumus';
+    document.getElementById('detectedFormula').textContent = formulaText;
     
     // Update info kebutuhan history
-    if (currentFormula) {
-        const maxDayNeeded = findMaxDayInFormula(currentFormula);
+    if (currentFormulas.length > 0) {
+        const maxDayNeeded = Math.max(...currentFormulas.map(findMaxDayInFormula));
         document.getElementById('historyInfo').textContent = 
-            `Butuh ${maxDayNeeded} hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
+            `Butuh ${maxDayNeeded} hari history. ${currentFormulas.length} rumus terdeteksi.`;
     }
     
     return {
         data: dataHistory,
-        formula: currentFormula
+        formulas: currentFormulas
     };
 }
 
@@ -621,13 +613,15 @@ function calculateAIForAll(formula) {
             results.push({
                 number: dataHistory[i].number,
                 ai: aiResult,
-                canCalculate: true
+                canCalculate: true,
+                originalAI: originalInputData[i].ai // Simpan original AI untuk format
             });
         } else {
             results.push({
                 number: dataHistory[i].number,
                 ai: '',
-                canCalculate: false
+                canCalculate: false,
+                originalAI: originalInputData[i].ai
             });
         }
     }
@@ -738,116 +732,137 @@ function reduceToSingleDigit(num) {
 }
 
 function formatAIWithColor(calculatedAI, originalAI) {
-    // calculatedAI adalah angka 0-9 (hasil perhitungan)
-    // Buat urutan digit dimulai dari calculatedAI
-    let rotatedDigits = '';
-    const allDigits = '0123456789';
-    
-    // Mulai dari calculatedAI dan putar
-    const startIndex = allDigits.indexOf(calculatedAI.toString());
-    
-    for (let i = 0; i < allDigits.length; i++) {
-        const actualIndex = (startIndex + i) % allDigits.length;
-        rotatedDigits += allDigits[actualIndex];
-    }
-    
-    // Sekarang beri warna pada digit yang sesuai dengan originalAI
-    let result = '';
-    for (let i = 0; i < rotatedDigits.length; i++) {
-        const digit = rotatedDigits[i];
+    // PERBAIKAN: Jika ada originalAI, tampilkan rotasi digit dengan highlight
+    // Jika tidak ada originalAI, tampilkan single digit saja
+    if (originalAI && originalAI !== '') {
+        // Buat urutan digit dimulai dari calculatedAI
+        let rotatedDigits = '';
+        const allDigits = '0123456789';
+        const startIndex = allDigits.indexOf(calculatedAI.toString());
         
-        // Cek apakah digit ini ada di originalAI
-        if (originalAI && originalAI.includes(digit)) {
-            result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
-        } else {
-            result += digit;
+        for (let i = 0; i < allDigits.length; i++) {
+            const actualIndex = (startIndex + i) % allDigits.length;
+            rotatedDigits += allDigits[actualIndex];
         }
+        
+        // Beri warna pada digit yang sesuai dengan originalAI
+        let result = '';
+        for (let i = 0; i < rotatedDigits.length; i++) {
+            const digit = rotatedDigits[i];
+            
+            if (originalAI.includes(digit)) {
+                result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
+            } else {
+                result += digit;
+            }
+        }
+        
+        return result;
+    } else {
+        // Tidak ada originalAI, tampilkan single digit saja
+        return calculatedAI.toString();
     }
-    
-    return result;
 }
 
-function displayResultWithColor(results, formula) {
+function displayMultiResultWithColor(allResults) {
     const output = document.getElementById('resultOutput');
-    
-    // Clear output dan buat dalam format HTML
     output.innerHTML = '';
     
-    for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        const originalData = originalInputData[i];
+    // Untuk setiap rumus, buat blok output terpisah
+    for (const { formula, results } of allResults) {
+        const blockDiv = document.createElement('div');
+        blockDiv.style.marginBottom = '20px';
         
-        const lineDiv = document.createElement('div');
-        
-        if (result.canCalculate) {
-            const formattedAI = formatAIWithColor(result.ai, originalData.ai);
-            lineDiv.innerHTML = `${result.number} = ${formattedAI} ai`;
-        } else {
-            lineDiv.textContent = `${result.number} = `;
+        // Tambahkan semua hasil untuk rumus ini
+        for (let i = 0; i < results.length; i++) {
+            const result = results[i];
+            const lineDiv = document.createElement('div');
+            
+            if (result.canCalculate) {
+                const formattedAI = formatAIWithColor(result.ai, result.originalAI);
+                lineDiv.innerHTML = `${result.number} = ${formattedAI} ai`;
+            } else {
+                lineDiv.textContent = `${result.number} = `;
+            }
+            
+            blockDiv.appendChild(lineDiv);
         }
         
-        output.appendChild(lineDiv);
+        // Tambahkan separator dan formula
+        const separatorDiv = document.createElement('div');
+        separatorDiv.textContent = '======';
+        separatorDiv.style.fontWeight = 'bold';
+        separatorDiv.style.marginTop = '5px';
+        blockDiv.appendChild(separatorDiv);
+        
+        const formulaDiv = document.createElement('div');
+        formulaDiv.textContent = formula;
+        formulaDiv.style.marginBottom = '10px';
+        blockDiv.appendChild(formulaDiv);
+        
+        output.appendChild(blockDiv);
     }
-    
-    // Tambahkan separator dan formula
-    const separatorDiv = document.createElement('div');
-    separatorDiv.textContent = '======';
-    output.appendChild(separatorDiv);
-    
-    const formulaDiv = document.createElement('div');
-    formulaDiv.textContent = formula;
-    output.appendChild(formulaDiv);
 }
 
-// Fungsi baru untuk mendapatkan output text-only (hanya angka yang di-highlight)
+// Fungsi untuk mendapatkan output text-only (hanya angka yang di-highlight)
 function getTextOutput() {
     const output = document.getElementById('resultOutput');
-    const lines = output.querySelectorAll('div');
+    const blocks = output.querySelectorAll('div > div'); // Ambil semua blok rumus
     let textOutput = '';
     
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+    blocks.forEach(block => {
+        const lines = block.querySelectorAll('div');
+        let blockText = '';
         
-        if (line.textContent.includes('======')) {
-            // Ini separator
-            textOutput += '======\n';
-            if (lines[i + 1]) {
-                textOutput += lines[i + 1].textContent + '\n';
-                i++; // Skip formula line
-            }
-        } else if (line.innerHTML.includes('<span')) {
-            // Line dengan highlight - ekstrak hanya angka yang di-highlight
-            const number = line.textContent.split(' = ')[0];
-            const spanElements = line.querySelectorAll('span');
-            let highlightedDigits = '';
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
             
-            spanElements.forEach(span => {
-                highlightedDigits += span.textContent;
-            });
-            
-            if (highlightedDigits) {
-                textOutput += `${number} = ${highlightedDigits} ai\n`;
+            if (line.textContent.includes('======')) {
+                // Ini separator
+                blockText += '======\n';
+                if (lines[i + 1]) {
+                    blockText += lines[i + 1].textContent + '\n\n';
+                    i++; // Skip formula line
+                }
+            } else if (line.innerHTML.includes('<span')) {
+                // Line dengan highlight - ekstrak hanya angka yang di-highlight
+                const number = line.textContent.split(' = ')[0];
+                const spanElements = line.querySelectorAll('span');
+                let highlightedDigits = '';
+                
+                spanElements.forEach(span => {
+                    highlightedDigits += span.textContent;
+                });
+                
+                if (highlightedDigits) {
+                    blockText += `${number} = ${highlightedDigits} ai\n`;
+                } else {
+                    blockText += `${number} = \n`;
+                }
             } else {
-                textOutput += `${number} = \n`;
+                // Line tanpa highlight
+                const lineText = line.textContent.trim();
+                if (lineText && !lineText.includes('======')) {
+                    blockText += lineText + '\n';
+                }
             }
-        } else {
-            // Line tanpa highlight
-            textOutput += line.textContent + '\n';
         }
-    }
+        
+        textOutput += blockText;
+    });
     
     return textOutput.trim();
 }
 
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini<br>// Format:<br>// 3062 = 2345678901 ai<br>// 0405 = 5678901234 ai<br>// ...<br>// 4467 = 7890123456 ai<br>// ======<br>// E1`;
+    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini<br>// Format multi-rumus:<br>// 3062 = 07 ai<br>// 0405 = 07 ai<br>// ...<br>// 4467 = 41 ai<br>// ======<br>// A3mb-A5m9.(ty)<br><br>// [Blok rumus berikutnya...]`;
     document.getElementById('info').textContent = 'Masukkan data dengan format angka dan rumus, lalu klik HITUNG RUMUS';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
     document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
     dataHistory = [];
-    currentFormula = '';
+    currentFormulas = [];
     originalInputData = [];
 }
 
@@ -866,7 +881,7 @@ function updateInputInfo() {
     const input = document.getElementById('inputData').value.trim();
     const parsed = parseInputData(input);
     const numberCount = dataHistory.length;
-    const formulaCount = currentFormula ? 1 : 0;
+    const formulaCount = currentFormulas.length;
     
     document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
 }
