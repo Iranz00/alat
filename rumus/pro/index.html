@@ -589,7 +589,7 @@ function displayAllFormulaResults(formulas) {
         }
         
         // Generate output dengan rotasi angka dan highlight YANG BENAR
-        const formulaOutput = generateRotatedOutput(results, formula, highlightData);
+        const formulaOutput = generateRotatedOutput(results, formula, highlightData, i);
         outputHTML += formulaOutput;
         
         if (i < formulas.length - 1) {
@@ -605,8 +605,48 @@ function getHighlightDataForFormula(formulaIndex) {
         return highlightPatterns[formulaIndex];
     }
     
-    // Fallback: return array kosong jika tidak ada pattern
-    return originalInputData.map(() => '');
+    // Untuk rumus ke-6+, generate highlight otomatis
+    return generateAutoHighlight(formulaIndex);
+}
+
+function generateAutoHighlight(formulaIndex) {
+    // Buat pattern highlight otomatis untuk rumus ke-6+
+    const autoHighlight = [];
+    const highlightPositions = [
+        [0, 1], // Rumus 6: posisi 0 dan 1
+        [2, 3], // Rumus 7: posisi 2 dan 3  
+        [4, 5], // Rumus 8: posisi 4 dan 5
+        [6, 7], // Rumus 9: posisi 6 dan 7
+        [8, 9]  // Rumus 10: posisi 8 dan 9
+    ];
+    
+    const positions = highlightPositions[formulaIndex - 5] || [0, 1];
+    
+    // Calculate rumus untuk mendapatkan data
+    const results = calculateAIForSingleFormula(currentFormulas[formulaIndex]);
+    
+    for (let i = 0; i < results.length; i++) {
+        if (results[i].canCalculate) {
+            const ai = results[i].ai;
+            const allDigits = '0123456789';
+            const startIndex = allDigits.indexOf(ai.toString());
+            const rotatedDigits = [];
+            
+            for (let j = 0; j < allDigits.length; j++) {
+                const actualIndex = (startIndex + j) % allDigits.length;
+                rotatedDigits.push(allDigits[actualIndex]);
+            }
+            
+            // Ambil 2 digit berdasarkan positions
+            const digit1 = rotatedDigits[positions[0]];
+            const digit2 = rotatedDigits[positions[1]];
+            autoHighlight.push(digit1 + digit2);
+        } else {
+            autoHighlight.push('');
+        }
+    }
+    
+    return autoHighlight;
 }
 
 function calculateAIForSingleFormula(formula) {
@@ -633,11 +673,16 @@ function calculateAIForSingleFormula(formula) {
     return results;
 }
 
-function generateRotatedOutput(results, formula, highlightData) {
+function generateRotatedOutput(results, formula, highlightData, formulaIndex) {
     let output = '';
     let inheritedPositions = null;
     
-    // Tambahkan data hasil perhitungan dengan rotasi angka dan highlight YANG BENAR
+    // Untuk rumus ke-6+ (tidak ada di highlightPatterns), buat highlight otomatis
+    if (formulaIndex >= 5 && (!highlightData || highlightData.every(item => item === ''))) {
+        highlightData = generateAutoHighlight(formulaIndex);
+    }
+    
+    // Tambahkan data hasil perhitungan dengan rotasi angka dan highlight
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
         
@@ -650,7 +695,7 @@ function generateRotatedOutput(results, formula, highlightData) {
             inheritedPositions = rotatedResult.highlightPositions;
         } else {
             output += `${result.number} = \n`;
-            inheritedPositions = null; // Reset jika tidak bisa kalkulasi
+            inheritedPositions = null;
         }
     }
     
@@ -872,48 +917,7 @@ function copyMultiFormulaOutput() {
     });
 }
 
-function parseOutputForMultiFormula(outputHTML) {
-    const rumusData = [];
-    const lines = outputHTML.split('\n');
-    let currentRumusIndex = -1;
-    let currentLineIndex = 0;
-    
-    for (let line of lines) {
-        line = line.trim();
-        
-        if (line === '======') {
-            currentRumusIndex++;
-            rumusData[currentRumusIndex] = [];
-            currentLineIndex = 0;
-            continue;
-        }
-        
-        // Skip komentar dan rumus
-        if (line.includes('//') || (currentRumusIndex >= 0 && !line.match(/\d{4} =/))) {
-            continue;
-        }
-        
-        // Process line dengan angka
-        const numberMatch = line.match(/(\d{4}) =/);
-        if (numberMatch && currentRumusIndex >= 0) {
-            // Ekstrak angka AI dari output (cari angka setelah = dan sebelum ai)
-            const aiMatch = line.match(/= ([^a]+) ai/);
-            if (aiMatch) {
-                const aiText = aiMatch[1].trim();
-                // Ambil hanya angka (hilangkan tag HTML untuk highlight)
-                const cleanAI = aiText.replace(/<[^>]*>/g, '');
-                if (cleanAI) {
-                    rumusData[currentRumusIndex][currentLineIndex] = cleanAI;
-                }
-            }
-            currentLineIndex++;
-        }
-    }
-    
-    return rumusData;
-}
-
-// ... (fungsi-fungsi helper lainnya tetap sama)
+// ... (fungsi-fungsi helper lainnya)
 function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
