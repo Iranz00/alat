@@ -558,8 +558,9 @@ function parseInputData(inputData) {
         }
     }
     
-    // REVERSE DATA: Index 0 = terlama (paling atas), index terakhir = terbaru (paling bawah)
-    dataHistory = [...tempData].reverse();
+    // PERBAIKAN: JANGAN DI-REVERSE! 
+    // dataHistory[0] = terlama (paling atas), dataHistory[terakhir] = terbaru (paling bawah)
+    dataHistory = tempData; // Hapus .reverse()
     
     // Update tampilan rumus yang terdeteksi
     document.getElementById('detectedFormula').textContent = currentFormula || 'Tidak ada rumus';
@@ -588,11 +589,11 @@ function calculateAIForAll(formula) {
     console.log(`Hari maksimum yang dibutuhkan: ${maxDayNeeded}`);
     
     // Untuk setiap angka dalam dataHistory, hitung AI-nya
-    // Hanya hitung untuk data yang memiliki cukup riwayat
+    // dataHistory[0] = terlama, dataHistory[terakhir] = terbaru
     for (let i = 0; i < dataHistory.length; i++) {
         // Cek apakah data ini memiliki cukup riwayat untuk rumus
         // i = index data saat ini (0 = terlama, terakhir = terbaru)
-        // Data terbaru (index besar) butuh data sebelumnya (index kecil)
+        // Data terlama (index kecil) tidak punya data sebelumnya
         if (i >= maxDayNeeded - 1) {
             const aiResult = calculateSingleAI(formula, i);
             results.push({
@@ -613,77 +614,6 @@ function calculateAIForAll(formula) {
     return results;
 }
 
-function findMaxDayInFormula(formula) {
-    let maxDay = 1; // Minimal hari 1 (hari ini)
-    
-    // Process final conversion like .(ml) first
-    let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-    
-    // Cari semua komponen dalam rumus
-    const components = workingFormula.split(/[+\-]/);
-    
-    components.forEach(component => {
-        const match = component.trim().match(/^([AKCEJ])(\d+)/);
-        if (match) {
-            const day = parseInt(match[2]);
-            if (day > maxDay) {
-                maxDay = day;
-            }
-        }
-    });
-    
-    return maxDay;
-}
-
-function calculateSingleAI(formula, currentDayIndex) {
-    let workingFormula = formula;
-    
-    // Process final conversion like .(ml)
-    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
-    if (finalConversion) {
-        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
-    }
-    
-    // Process components dengan support + dan -
-    const components = workingFormula.split(/([+\-])/);
-    let total = 0;
-    let currentOperator = '+';
-    
-    for (let i = 0; i < components.length; i++) {
-        const component = components[i].trim();
-        
-        if (component === '+' || component === '-') {
-            currentOperator = component;
-            continue;
-        }
-        
-        if (component) {
-            const value = processComponent(component, currentDayIndex);
-            
-            if (currentOperator === '+') {
-                total += value;
-            } else if (currentOperator === '-') {
-                total -= value;
-            }
-        }
-    }
-    
-    // Handle negative results
-    if (total < 0) {
-        total = Math.abs(total);
-    }
-    
-    // Apply final conversion if exists
-    if (finalConversion) {
-        const table = finalConversion[1].toUpperCase();
-        const converted = convertMistik(total.toString(), table);
-        total = parseInt(converted);
-    }
-    
-    const finalResult = reduceToSingleDigit(total);
-    return finalResult;
-}
-
 function processComponent(component, currentDayIndex) {
     // Examples: K1mb, J10m9, A25, C30, etc.
     const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
@@ -695,7 +625,7 @@ function processComponent(component, currentDayIndex) {
     const dayOffset = parseInt(match[2]); // 1 = hari ini, 2 = kemarin, 3 = lusa, dst
     const conversion = match[3]; // mb, m9, ml, etc.
     
-    // Hitung index data yang benar
+    // PERBAIKAN: Hitung index data yang benar
     // currentDayIndex = index data yang sedang dihitung (0 = terlama, terakhir = terbaru)
     // dayOffset = berapa hari mundur dari data yang sedang dihitung
     // Untuk data terlama (index 0), tidak bisa akses data sebelumnya
