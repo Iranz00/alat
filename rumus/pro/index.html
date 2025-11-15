@@ -795,12 +795,12 @@ function copyOutput() {
 function copyMultiFormulaOutput() {
     let copyText = '';
     
-    // Calculate semua rumus dulu untuk mendapatkan hasil 4467
-    const allFormulaResults = [];
-    for (let i = 0; i < currentFormulas.length; i++) {
-        const results = calculateAIForSingleFormula(currentFormulas[i]);
-        allFormulaResults.push(results);
-    }
+    // Ambil data dari output yang sudah ditampilkan (salin1)
+    const outputElement = document.getElementById('resultOutput');
+    const outputHTML = outputElement.innerHTML;
+    
+    // Parse output untuk extract AI dari setiap rumus
+    const rumusData = parseOutputForMultiFormula(outputHTML);
     
     // Generate output multi-rumus
     for (let i = 0; i < dataHistory.length; i++) {
@@ -813,20 +813,17 @@ function copyMultiFormulaOutput() {
             
             let aiValue = 'Xx';
             
-            if (j === 0) {
-                // Rumus pertama: ambil dari input asli
-                aiValue = originalInputData[i].ai || 'Xx';
-            } else if (j < highlightPatterns.length && i < highlightPatterns[j].length) {
-                // Rumus selanjutnya: ambil dari highlightPatterns
-                aiValue = highlightPatterns[j][i] || 'Xx';
+            // Coba ambil dari input asli dulu
+            if (j === 0 && originalInputData[i].ai) {
+                aiValue = originalInputData[i].ai;
             }
-            
-            // Jika tidak ada data di input (seperti 4467), gunakan hasil kalkulasi
-            if (aiValue === 'Xx' || aiValue === '') {
-                const result = allFormulaResults[j][i];
-                if (result.canCalculate) {
-                    aiValue = result.ai.toString().padStart(2, '0');
-                }
+            // Jika tidak ada, ambil dari output yang sudah dihitung
+            else if (rumusData[j] && rumusData[j][i]) {
+                aiValue = rumusData[j][i];
+            }
+            // Jika masih tidak ada, gunakan Xx
+            else {
+                aiValue = 'Xx';
             }
             
             multiAI += aiValue;
@@ -853,6 +850,47 @@ function copyMultiFormulaOutput() {
         document.body.removeChild(textArea);
         showInfo('Output multi-rumus berhasil disalin!', 'success');
     });
+}
+
+function parseOutputForMultiFormula(outputHTML) {
+    const rumusData = [];
+    const lines = outputHTML.split('\n');
+    let currentRumusIndex = -1;
+    let currentLineIndex = 0;
+    
+    for (let line of lines) {
+        line = line.trim();
+        
+        if (line === '======') {
+            currentRumusIndex++;
+            rumusData[currentRumusIndex] = [];
+            currentLineIndex = 0;
+            continue;
+        }
+        
+        // Skip komentar dan rumus
+        if (line.includes('//') || (currentRumusIndex >= 0 && !line.match(/\d{4} =/))) {
+            continue;
+        }
+        
+        // Process line dengan angka
+        const numberMatch = line.match(/(\d{4}) =/);
+        if (numberMatch && currentRumusIndex >= 0) {
+            // Ekstrak angka AI dari output (cari angka setelah = dan sebelum ai)
+            const aiMatch = line.match(/= ([^a]+) ai/);
+            if (aiMatch) {
+                const aiText = aiMatch[1].trim();
+                // Ambil hanya angka (hilangkan tag HTML untuk highlight)
+                const cleanAI = aiText.replace(/<[^>]*>/g, '');
+                if (cleanAI) {
+                    rumusData[currentRumusIndex][currentLineIndex] = cleanAI;
+                }
+            }
+            currentLineIndex++;
+        }
+    }
+    
+    return rumusData;
 }
 
 // ... (fungsi-fungsi helper lainnya tetap sama)
