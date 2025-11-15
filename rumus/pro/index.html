@@ -732,15 +732,31 @@ function copyOutput() {
     
     // Parse output HTML untuk ekstrak hanya angka highlight
     const lines = outputElement.innerHTML.split('\n');
+    let currentFormula = '';
+    let inFormulaSection = false;
     
     for (let line of lines) {
         line = line.trim();
         
-        // Skip separator dan rumus
-        if (line === '======' || line.startsWith('R') || line.includes('//')) {
-            if (line === '======' || line.startsWith('R')) {
+        // Deteksi section rumus
+        if (line === '======') {
+            inFormulaSection = true;
+            copyText += line + '\n';
+            continue;
+        }
+        
+        if (inFormulaSection) {
+            // Ini adalah rumus
+            if (line && !line.includes('//')) {
+                currentFormula = line;
                 copyText += line + '\n';
             }
+            inFormulaSection = false;
+            continue;
+        }
+        
+        // Skip komentar
+        if (line.includes('//')) {
             continue;
         }
         
