@@ -467,6 +467,15 @@ let dataHistory = [];
 let currentFormulas = [];
 let originalInputData = [];
 
+// Definisikan pola warna untuk setiap rumus
+const colorPatterns = {
+    'A3mb-A5m9.(ty)': [0, 1],    // Dua digit pertama
+    'A8mb+E5ml.(ml)': [1, 3],    // Digit ke-2 dan ke-4
+    'A4ml+C1ml': [0, 1],         // Dua digit pertama
+    'A5-A7ix': [0, 1],           // Dua digit pertama
+    'A9ty+C6ty.(m9)': [0, 1]     // Dua digit pertama
+};
+
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
     
@@ -485,16 +494,18 @@ function calculateFormula() {
         
         // Calculate untuk semua rumus
         const allResults = [];
-        for (const formula of currentFormulas) {
+        for (let i = 0; i < currentFormulas.length; i++) {
+            const formula = currentFormulas[i];
             const results = calculateAIForAll(formula);
             
-            // Untuk semua rumus, gunakan pola: warna pada posisi 0 dan 1
-            const colorPattern = [0, 1]; // Dua digit pertama selalu berwarna
+            // Dapatkan pola warna untuk rumus ini
+            const colorPattern = colorPatterns[formula] || [0, 1]; // Default ke [0,1] jika tidak ada
             
             allResults.push({ 
                 formula, 
                 results,
-                colorPattern 
+                colorPattern,
+                isFirstFormula: i === 0
             });
         }
         
@@ -707,7 +718,7 @@ function getRotatedDigits(calculatedAI, allDigits) {
     return rotatedDigits;
 }
 
-function formatAIWithPattern(calculatedAI, originalAI, colorPattern) {
+function formatAIWithPattern(calculatedAI, originalAI, colorPattern, isFirstFormula) {
     const allDigits = '0123456789';
     const rotatedDigits = getRotatedDigits(calculatedAI, allDigits);
     
@@ -717,11 +728,11 @@ function formatAIWithPattern(calculatedAI, originalAI, colorPattern) {
         const digit = rotatedDigits[i];
         let shouldHighlight = false;
         
-        // Prioritaskan originalAI jika ada
-        if (originalAI && originalAI !== '') {
+        // Hanya rumus pertama yang pakai originalAI, rumus lainnya pakai colorPattern saja
+        if (isFirstFormula && originalAI && originalAI !== '') {
             shouldHighlight = originalAI.includes(digit);
         } 
-        // Jika tidak ada originalAI, gunakan colorPattern (posisi 0 dan 1)
+        // Untuk rumus 2,3,4,5 hanya pakai colorPattern
         else if (colorPattern && colorPattern.includes(i)) {
             shouldHighlight = true;
         }
@@ -741,7 +752,7 @@ function displayMultiResultWithColor(allResults) {
     output.innerHTML = '';
     
     // Untuk setiap rumus, tampilkan semua data
-    for (const { formula, results, colorPattern } of allResults) {
+    for (const { formula, results, colorPattern, isFirstFormula } of allResults) {
         const blockDiv = document.createElement('div');
         blockDiv.style.marginBottom = '25px';
         
@@ -751,7 +762,7 @@ function displayMultiResultWithColor(allResults) {
             const lineDiv = document.createElement('div');
             
             if (result.canCalculate) {
-                const formattedAI = formatAIWithPattern(result.ai, result.originalAI, colorPattern);
+                const formattedAI = formatAIWithPattern(result.ai, result.originalAI, colorPattern, isFirstFormula);
                 lineDiv.innerHTML = `${result.number} = ${formattedAI} ai`;
             } else {
                 lineDiv.textContent = `${result.number} = `;
