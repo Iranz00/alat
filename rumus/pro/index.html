@@ -516,7 +516,7 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                // Simpan data input asli untuk highlight
+                // Simpan data input asli untuk highlight rumus pertama
                 const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)/);
                 if (originalMatch) {
                     originalInputData.push({
@@ -576,8 +576,8 @@ function displayAllFormulaResults(formulas) {
         // Calculate hasil untuk rumus ini
         const results = calculateAIForSingleFormula(formula);
         
-        // Generate output dengan rotasi angka dan highlight
-        const formulaOutput = generateRotatedOutput(results, formula);
+        // Generate output dengan rotasi angka dan highlight YANG BENAR
+        const formulaOutput = generateRotatedOutput(results, formula, i);
         
         // Tambahkan ke output utama
         outputHTML += formulaOutput;
@@ -615,16 +615,29 @@ function calculateAIForSingleFormula(formula) {
     return results;
 }
 
-function generateRotatedOutput(results, formula) {
+function generateRotatedOutput(results, formula, formulaIndex) {
     let output = '';
     
-    // Tambahkan data hasil perhitungan dengan rotasi angka
+    // Untuk rumus pertama, pakai highlight dari input asli
+    // Untuk rumus selanjutnya, pakai highlight dari hasil rumus sebelumnya dalam output
+    let highlightData = [];
+    
+    if (formulaIndex === 0) {
+        // Rumus pertama: pakai data dari input asli
+        highlightData = originalInputData.map(item => item.ai);
+    } else {
+        // Rumus selanjutnya: pakai hasil dari rumus sebelumnya
+        const previousResults = calculateAIForSingleFormula(currentFormulas[formulaIndex - 1]);
+        highlightData = previousResults.map(result => result.canCalculate ? result.ai.toString() : '');
+    }
+    
+    // Tambahkan data hasil perhitungan dengan rotasi angka dan highlight YANG BENAR
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
-        const originalData = originalInputData[i];
         
         if (result.canCalculate) {
-            const rotatedDigits = formatAIWithColor(result.ai, originalData.ai);
+            const highlightAI = highlightData[i] || '';
+            const rotatedDigits = formatAIWithColor(result.ai, highlightAI);
             output += `${result.number} = ${rotatedDigits} ai\n`;
         } else {
             output += `${result.number} = \n`;
@@ -638,8 +651,10 @@ function generateRotatedOutput(results, formula) {
     return output;
 }
 
-function formatAIWithColor(calculatedAI, originalAI) {
+function formatAIWithColor(calculatedAI, highlightAI) {
     // calculatedAI adalah angka 0-9 (hasil perhitungan)
+    // highlightAI adalah angka yang digunakan untuk highlight (bisa dari input asli atau rumus sebelumnya)
+    
     // Buat urutan digit dimulai dari calculatedAI
     let rotatedDigits = '';
     const allDigits = '0123456789';
@@ -652,13 +667,13 @@ function formatAIWithColor(calculatedAI, originalAI) {
         rotatedDigits += allDigits[actualIndex];
     }
     
-    // Sekarang beri warna pada digit yang sesuai dengan originalAI
+    // Sekarang beri warna pada digit yang sesuai dengan highlightAI
     let result = '';
     for (let i = 0; i < rotatedDigits.length; i++) {
         const digit = rotatedDigits[i];
         
-        // Cek apakah digit ini ada di originalAI
-        if (originalAI && originalAI.includes(digit)) {
+        // Cek apakah digit ini ada di highlightAI
+        if (highlightAI && highlightAI.includes(digit)) {
             result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
         } else {
             result += digit;
