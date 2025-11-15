@@ -840,18 +840,12 @@ function copyOutput() {
 function copyMultiFormulaOutput() {
     let copyText = '';
     
-    // Data dari input asli untuk rumus pertama
-    const inputAI = originalInputData.map(item => item.ai || 'Xx');
+    // Ambil data langsung dari output salin1 yang sudah ditampilkan
+    const outputElement = document.getElementById('resultOutput');
+    const outputText = outputElement.textContent || outputElement.innerText;
     
-    // Data dari highlightPatterns untuk rumus selanjutnya
-    const patternAI = [];
-    for (let i = 1; i < currentFormulas.length; i++) {
-        if (i < highlightPatterns.length) {
-            patternAI.push(highlightPatterns[i]);
-        } else {
-            patternAI.push(Array(dataHistory.length).fill('Xx'));
-        }
-    }
+    // Parse output salin1 untuk mendapatkan semua data AI
+    const parsedData = parseSalin1ForMultiFormula(outputText);
     
     // Generate output multi-rumus
     for (let i = 0; i < dataHistory.length; i++) {
@@ -862,35 +856,8 @@ function copyMultiFormulaOutput() {
         for (let j = 0; j < currentFormulas.length; j++) {
             if (j > 0) multiAI += ' . ';
             
-            let aiValue = 'Xx';
-            
-            if (j === 0) {
-                // Rumus pertama: dari input asli
-                aiValue = inputAI[i];
-            } else {
-                // Rumus selanjutnya: dari highlightPatterns
-                const patternIndex = j - 1;
-                if (patternIndex < patternAI.length && i < patternAI[patternIndex].length) {
-                    aiValue = patternAI[patternIndex][i];
-                }
-            }
-            
-            // Untuk 4467 yang kosong, gunakan data dari highlightPatterns atau contoh
-            if ((aiValue === 'Xx' || aiValue === '') && number === '4467') {
-                // Data khusus untuk 4467 dari contoh Anda
-                const data4467 = ['41', '91', '81', '91', '89'];
-                if (j < data4467.length) {
-                    aiValue = data4467[j];
-                }
-            }
-            // Untuk angka lain yang kosong, hitung hasilnya
-            else if (aiValue === 'Xx' || aiValue === '') {
-                const results = calculateAIForSingleFormula(currentFormulas[j]);
-                if (results[i].canCalculate) {
-                    aiValue = results[i].ai.toString().padStart(2, '0');
-                }
-            }
-            
+            // Ambil AI untuk number ini dari rumus ke-j
+            const aiValue = parsedData.getAI(number, j);
             multiAI += aiValue;
         }
         
@@ -915,6 +882,51 @@ function copyMultiFormulaOutput() {
         document.body.removeChild(textArea);
         showInfo('Output multi-rumus berhasil disalin!', 'success');
     });
+}
+
+function parseSalin1ForMultiFormula(outputText) {
+    const lines = outputText.split('\n');
+    const numbers = [];
+    const aiData = {}; // { number: [ai1, ai2, ai3, ...] }
+    let currentFormulaIndex = -1;
+    
+    for (let line of lines) {
+        line = line.trim();
+        
+        if (line === '======') {
+            currentFormulaIndex++;
+            continue;
+        }
+        
+        // Skip komentar dan rumus
+        if (line.includes('//') || !line.match(/\d{4} =/)) {
+            continue;
+        }
+        
+        // Process line dengan angka
+        const match = line.match(/(\d{4}) = (\d+) ai/);
+        if (match) {
+            const number = match[1];
+            const ai = match[2];
+            
+            // Initialize array untuk number ini
+            if (!aiData[number]) {
+                aiData[number] = [];
+                numbers.push(number);
+            }
+            
+            // Simpan AI untuk rumus saat ini
+            aiData[number][currentFormulaIndex] = ai;
+        }
+    }
+    
+    return {
+        numbers: numbers,
+        formulaCount: currentFormulaIndex + 1,
+        getAI: function(number, formulaIndex) {
+            return aiData[number] && aiData[number][formulaIndex] ? aiData[number][formulaIndex] : 'Xx';
+        }
+    };
 }
 
 // ... (fungsi-fungsi helper lainnya)
