@@ -316,6 +316,47 @@ button:active {
     font-size: 14px;
     font-weight: 600;
 }
+
+/* Breakdown Styles */
+.input-breakdown, .output-breakdown {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.breakdown-cards {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.breakdown-card {
+    background: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 70px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.breakdown-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 4px;
+}
+
+.breakdown-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
 .markdown-output { 
     background:#1a202c; 
     color:#e2e8f0; 
@@ -519,6 +560,21 @@ body.dark-theme .output-container {
     background: #4a5568;
     border-color: #718096;
 }
+body.dark-theme .input-breakdown,
+body.dark-theme .output-breakdown {
+    background: #4a5568;
+    border-color: #718096;
+}
+body.dark-theme .breakdown-card {
+    background: #2d3748;
+    border-color: #718096;
+}
+body.dark-theme .breakdown-label {
+    color: #e2e8f0;
+}
+body.dark-theme .breakdown-value {
+    color: #ffffff;
+}
 
 @media (max-width: 768px) {
     body {
@@ -564,6 +620,13 @@ body.dark-theme .output-container {
         margin-top: 10px;
         display: inline-block;
     }
+    .breakdown-cards {
+        gap: 10px;
+    }
+    .breakdown-card {
+        padding: 10px 12px;
+        min-width: 60px;
+    }
 }
 </style>
 </head>
@@ -608,6 +671,24 @@ SURAT:
 03*04#5000, 
 05#10000," oninput="updateInputCounter()"></textarea>
                     <div class="input-counter" id="inputCounter">Total: 0</div>
+                    
+                    <!-- Input Breakdown -->
+                    <div class="input-breakdown" id="inputBreakdown" style="display: none;">
+                        <div class="breakdown-cards">
+                            <div class="breakdown-card">
+                                <div class="breakdown-label">4D</div>
+                                <div class="breakdown-value" id="input4D">0 Line</div>
+                            </div>
+                            <div class="breakdown-card">
+                                <div class="breakdown-label">3D</div>
+                                <div class="breakdown-value" id="input3D">0 Line</div>
+                            </div>
+                            <div class="breakdown-card">
+                                <div class="breakdown-label">2D</div>
+                                <div class="breakdown-value" id="input2D">0 Line</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="button-group">
@@ -637,6 +718,25 @@ SURAT:
                     <h3>📊 Hasil Output:</h3>
                     <div class="total-value" id="outputTotal">Total: 0</div>
                 </div>
+                
+                <!-- Output Breakdown -->
+                <div class="output-breakdown" id="outputBreakdown" style="display: none;">
+                    <div class="breakdown-cards">
+                        <div class="breakdown-card">
+                            <div class="breakdown-label">4D</div>
+                            <div class="breakdown-value" id="output4D">0 Line</div>
+                        </div>
+                        <div class="breakdown-card">
+                            <div class="breakdown-label">3D</div>
+                            <div class="breakdown-value" id="output3D">0 Line</div>
+                        </div>
+                        <div class="breakdown-card">
+                            <div class="breakdown-label">2D</div>
+                            <div class="breakdown-value" id="output2D">0 Line</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
             </div>
         </div>
@@ -650,6 +750,7 @@ SURAT:
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
+                        <h3>📥 INPUT ANGKA</h3>
                         <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
                     </div>
                 </div>
@@ -692,13 +793,10 @@ SURAT:
         
         <!-- TAB 3: POLTAR 4D/3D/2D -->
         <div id="tab3" class="tab-content">
-            <div class="warning">
-                ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
-            </div>
-            
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
+                        <h3>📥 INPUT ANGKA</h3>
                         <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
                     </div>
                 </div>
@@ -825,6 +923,11 @@ function extractValidPatterns(line) {
 function updateInputCounter() {
     const input = document.getElementById('inputData').value.trim();
     let total = 0;
+    let lineCount4D = 0;
+    let lineCount3D = 0;
+    let lineCount2D = 0;
+    
+    const breakdownContainer = document.getElementById('inputBreakdown');
     
     if (input) {
         const lines = input.split(',').map(line => line.trim()).filter(line => line);
@@ -841,6 +944,12 @@ function updateInputCounter() {
                     keys.forEach(key => {
                         if (!individualKeyMap[key]) individualKeyMap[key] = 0;
                         individualKeyMap[key] += pattern.value;
+                        
+                        // Hitung line per digit
+                        const digitLength = key.length;
+                        if (digitLength === 4) lineCount4D++;
+                        else if (digitLength === 3) lineCount3D++;
+                        else if (digitLength === 2) lineCount2D++;
                     });
                 }
             });
@@ -849,6 +958,18 @@ function updateInputCounter() {
         Object.values(individualKeyMap).forEach(value => {
             total += value;
         });
+        
+        // Tampilkan breakdown jika ada data
+        if (total > 0) {
+            breakdownContainer.style.display = 'block';
+            document.getElementById('input4D').textContent = lineCount4D + ' Line';
+            document.getElementById('input3D').textContent = lineCount3D + ' Line';
+            document.getElementById('input2D').textContent = lineCount2D + ' Line';
+        } else {
+            breakdownContainer.style.display = 'none';
+        }
+    } else {
+        breakdownContainer.style.display = 'none';
     }
     
     document.getElementById('inputCounter').textContent = `Total: ${total.toLocaleString()}`;
@@ -967,13 +1088,26 @@ function prosesData() {
 
 function generateMarkdown(groups) {
     const markdownOutput = document.getElementById('markdownOutput');
+    const outputBreakdown = document.getElementById('outputBreakdown');
     let output = '';
     let totalOutputValue = 0;
     
+    // Hitung line count per digit untuk OUTPUT
+    let lineCount4D = 0;
+    let lineCount3D = 0;
+    let lineCount2D = 0;
+    
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
+            // Hitung breakdown
             const count = groups[group].reduce((sum, entry) => sum + entry.keys.length, 0);
-            output += `${group.replace('DIGIT', 'D')} (${count} line):\n`;
+            if (group === '4DIGIT') lineCount4D = count;
+            else if (group === '3DIGIT') lineCount3D = count;
+            else if (group === '2DIGIT') lineCount2D = count;
+            
+            const label = group.replace('DIGIT', 'D');
+            output += `${label} (${count} line):\n`;
+            
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
                 totalOutputValue += entry.value * entry.keys.length;
@@ -981,6 +1115,16 @@ function generateMarkdown(groups) {
             output += '\n';
         }
     });
+    
+    // Update breakdown output
+    if (lineCount4D > 0 || lineCount3D > 0 || lineCount2D > 0) {
+        outputBreakdown.style.display = 'block';
+        document.getElementById('output4D').textContent = lineCount4D + ' Line';
+        document.getElementById('output3D').textContent = lineCount3D + ' Line';
+        document.getElementById('output2D').textContent = lineCount2D + ' Line';
+    } else {
+        outputBreakdown.style.display = 'none';
+    }
     
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
@@ -997,6 +1141,8 @@ function cleanAll() {
     document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
     document.getElementById('outputTotal').textContent = 'Total: 0';
     document.getElementById('inputCounter').textContent = 'Total: 0';
+    document.getElementById('inputBreakdown').style.display = 'none';
+    document.getElementById('outputBreakdown').style.display = 'none';
     document.getElementById('errorDetails').style.display = 'none';
     showInfoRekap('💡 Masukkan data Anda dan klik "PROSES DATA"', 'default');
 }
