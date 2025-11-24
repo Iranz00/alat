@@ -659,6 +659,24 @@ body.dark-theme .breakdown-value {
             </button>
         </div>
         
+        <!-- Input Breakdown -->
+        <div class="input-breakdown" id="inputBreakdown" style="display: none;">
+            <div class="breakdown-cards">
+                <div class="breakdown-card">
+                    <div class="breakdown-label">4D</div>
+                    <div class="breakdown-value" id="input4D">0 Line</div>
+                </div>
+                <div class="breakdown-card">
+                    <div class="breakdown-label">3D</div>
+                    <div class="breakdown-value" id="input3D">0 Line</div>
+                </div>
+                <div class="breakdown-card">
+                    <div class="breakdown-label">2D</div>
+                    <div class="breakdown-value" id="input2D">0 Line</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- TAB 1: REKAP DATA -->
         <div id="tab1" class="tab-content active">
             <div class="input-section">
@@ -671,24 +689,6 @@ SURAT:
 03*04#5000, 
 05#10000," oninput="updateInputCounter()"></textarea>
                     <div class="input-counter" id="inputCounter">Total: 0</div>
-                    
-                    <!-- Input Breakdown -->
-                    <div class="input-breakdown" id="inputBreakdown" style="display: none;">
-                        <div class="breakdown-cards">
-                            <div class="breakdown-card">
-                                <div class="breakdown-label">4D</div>
-                                <div class="breakdown-value" id="input4D">0 Line</div>
-                            </div>
-                            <div class="breakdown-card">
-                                <div class="breakdown-label">3D</div>
-                                <div class="breakdown-value" id="input3D">0 Line</div>
-                            </div>
-                            <div class="breakdown-card">
-                                <div class="breakdown-label">2D</div>
-                                <div class="breakdown-value" id="input2D">0 Line</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="button-group">
@@ -1105,8 +1105,8 @@ function generateMarkdown(groups) {
             else if (group === '3DIGIT') lineCount3D = count;
             else if (group === '2DIGIT') lineCount2D = count;
             
-            // Output tanpa "(X line)" - hanya label
-            output += `${group}:\n`;
+            const label = group.replace('DIGIT', 'D');
+            output += `${label} (${count} line):\n`;
             
             groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
