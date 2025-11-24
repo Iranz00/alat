@@ -371,18 +371,48 @@ button:active {
     border:1px solid #2d3748;
     font-size:14px;
 }
-/* Styles untuk warna output */
+/* REKOMENDASI WARNA UNTUK BACKGROUND HITAM */
 .digit-yellow {
     color: #FFD700;
     font-weight: bold;
+    text-shadow: 0 0 3px rgba(255, 215, 0, 0.3);
 }
 .star-red {
-    color: #FF4444;
+    color: #FF6B6B;
     font-weight: bold;
+    text-shadow: 0 0 3px rgba(255, 107, 107, 0.3);
 }
 .hash-blue {
-    color: #4488FF;
+    color: #4FC3F7;
     font-weight: bold;
+    text-shadow: 0 0 3px rgba(79, 195, 247, 0.3);
+}
+
+/* WARNA TAMBAHAN UNTUK LABEL */
+.label-neon-green {
+    color: #00FF9D;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.4);
+}
+.label-electric-purple {
+    color: #B388FF;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(179, 136, 255, 0.4);
+}
+.label-cyan {
+    color: #18FFFF;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(24, 255, 255, 0.4);
+}
+.label-orange {
+    color: #FFAB40;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 171, 64, 0.4);
+}
+.label-pink {
+    color: #FF80AB;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 128, 171, 0.4);
 }
 .markdown-output::-webkit-scrollbar {
     width:8px;
@@ -671,7 +701,7 @@ body.dark-theme .breakdown-value {
                 <span>POLTAR 4D/3D/2D</span>
             </button>
         </div>
-        <br/>
+        
         <!-- Input Breakdown -->
         <div class="input-breakdown" id="inputBreakdown" style="display: none;">
             <div class="breakdown-cards">
@@ -689,7 +719,7 @@ body.dark-theme .breakdown-value {
                 </div>
             </div>
         </div>
-        
+        <br/>
         <!-- TAB 1: REKAP DATA -->
         <div id="tab1" class="tab-content active">
             <div class="input-section">
@@ -910,12 +940,18 @@ function switchTab(tabName) {
 // COLOR FORMATTING FUNCTIONS
 // =============================================
 function addColorToOutput(text) {
-    // Ganti angka 0-9 dengan span berwarna kuning
+    // Warna utama
     text = text.replace(/([0-9])/g, '<span class="digit-yellow">$1</span>');
-    // Ganti * dengan span berwarna merah
     text = text.replace(/\*/g, '<span class="star-red">*</span>');
-    // Ganti # dengan span berwarna biru
     text = text.replace(/#/g, '<span class="hash-blue">#</span>');
+    
+    // Warna untuk label
+    text = text.replace(/(\b[234]D\b)/g, '<span class="label-neon-green">$1</span>');
+    text = text.replace(/(line)/gi, '<span class="label-electric-purple">$1</span>');
+    text = text.replace(/(Total:)/g, '<span class="label-cyan">$1</span>');
+    text = text.replace(/(hasil)/gi, '<span class="label-orange">$1</span>');
+    text = text.replace(/(kombinasi)/gi, '<span class="label-pink">$1</span>');
+    
     return text;
 }
 
