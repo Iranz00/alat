@@ -371,6 +371,19 @@ button:active {
     border:1px solid #2d3748;
     font-size:14px;
 }
+/* Styles untuk warna output */
+.digit-yellow {
+    color: #FFD700;
+    font-weight: bold;
+}
+.star-red {
+    color: #FF4444;
+    font-weight: bold;
+}
+.hash-blue {
+    color: #4488FF;
+    font-weight: bold;
+}
 .markdown-output::-webkit-scrollbar {
     width:8px;
 }
@@ -658,7 +671,7 @@ body.dark-theme .breakdown-value {
                 <span>POLTAR 4D/3D/2D</span>
             </button>
         </div>
-        
+        <br/>
         <!-- Input Breakdown -->
         <div class="input-breakdown" id="inputBreakdown" style="display: none;">
             <div class="breakdown-cards">
@@ -891,6 +904,26 @@ function switchTab(tabName) {
     });
     document.getElementById(tabName).classList.add('active');
     event.currentTarget.classList.add('active');
+}
+
+// =============================================
+// COLOR FORMATTING FUNCTIONS
+// =============================================
+function addColorToOutput(text) {
+    // Ganti angka 0-9 dengan span berwarna kuning
+    text = text.replace(/([0-9])/g, '<span class="digit-yellow">$1</span>');
+    // Ganti * dengan span berwarna merah
+    text = text.replace(/\*/g, '<span class="star-red">*</span>');
+    // Ganti # dengan span berwarna biru
+    text = text.replace(/#/g, '<span class="hash-blue">#</span>');
+    return text;
+}
+
+function getPlainTextForCopy(htmlText) {
+    // Hapus semua tag HTML untuk copy text biasa
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlText;
+    return tempDiv.textContent || tempDiv.innerText || '';
 }
 
 // =============================================
@@ -1127,18 +1160,26 @@ function generateMarkdown(groups) {
     }
     
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
-    markdownOutput.textContent = output || '// Tidak ada data yang diproses';
+    
+    // Tambahkan warna ke output dan tampilkan sebagai HTML
+    const coloredOutput = addColorToOutput(output);
+    markdownOutput.innerHTML = coloredOutput || '// Tidak ada data yang diproses';
+    
+    // Simpan plain text untuk copy
+    markdownOutput.setAttribute('data-plain-text', output || '// Tidak ada data yang diproses');
 }
 
 function copyMarkdown() {
     const markdownOutput = document.getElementById('markdownOutput');
-    copyToClipboard(markdownOutput.textContent);
+    const plainText = markdownOutput.getAttribute('data-plain-text') || markdownOutput.textContent;
+    copyToClipboard(plainText);
     showInfoRekap('Output berhasil disalin!', 'success');
 }
 
 function cleanAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    document.getElementById('markdownOutput').innerHTML = '// Output akan muncul di sini setelah proses data...';
+    document.getElementById('markdownOutput').setAttribute('data-plain-text', '// Output akan muncul di sini setelah proses data...');
     document.getElementById('outputTotal').textContent = 'Total: 0';
     document.getElementById('inputCounter').textContent = 'Total: 0';
     document.getElementById('inputBreakdown').style.display = 'none';
@@ -1204,7 +1245,11 @@ function generatePermutasi() {
         const output = formatGroupedOutput(groupedResults);
         const totalResults = calculateTotalResults(groupedResults);
         
-        document.getElementById('outputPermutasi').textContent = output;
+        // Tambahkan warna ke output dan tampilkan sebagai HTML
+        const coloredOutput = addColorToOutput(output);
+        document.getElementById('outputPermutasi').innerHTML = coloredOutput;
+        document.getElementById('outputPermutasi').setAttribute('data-plain-text', output);
+        
         document.getElementById('countOutput').textContent = `${totalResults} hasil`;
         
         document.getElementById('btnGenerate').disabled = false;
@@ -1263,13 +1308,16 @@ function calculateTotalResults(groupedResults) {
 }
 
 function copyOutput() {
-    copyToClipboard(document.getElementById('outputPermutasi').textContent);
+    const outputPermutasi = document.getElementById('outputPermutasi');
+    const plainText = outputPermutasi.getAttribute('data-plain-text') || outputPermutasi.textContent;
+    copyToClipboard(plainText);
     showInfoBBFS('Output berhasil disalin!', 'success');
 }
 
 function clearAllBBFS() {
     document.getElementById('inputAngka').value = '';
-    document.getElementById('outputPermutasi').textContent = '// Hasil akan muncul di sini dengan format kelompok digit';
+    document.getElementById('outputPermutasi').innerHTML = '// Hasil akan muncul di sini dengan format kelompok digit';
+    document.getElementById('outputPermutasi').setAttribute('data-plain-text', '// Hasil akan muncul di sini dengan format kelompok digit');
     document.getElementById('countOutput').textContent = '0 hasil';
     document.querySelectorAll('#digitCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
@@ -1386,7 +1434,11 @@ function generateKombinasi() {
         total += results['2D'].length;
     }
     
-    document.getElementById('outputKombinasi').textContent = output || 'Tidak ada kombinasi yang dihasilkan';
+    // Tambahkan warna ke output dan tampilkan sebagai HTML
+    const coloredOutput = addColorToOutput(output);
+    document.getElementById('outputKombinasi').innerHTML = coloredOutput || 'Tidak ada kombinasi yang dihasilkan';
+    document.getElementById('outputKombinasi').setAttribute('data-plain-text', output || 'Tidak ada kombinasi yang dihasilkan');
+    
     document.getElementById('totalKombinasi').textContent = `${total} kombinasi`;
     showInfoKombinasi(`Berhasil generate ${total} kombinasi!`, 'success');
 }
@@ -1412,13 +1464,16 @@ function generateCartesian(arrays) {
 }
 
 function copyKombinasi() {
-    copyToClipboard(document.getElementById('outputKombinasi').textContent);
+    const outputKombinasi = document.getElementById('outputKombinasi');
+    const plainText = outputKombinasi.getAttribute('data-plain-text') || outputKombinasi.textContent;
+    copyToClipboard(plainText);
     showInfoKombinasi('Hasil kombinasi berhasil disalin!', 'success');
 }
 
 function clearKombinasi() {
     document.getElementById('inputKelompok').value = '';
-    document.getElementById('outputKombinasi').textContent = '// Hasil kombinasi akan muncul di sini...';
+    document.getElementById('outputKombinasi').innerHTML = '// Hasil kombinasi akan muncul di sini...';
+    document.getElementById('outputKombinasi').setAttribute('data-plain-text', '// Hasil kombinasi akan muncul di sini...');
     document.getElementById('totalKombinasi').textContent = '0 kombinasi';
     document.querySelectorAll('#kombinasiCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = true;
