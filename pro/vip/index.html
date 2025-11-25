@@ -750,8 +750,7 @@ SURAT:
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
-                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit (contoh: 2346)" maxlength="6">
+                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit" maxlength="6">
                     </div>
                 </div>
                 
@@ -796,7 +795,6 @@ SURAT:
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
-                        <h3>📥 INPUT ANGKA</h3>
                         <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
                     </div>
                 </div>
@@ -1171,7 +1169,7 @@ function generateMarkdown(groups) {
         }
     });
     
-    // Update breakdown output
+    // breakdown output
     if (lineCount4D > 0 || lineCount3D > 0 || lineCount2D > 0) {
         outputBreakdown.style.display = 'block';
         document.getElementById('output4D').textContent = lineCount4D + ' Line';
@@ -1390,7 +1388,7 @@ function generateKombinasi() {
         return;
     }
     
-    // Get selected digit types
+    // Generate berdasarkan jumlah kelompok dan pilihan user
     const selectedTypes = [];
     if (document.getElementById('kombinasi4D').checked) selectedTypes.push('4D');
     if (document.getElementById('kombinasi3D').checked) selectedTypes.push('3D');
