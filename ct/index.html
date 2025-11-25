@@ -92,11 +92,18 @@ td, th{
 }
 .mode-selection {
     display: flex;
-    gap: 15px;
+    justify-content: center;
+    gap: 20px;
     margin-bottom: 15px;
     flex-wrap: wrap;
 }
-.mode-option {
+.checkbox-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.checkbox-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -108,13 +115,23 @@ td, th{
     border: 2px solid var(--border);
     font-weight: 600;
 }
-.mode-option.active {
+.checkbox-item.active {
     background: var(--blue);
     color: white;
     border-color: var(--blue);
 }
-.mode-option input {
-    display: none;
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+.checkbox-item label {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    font-weight: 600;
+}
+.checkbox-item.active label {
+    color: white;
 }
 .rekap-textarea {
     width: 100%;
@@ -189,10 +206,13 @@ td, th{
     header{
         font-size:18px;
     }
-    .mode-selection {
+    .checkbox-group {
         flex-direction: column;
+        align-items: center;
     }
-    .mode-option {
+    .checkbox-item {
+        width: 100%;
+        max-width: 200px;
         justify-content: center;
     }
     .button-group {
@@ -207,15 +227,15 @@ td, th{
     
     <!-- Input Section -->
     <div class="input-section">
-        <!-- Mode Selection -->
-        <div class="mode-selection">
-            <div class="mode-option active" onclick="selectMode('ct')">
-                <input type="radio" name="mode" id="modeCT" checked>
-                <span>🎯 MODE CT</span>
+        <!-- Mode Selection dengan Checkbox Item -->
+        <div class="checkbox-group">
+            <div class="checkbox-item active" onclick="selectMode('ct')">
+                <input type="checkbox" id="modeCT" checked>
+                <label for="modeCT">🎯 MODE CT</label>
             </div>
-            <div class="mode-option" onclick="selectMode('kumat')">
-                <input type="radio" name="mode" id="modeKumat">
-                <span>📋 MODE KUMAT</span>
+            <div class="checkbox-item" onclick="selectMode('kumat')">
+                <input type="checkbox" id="modeKumat">
+                <label for="modeKumat">📋 MODE KUMAT</label>
             </div>
         </div>
         
@@ -267,11 +287,14 @@ let currentMode = 'ct';
 function selectMode(mode) {
     currentMode = mode;
     
-    // Update UI
-    document.querySelectorAll('.mode-option').forEach(opt => {
-        opt.classList.remove('active');
+    // Update UI - hanya satu yang aktif
+    document.querySelectorAll('.checkbox-item').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('input[type="checkbox"]').checked = false;
     });
+    
     event.currentTarget.classList.add('active');
+    event.currentTarget.querySelector('input[type="checkbox"]').checked = true;
     
     // Update placeholder
     const textarea = document.getElementById('inputData');
