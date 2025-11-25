@@ -747,10 +747,6 @@ SURAT:
         
         <!-- TAB 2: GENERATOR BBFS -->
         <div id="tab2" class="tab-content">
-            <div class="warning">
-                ⚠️ <strong>PERHATIAN:</strong> 6 digit akan menghasilkan banyak hasil. 7+ digit tidak disarankan!
-            </div>
-            
             <div class="input-section">
                 <div class="input-group">
                     <div class="input-box">
@@ -855,42 +851,36 @@ SURAT:
         <!-- TAB 4: REKAP CT & KUMAT -->
         <div id="tab4" class="tab-content">
             <div class="input-section">
-                <div class="digit-selection">
-                    <h3>📊 PILIH MODE:</h3>
-                    <div class="checkbox-group" id="modeCheckboxes">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ModeCT" value="CT" checked>
-                            <label for="ModeCT">Mode CT</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ModeKumat" value="Kumat" checked>
-                            <label for="ModeKumat">Mode Kumat</label>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="textarea-container">
-                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Masukkan data sesuai mode yang dipilih:
-
+                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="
 Mode CT - Contoh:
 04
 46
 94
-91
-61
-
 Mode Kumat - Contoh:
 12356789
 01235789
-01235678
-02345678
-02345789"></textarea>
+01235678"></textarea>
+                </div>
+                
+                <div class="digit-selection">
+                    <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
+                    <div class="checkbox-group" id="modeCheckboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ModeCT" value="CT" checked>
+                            <label for="ModeCT">MODE CT</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ModeKumat" value="Kumat" checked>
+                            <label for="ModeKumat">MODE KUMAT</label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="button-group">
                     <button class="btn-submit" onclick="prosesRekapCTKumat()">
                         <span>🚀</span>
-                        <span>PROSES REKAP</span>
+                        <span>GENERATE</span>
                     </button>
                     <button class="btn-copy" onclick="copyOutputCTKumat()">
                         <span>📋</span>
@@ -904,12 +894,12 @@ Mode Kumat - Contoh:
             </div>
             
             <div class="info" id="infoCTKumat">
-                💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"
+                💡 Pilih mode yang diinginkan, masukkan data, lalu klik "GENERATE"
             </div>
 
             <div class="output-section">
-                <h3>📊 Hasil Rekap CT & KUMAT:</h3>
-                <div class="markdown-output" id="markdownOutputCTKumat">// Output akan muncul di sini setelah proses data...</div>
+                <h3>📊 Hasil Rekap CT & Kumat:</h3>
+                <div class="markdown-output" id="markdownOutputCTKumat">// Hasil Rekap akan muncul di sini setelah proses data...</div>
             </div>
         </div>
     </div>
