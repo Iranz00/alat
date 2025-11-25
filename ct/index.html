@@ -190,12 +190,18 @@ button:hover {
     
     <div class="input-section">
         <div class="textarea-container">
-            <textarea id="inputData" class="rekap-textarea" placeholder="Masukkan CT (contoh):
+            <textarea id="inputData" class="rekap-textarea" placeholder="Masukkan CT (2-7 digit) - contoh:
 04
 46
 94
 91
-61"></textarea>
+61
+
+ATAU CT 3-digit:
+234
+678
+456
+123"></textarea>
         </div>
         
         <div class="button-group">
@@ -215,7 +221,7 @@ button:hover {
     </div>
     
     <div class="info" id="info">
-        💡 Masukkan CT (2-digit) dan klik "PROSES REKAP" - Sistem akan generate Ranking berdasarkan kumat
+        💡 Masukkan CT (2-7 digit) dan klik "PROSES REKAP" - Sistem akan generate Ranking berdasarkan kumat
     </div>
 
     <div class="output-section">
@@ -234,10 +240,10 @@ function prosesRekapCT() {
     
     const lines = input.split('\n').map(line => line.trim()).filter(line => line);
     
-    // Validasi semua line harus 2 digit
+    // Validasi semua line harus 2-7 digit angka
     for (let line of lines) {
-        if (!/^\d{2}$/.test(line)) {
-            showInfo('Semua CT harus 2 digit!', 'error');
+        if (!/^\d{2,7}$/.test(line)) {
+            showInfo('Semua CT harus 2-7 digit angka!', 'error');
             return;
         }
     }
@@ -254,7 +260,8 @@ function hitungRekapCT(controls) {
     
     // Generate kumat permutations untuk setiap control
     for (let control of controls) {
-        const kumatDigits = getKumatDigits(control);
+        const digits = new Set(control.split('')); // Ambil semua digit unik dari CT
+        const kumatDigits = getKumatDigits(digits);
         const permutations = generatePermutations(kumatDigits);
         kumatPermutations.push(permutations);
     }
@@ -287,9 +294,8 @@ function hitungRekapCT(controls) {
     return results;
 }
 
-function getKumatDigits(control) {
+function getKumatDigits(controlDigits) {
     const allDigits = new Set('0123456789');
-    const controlDigits = new Set(control);
     
     // Kumat = semua digit yang tidak ada di control
     const kumatDigits = new Set();
@@ -369,7 +375,7 @@ function copyOutput() {
 function cleanAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
-    showInfo('💡 Masukkan CT (2-digit) dan klik "PROSES REKAP"', 'default');
+    showInfo('💡 Masukkan CT (2-7 digit) dan klik "PROSES REKAP"', 'default');
 }
 
 function showInfo(message, type) {
