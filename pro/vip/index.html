@@ -371,49 +371,6 @@ button:active {
     border:1px solid #2d3748;
     font-size:14px;
 }
-/* REKOMENDASI WARNA UNTUK BACKGROUND HITAM */
-.digit-yellow {
-    color: #FFD700;
-    font-weight: bold;
-    text-shadow: 0 0 3px rgba(255, 215, 0, 0.3);
-}
-.star-red {
-    color: #FF6B6B;
-    font-weight: bold;
-    text-shadow: 0 0 3px rgba(255, 107, 107, 0.3);
-}
-.hash-blue {
-    color: #4FC3F7;
-    font-weight: bold;
-    text-shadow: 0 0 3px rgba(79, 195, 247, 0.3);
-}
-
-/* WARNA TAMBAHAN UNTUK LABEL */
-.label-neon-green {
-    color: #00FF9D;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 255, 157, 0.4);
-}
-.label-electric-purple {
-    color: #B388FF;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(179, 136, 255, 0.4);
-}
-.label-cyan {
-    color: #18FFFF;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(24, 255, 255, 0.4);
-}
-.label-orange {
-    color: #FFAB40;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(255, 171, 64, 0.4);
-}
-.label-pink {
-    color: #FF80AB;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(255, 128, 171, 0.4);
-}
 .markdown-output::-webkit-scrollbar {
     width:8px;
 }
@@ -700,6 +657,10 @@ body.dark-theme .breakdown-value {
                 <span>🔢</span>
                 <span>POLTAR 4D/3D/2D</span>
             </button>
+            <button class="tab-btn" onclick="switchTab('tab4')">
+                <span>🎯</span>
+                <span>REKAP CT & KUMAT</span>
+            </button>
         </div>
         
         <!-- Input Breakdown -->
@@ -718,8 +679,8 @@ body.dark-theme .breakdown-value {
                     <div class="breakdown-value" id="input2D">0 Line</div>
                 </div>
             </div>
-        </div>
-        <br/>
+        </div><br/>
+        
         <!-- TAB 1: REKAP DATA -->
         <div id="tab1" class="tab-content active">
             <div class="input-section">
@@ -890,6 +851,67 @@ SURAT:
                 <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
             </div>
         </div>
+        
+        <!-- TAB 4: REKAP CT & KUMAT -->
+        <div id="tab4" class="tab-content">
+            <div class="input-section">
+                <div class="digit-selection">
+                    <h3>📊 PILIH MODE:</h3>
+                    <div class="checkbox-group" id="modeCheckboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ModeCT" value="CT" checked>
+                            <label for="ModeCT">Mode CT</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ModeKumat" value="Kumat" checked>
+                            <label for="ModeKumat">Mode Kumat</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="textarea-container">
+                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Masukkan data sesuai mode yang dipilih:
+
+Mode CT - Contoh:
+04
+46
+94
+91
+61
+
+Mode Kumat - Contoh:
+12356789
+01235789
+01235678
+02345678
+02345789"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-submit" onclick="prosesRekapCTKumat()">
+                        <span>🚀</span>
+                        <span>PROSES REKAP</span>
+                    </button>
+                    <button class="btn-copy" onclick="copyOutputCTKumat()">
+                        <span>📋</span>
+                        <span>SALIN OUTPUT</span>
+                    </button>
+                    <button class="btn-clean" onclick="cleanAllCTKumat()">
+                        <span>🗑️</span>
+                        <span>CLEAR</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="info" id="infoCTKumat">
+                💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"
+            </div>
+
+            <div class="output-section">
+                <h3>📊 Hasil Rekap CT & KUMAT:</h3>
+                <div class="markdown-output" id="markdownOutputCTKumat">// Output akan muncul di sini setelah proses data...</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -934,32 +956,6 @@ function switchTab(tabName) {
     });
     document.getElementById(tabName).classList.add('active');
     event.currentTarget.classList.add('active');
-}
-
-// =============================================
-// COLOR FORMATTING FUNCTIONS
-// =============================================
-function addColorToOutput(text) {
-    // Warna utama
-    text = text.replace(/([0-9])/g, '<span class="digit-yellow">$1</span>');
-    text = text.replace(/\*/g, '<span class="star-red">*</span>');
-    text = text.replace(/#/g, '<span class="hash-blue">#</span>');
-    
-    // Warna untuk label
-    text = text.replace(/(\b[234]D\b)/g, '<span class="label-neon-green">$1</span>');
-    text = text.replace(/(line)/gi, '<span class="label-electric-purple">$1</span>');
-    text = text.replace(/(Total:)/g, '<span class="label-cyan">$1</span>');
-    text = text.replace(/(hasil)/gi, '<span class="label-orange">$1</span>');
-    text = text.replace(/(kombinasi)/gi, '<span class="label-pink">$1</span>');
-    
-    return text;
-}
-
-function getPlainTextForCopy(htmlText) {
-    // Hapus semua tag HTML untuk copy text biasa
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlText;
-    return tempDiv.textContent || tempDiv.innerText || '';
 }
 
 // =============================================
@@ -1196,26 +1192,18 @@ function generateMarkdown(groups) {
     }
     
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
-    
-    // Tambahkan warna ke output dan tampilkan sebagai HTML
-    const coloredOutput = addColorToOutput(output);
-    markdownOutput.innerHTML = coloredOutput || '// Tidak ada data yang diproses';
-    
-    // Simpan plain text untuk copy
-    markdownOutput.setAttribute('data-plain-text', output || '// Tidak ada data yang diproses');
+    markdownOutput.textContent = output || '// Tidak ada data yang diproses';
 }
 
 function copyMarkdown() {
     const markdownOutput = document.getElementById('markdownOutput');
-    const plainText = markdownOutput.getAttribute('data-plain-text') || markdownOutput.textContent;
-    copyToClipboard(plainText);
+    copyToClipboard(markdownOutput.textContent);
     showInfoRekap('Output berhasil disalin!', 'success');
 }
 
 function cleanAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('markdownOutput').innerHTML = '// Output akan muncul di sini setelah proses data...';
-    document.getElementById('markdownOutput').setAttribute('data-plain-text', '// Output akan muncul di sini setelah proses data...');
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
     document.getElementById('outputTotal').textContent = 'Total: 0';
     document.getElementById('inputCounter').textContent = 'Total: 0';
     document.getElementById('inputBreakdown').style.display = 'none';
@@ -1281,11 +1269,7 @@ function generatePermutasi() {
         const output = formatGroupedOutput(groupedResults);
         const totalResults = calculateTotalResults(groupedResults);
         
-        // Tambahkan warna ke output dan tampilkan sebagai HTML
-        const coloredOutput = addColorToOutput(output);
-        document.getElementById('outputPermutasi').innerHTML = coloredOutput;
-        document.getElementById('outputPermutasi').setAttribute('data-plain-text', output);
-        
+        document.getElementById('outputPermutasi').textContent = output;
         document.getElementById('countOutput').textContent = `${totalResults} hasil`;
         
         document.getElementById('btnGenerate').disabled = false;
@@ -1344,16 +1328,13 @@ function calculateTotalResults(groupedResults) {
 }
 
 function copyOutput() {
-    const outputPermutasi = document.getElementById('outputPermutasi');
-    const plainText = outputPermutasi.getAttribute('data-plain-text') || outputPermutasi.textContent;
-    copyToClipboard(plainText);
+    copyToClipboard(document.getElementById('outputPermutasi').textContent);
     showInfoBBFS('Output berhasil disalin!', 'success');
 }
 
 function clearAllBBFS() {
     document.getElementById('inputAngka').value = '';
-    document.getElementById('outputPermutasi').innerHTML = '// Hasil akan muncul di sini dengan format kelompok digit';
-    document.getElementById('outputPermutasi').setAttribute('data-plain-text', '// Hasil akan muncul di sini dengan format kelompok digit');
+    document.getElementById('outputPermutasi').textContent = '// Hasil akan muncul di sini dengan format kelompok digit';
     document.getElementById('countOutput').textContent = '0 hasil';
     document.querySelectorAll('#digitCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
@@ -1470,11 +1451,7 @@ function generateKombinasi() {
         total += results['2D'].length;
     }
     
-    // Tambahkan warna ke output dan tampilkan sebagai HTML
-    const coloredOutput = addColorToOutput(output);
-    document.getElementById('outputKombinasi').innerHTML = coloredOutput || 'Tidak ada kombinasi yang dihasilkan';
-    document.getElementById('outputKombinasi').setAttribute('data-plain-text', output || 'Tidak ada kombinasi yang dihasilkan');
-    
+    document.getElementById('outputKombinasi').textContent = output || 'Tidak ada kombinasi yang dihasilkan';
     document.getElementById('totalKombinasi').textContent = `${total} kombinasi`;
     showInfoKombinasi(`Berhasil generate ${total} kombinasi!`, 'success');
 }
@@ -1500,16 +1477,13 @@ function generateCartesian(arrays) {
 }
 
 function copyKombinasi() {
-    const outputKombinasi = document.getElementById('outputKombinasi');
-    const plainText = outputKombinasi.getAttribute('data-plain-text') || outputKombinasi.textContent;
-    copyToClipboard(plainText);
+    copyToClipboard(document.getElementById('outputKombinasi').textContent);
     showInfoKombinasi('Hasil kombinasi berhasil disalin!', 'success');
 }
 
 function clearKombinasi() {
     document.getElementById('inputKelompok').value = '';
-    document.getElementById('outputKombinasi').innerHTML = '// Hasil kombinasi akan muncul di sini...';
-    document.getElementById('outputKombinasi').setAttribute('data-plain-text', '// Hasil kombinasi akan muncul di sini...');
+    document.getElementById('outputKombinasi').textContent = '// Hasil kombinasi akan muncul di sini...';
     document.getElementById('totalKombinasi').textContent = '0 kombinasi';
     document.querySelectorAll('#kombinasiCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = true;
@@ -1519,6 +1493,202 @@ function clearKombinasi() {
 
 function showInfoKombinasi(message, type) {
     const infoDiv = document.getElementById('infoKombinasi');
+    infoDiv.textContent = message;
+    infoDiv.className = 'info';
+    if (type === 'error') infoDiv.classList.add('error');
+    else if (type === 'success') infoDiv.classList.add('success');
+}
+
+// =============================================
+// TAB 4: REKAP CT & KUMAT FUNCTIONS
+// =============================================
+let currentMode = 'both';
+
+function updateMode() {
+    const ctChecked = document.getElementById('ModeCT').checked;
+    const kumatChecked = document.getElementById('ModeKumat').checked;
+    
+    if (ctChecked && kumatChecked) {
+        currentMode = 'both';
+        showInfoCTKumat('💡 Mode CT dan KUMAT aktif - Masukkan data keduanya', 'default');
+    } else if (ctChecked) {
+        currentMode = 'ct';
+        showInfoCTKumat('💡 Mode CT aktif - Masukkan data CT', 'default');
+    } else if (kumatChecked) {
+        currentMode = 'kumat';
+        showInfoCTKumat('💡 Mode KUMAT aktif - Masukkan data KUMAT', 'default');
+    } else {
+        showInfoCTKumat('❌ Pilih minimal satu mode!', 'error');
+    }
+}
+
+function prosesRekapCTKumat() {
+    const input = document.getElementById('inputCTKumat').value.trim();
+    if (!input) {
+        showInfoCTKumat('Masukkan data terlebih dahulu!', 'error');
+        return;
+    }
+    
+    const lines = input.split('\n').map(line => line.trim()).filter(line => line);
+    
+    let kumatSets;
+    
+    if (currentMode === 'ct') {
+        // Validasi CT mode
+        for (let line of lines) {
+            if (!/^\d{2,7}$/.test(line)) {
+                showInfoCTKumat('Semua CT harus 2-7 digit angka!', 'error');
+                return;
+            }
+        }
+        kumatSets = processCTMode(lines);
+    } else if (currentMode === 'kumat') {
+        // Validasi KUMAT mode
+        for (let line of lines) {
+            if (!/^[0-9]{2,9}$/.test(line)) {
+                showInfoCTKumat('KUMAT harus terdiri dari digit 0-9 (min 2 digit)!', 'error');
+                return;
+            }
+        }
+        kumatSets = processKumatMode(lines);
+    } else if (currentMode === 'both') {
+        // Mode kombinasi - butuh logika khusus
+        showInfoCTKumat('❌ Mode kombinasi belum diimplementasikan!', 'error');
+        return;
+    }
+    
+    const result = hitungRanking(kumatSets);
+    tampilkanHasilCTKumat(result);
+    showInfoCTKumat('Rekap berhasil diproses!', 'success');
+}
+
+function processCTMode(controls) {
+    const kumatSets = [];
+    
+    for (let control of controls) {
+        const digits = new Set(control.split(''));
+        const kumatDigits = getKumatDigits(digits);
+        const permutations = generatePermutations(kumatDigits);
+        kumatSets.push(permutations);
+    }
+    
+    return kumatSets;
+}
+
+function processKumatMode(kumats) {
+    const kumatSets = [];
+    
+    for (let kumat of kumats) {
+        const kumatDigits = new Set(kumat.split(''));
+        const permutations = generatePermutations(kumatDigits);
+        kumatSets.push(permutations);
+    }
+    
+    return kumatSets;
+}
+
+function hitungRanking(kumatSets) {
+    const allNumbers = generateAllNumbers();
+    const results = {
+        lolosKumat: [],
+        kena1x: [],
+        kena2x: []
+    };
+    
+    for (let number of allNumbers) {
+        let kenaCount = 0;
+        
+        for (let permutations of kumatSets) {
+            if (permutations.has(number)) {
+                kenaCount++;
+            }
+        }
+        
+        if (kenaCount === 0 && !isTwin(number)) {
+            results.lolosKumat.push(number);
+        } else if (kenaCount === 1) {
+            results.kena1x.push(number);
+        } else if (kenaCount === 2) {
+            results.kena2x.push(number);
+        }
+    }
+    
+    return results;
+}
+
+function getKumatDigits(controlDigits) {
+    const allDigits = new Set('0123456789');
+    const kumatDigits = new Set();
+    
+    for (let digit of allDigits) {
+        if (!controlDigits.has(digit)) {
+            kumatDigits.add(digit);
+        }
+    }
+    
+    return kumatDigits;
+}
+
+function generatePermutations(digits) {
+    const permutations = new Set();
+    const digitArray = Array.from(digits);
+    
+    for (let i = 0; i < digitArray.length; i++) {
+        for (let j = 0; j < digitArray.length; j++) {
+            if (i !== j) {
+                permutations.add(digitArray[i] + digitArray[j]);
+            }
+        }
+    }
+    
+    return permutations;
+}
+
+function generateAllNumbers() {
+    const numbers = [];
+    for (let i = 0; i <= 99; i++) {
+        numbers.push(i.toString().padStart(2, '0'));
+    }
+    return numbers;
+}
+
+function isTwin(number) {
+    return number[0] === number[1];
+}
+
+function tampilkanHasilCTKumat(result) {
+    const output = document.getElementById('markdownOutputCTKumat');
+    let text = '';
+    
+    text += `Ranking 1\n`;
+    text += `${result.lolosKumat.join('*')}*\n`;
+    text += `${result.lolosKumat.length} Line\n\n`;
+    
+    text += `Ranking 2\n`;
+    text += `${result.kena1x.join('*')}*\n`;
+    text += `${result.kena1x.length} Line\n\n`;
+    
+    text += `Ranking 3\n`;
+    text += `${result.kena2x.join('*')}*\n`;
+    text += `${result.kena2x.length} Line\n`;
+    
+    output.textContent = text;
+}
+
+function copyOutputCTKumat() {
+    const output = document.getElementById('markdownOutputCTKumat');
+    copyToClipboard(output.textContent);
+    showInfoCTKumat('Output berhasil disalin!', 'success');
+}
+
+function cleanAllCTKumat() {
+    document.getElementById('inputCTKumat').value = '';
+    document.getElementById('markdownOutputCTKumat').textContent = '// Output akan muncul di sini setelah proses data...';
+    showInfoCTKumat('💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"', 'default');
+}
+
+function showInfoCTKumat(message, type) {
+    const infoDiv = document.getElementById('infoCTKumat');
     infoDiv.textContent = message;
     infoDiv.className = 'info';
     if (type === 'error') infoDiv.classList.add('error');
@@ -1554,6 +1724,11 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDigitCheckboxes(Math.min(digitCount, 6));
     });
     
+    // Initialize CT/KUMAT mode checkboxes
+    document.getElementById('ModeCT').addEventListener('change', updateMode);
+    document.getElementById('ModeKumat').addEventListener('change', updateMode);
+    updateMode(); // Initialize mode
+    
     // Support Enter key untuk generate
     document.getElementById('inputAngka').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') generatePermutasi();
@@ -1562,6 +1737,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Support Enter key untuk kombinasi
     document.getElementById('inputKelompok').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') generateKombinasi();
+    });
+    
+    // Support Enter key untuk CT/KUMAT
+    document.getElementById('inputCTKumat').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') prosesRekapCTKumat();
     });
     
     // Initialize dengan 0 digit
