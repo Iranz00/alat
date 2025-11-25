@@ -47,32 +47,41 @@ h1 {
     transition: all 0.3s ease;
 }
 
-/* Mode Selection */
-.mode-selection {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+/* Digit Selection */
+.digit-selection {
     margin-bottom: 20px;
-    flex-wrap: wrap;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
 }
-.mode-option {
+.digit-selection h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
-    background: #f8fafc;
-    border-radius: 10px;
+}
+.checkbox-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid #e2e8f0;
 }
-.mode-option.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-.mode-option input {
-    display: none;
+.checkbox-item label {
+    font-weight: 600;
+    color: #2d3748;
+    cursor: pointer;
 }
 
 .input-section {
@@ -161,64 +170,31 @@ button:hover {
     align-items: center;
     gap: 8px;
 }
+.markdown-output { 
+    background:#1a202c; 
+    color:#e2e8f0; 
+    padding:25px; 
+    border-radius:12px; 
+    margin-top:10px; 
+    font-family:'Courier New', monospace; 
+    white-space:pre-wrap; 
+    max-height:600px;
+    overflow-y:auto; 
+    line-height:1.5;
+    border:1px solid #2d3748;
+    font-size:14px;
+}
 
-/* Tabel Output Styles */
-.output-table {
-    width: 100%;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
+.markdown-output::-webkit-scrollbar {
+    width:8px;
 }
-.table-row {
-    display: flex;
-    border-bottom: 1px solid #e2e8f0;
+.markdown-output::-webkit-scrollbar-track {
+    background:#2d3748;
+    border-radius:4px;
 }
-.table-row:last-child {
-    border-bottom: none;
-}
-.table-label {
-    width: 30%;
-    padding: 16px;
-    background: #f8fafc;
-    font-weight: 600;
-    color: #2d3748;
-    border-right: 1px solid #e2e8f0;
-}
-.table-label.blue {
-    color: #1976d2;
-}
-.table-label.green {
-    color: #2e7d32;
-}
-.table-label.red {
-    color: #d32f2f;
-}
-.table-values {
-    width: 70%;
-    padding: 16px;
-}
-.numbers {
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.4;
-    color: #2d3748;
-}
-.count {
-    display: block;
-    margin-top: 8px;
-    font-weight: 700;
-    font-size: 16px;
-}
-.count.blue {
-    color: #1976d2;
-}
-.count.green {
-    color: #2e7d32;
-}
-.count.red {
-    color: #d32f2f;
+.markdown-output::-webkit-scrollbar-thumb {
+    background:#4a5568;
+    border-radius:4px;
 }
 
 @media (max-width: 768px) {
@@ -231,14 +207,9 @@ button:hover {
     h1 {
         font-size:1.8rem;
     }
-    .mode-selection {
+    .checkbox-group {
         flex-direction: column;
-        align-items: center;
-    }
-    .mode-option {
-        width: 100%;
-        max-width: 200px;
-        justify-content: center;
+        gap: 12px;
     }
     .button-group {
         flex-wrap: wrap;
@@ -249,12 +220,6 @@ button:hover {
     .rekap-textarea {
         height:150px;
     }
-    .table-label {
-        width: 40%;
-    }
-    .table-values {
-        width: 60%;
-    }
 }
 </style>
 </head>
@@ -264,28 +229,33 @@ button:hover {
         <h1>🛠️ REKAP CT & KUMAT 🛠️</h1>
     </div>
     
-    <!-- Mode Selection -->
-    <div class="mode-selection">
-        <div class="mode-option active" onclick="selectMode('ct')">
-            <input type="radio" name="mode" id="modeCT" checked>
-            <span>🎯 MODE CT</span>
-        </div>
-        <div class="mode-option" onclick="selectMode('kumat')">
-            <input type="radio" name="mode" id="modeKumat">
-            <span>📋 MODE KUMAT</span>
+    <!-- Digit Selection -->
+    <div class="digit-selection">
+        <h3>📊 PILIH MODE:</h3>
+        <div class="checkbox-group" id="kombinasiCheckboxes">
+            <div class="checkbox-item">
+                <input type="checkbox" id="ModeCT" value="CT" checked>
+                <label for="ModeCT">Mode CT</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="ModeKumat" value="Kumat" checked>
+                <label for="ModeKumat">Mode Kumat</label>
+            </div>
         </div>
     </div>
     
     <div class="input-section">
         <div class="textarea-container">
-            <textarea id="inputData" class="rekap-textarea" placeholder="MODE CT - Masukkan CT (2-7 digit):
+            <textarea id="inputData" class="rekap-textarea" placeholder="Masukkan data sesuai mode yang dipilih:
+
+Mode CT - Contoh:
 04
 46
 94
 91
 61
 
-MODE KUMAT - Masukkan digit KUMAT:
+Mode Kumat - Contoh:
 12356789
 01235789
 01235678
@@ -310,39 +280,40 @@ MODE KUMAT - Masukkan digit KUMAT:
     </div>
     
     <div class="info" id="info">
-        💡 Pilih mode CT atau KUMAT, masukkan data, lalu klik "PROSES REKAP"
+        💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"
     </div>
 
     <div class="output-section">
         <h3>📊 Hasil Rekap:</h3>
-        <div class="output-table" id="outputTable">
-            <!-- Hasil akan di-generate di sini -->
-        </div>
+        <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
     </div>
 </div>
 
 <script>
-let currentMode = 'ct';
+let currentMode = 'both'; // 'ct', 'kumat', atau 'both'
 
-function selectMode(mode) {
-    currentMode = mode;
+// Update mode berdasarkan checkbox
+function updateMode() {
+    const ctChecked = document.getElementById('ModeCT').checked;
+    const kumatChecked = document.getElementById('ModeKumat').checked;
     
-    // Update UI
-    document.querySelectorAll('.mode-option').forEach(opt => {
-        opt.classList.remove('active');
-    });
-    event.currentTarget.classList.add('active');
-    
-    // Update placeholder
-    const textarea = document.getElementById('inputData');
-    if (mode === 'ct') {
-        textarea.placeholder = 'MODE CT - Masukkan CT (2-7 digit):\n04\n46\n94\n91\n61';
+    if (ctChecked && kumatChecked) {
+        currentMode = 'both';
+        showInfo('💡 Mode CT dan KUMAT aktif - Masukkan data keduanya', 'default');
+    } else if (ctChecked) {
+        currentMode = 'ct';
+        showInfo('💡 Mode CT aktif - Masukkan data CT', 'default');
+    } else if (kumatChecked) {
+        currentMode = 'kumat';
+        showInfo('💡 Mode KUMAT aktif - Masukkan data KUMAT', 'default');
     } else {
-        textarea.placeholder = 'MODE KUMAT - Masukkan digit KUMAT:\n12356789\n01235789\n01235678\n02345678\n02345789';
+        showInfo('❌ Pilih minimal satu mode!', 'error');
     }
-    
-    showInfo('💡 Pilih mode CT atau KUMAT, masukkan data, lalu klik "PROSES REKAP"', 'default');
 }
+
+// Event listeners untuk checkbox
+document.getElementById('ModeCT').addEventListener('change', updateMode);
+document.getElementById('ModeKumat').addEventListener('change', updateMode);
 
 function prosesRekap() {
     const input = document.getElementById('inputData').value.trim();
@@ -364,7 +335,7 @@ function prosesRekap() {
             }
         }
         kumatSets = processCTMode(lines);
-    } else {
+    } else if (currentMode === 'kumat') {
         // Validasi KUMAT mode
         for (let line of lines) {
             if (!/^[0-9]{2,9}$/.test(line)) {
@@ -373,10 +344,14 @@ function prosesRekap() {
             }
         }
         kumatSets = processKumatMode(lines);
+    } else if (currentMode === 'both') {
+        // Mode kombinasi - butuh logika khusus
+        showInfo('❌ Mode kombinasi belum diimplementasikan!', 'error');
+        return;
     }
     
     const result = hitungRanking(kumatSets);
-    tampilkanHasilTable(result);
+    tampilkanHasil(result);
     showInfo('Rekap berhasil diproses!', 'success');
 }
 
@@ -474,63 +449,28 @@ function isTwin(number) {
     return number[0] === number[1];
 }
 
-function tampilkanHasilTable(result) {
-    const output = document.getElementById('outputTable');
-    let html = '';
+function tampilkanHasil(result) {
+    const output = document.getElementById('markdownOutput');
+    let text = '';
     
-    // Lolos Kumat
-    if (result.lolosKumat.length > 0) {
-        html += `
-        <div class="table-row">
-            <div class="table-label blue">Ranking 1</div>
-            <div class="table-values">
-                <div class="numbers">${result.lolosKumat.join('*')}*</div>
-                <span class="count blue">${result.lolosKumat.length} Angka</span>
-            </div>
-        </div>`;
-    }
+    text += `Ranking 1\n`;
+    text += `${result.lolosKumat.join('*')}*\n`;
+    text += `${result.lolosKumat.length} Line\n\n`;
     
-    // Kena Kumat 1x
-    if (result.kena1x.length > 0) {
-        html += `
-        <div class="table-row">
-            <div class="table-label green">Ranking 2</div>
-            <div class="table-values">
-                <div class="numbers">${result.kena1x.join('*')}*</div>
-                <span class="count green">${result.kena1x.length} Angka</span>
-            </div>
-        </div>`;
-    }
+    text += `Ranking 2\n`;
+    text += `${result.kena1x.join('*')}*\n`;
+    text += `${result.kena1x.length} Line\n\n`;
     
-    // Kena Kumat 2x
-    if (result.kena2x.length > 0) {
-        html += `
-        <div class="table-row">
-            <div class="table-label red">Ranking 3</div>
-            <div class="table-values">
-                <div class="numbers">${result.kena2x.join('*')}*</div>
-                <span class="count red">${result.kena2x.length} Angka</span>
-            </div>
-        </div>`;
-    }
+    text += `Ranking 3\n`;
+    text += `${result.kena2x.join('*')}*\n`;
+    text += `${result.kena2x.length} Line\n`;
     
-    output.innerHTML = html || '<div class="table-row"><div class="table-values" style="width:100%; text-align:center; padding:20px; color:#718096;">Tidak ada data yang diproses</div></div>';
+    output.textContent = text;
 }
 
 function copyOutput() {
-    const output = document.getElementById('outputTable');
-    let text = 'HASIL REKAP\n\n';
-    
-    const rows = output.querySelectorAll('.table-row');
-    rows.forEach(row => {
-        const label = row.querySelector('.table-label').textContent;
-        const numbers = row.querySelector('.numbers').textContent;
-        const count = row.querySelector('.count').textContent;
-        
-        text += `${label}\n`;
-        text += `${numbers}\n`;
-        text += `${count}\n\n`;
-    });
+    const output = document.getElementById('markdownOutput');
+    const text = output.textContent;
     
     navigator.clipboard.writeText(text).then(() => {
         showInfo('Output berhasil disalin!', 'success');
@@ -547,8 +487,8 @@ function copyOutput() {
 
 function cleanAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('outputTable').innerHTML = '';
-    showInfo('💡 Pilih mode CT atau KUMAT, masukkan data, lalu klik "PROSES REKAP"', 'default');
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    showInfo('💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"', 'default');
 }
 
 function showInfo(message, type) {
@@ -569,6 +509,9 @@ function showInfo(message, type) {
         infoDiv.style.color = '#1565c0';
     }
 }
+
+// Initialize
+updateMode();
 </script>
 </body>
 </html>
