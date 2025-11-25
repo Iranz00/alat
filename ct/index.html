@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools REKAP CT - RAN</title>
+<style>
+* { 
+    margin:0; 
+    padding:0; 
+    box-sizing:border-box; 
+}
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+}
+.container { 
+    max-width:1200px; 
+    width:100%;
+    margin:0 auto; 
+    background:white; 
+    border-radius:20px; 
+    padding:30px; 
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+.header { 
+    text-align:center; 
+    margin-bottom:25px; 
+}
+h1 { 
+    color:#2d3748; 
+    margin-bottom:8px; 
+    font-size:2.2rem;
+    font-weight:700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.input-section {
+    margin-bottom:20px;
+}
+.textarea-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+.rekap-textarea {
+    width:100%; 
+    height:180px; 
+    padding:20px; 
+    border:2px solid #e2e8f0; 
+    border-radius:12px; 
+    font-size:16px; 
+    resize:vertical; 
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+.rekap-textarea:focus { 
+    border-color:#667eea; 
+    outline:none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.button-group { 
+    display:flex; 
+    gap:12px; 
+    margin-bottom:20px;
+    flex-wrap: nowrap;
+}
+button { 
+    flex: 1; 
+    min-width: 120px;
+    padding: 16px 12px;
+    border:none; 
+    border-radius:12px; 
+    font-size:15px; 
+    font-weight:600; 
+    cursor:pointer; 
+    transition:all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.btn-submit { 
+    background: linear-gradient(135deg, #009688, #00796B);
+    color:white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+.btn-copy { 
+    background:linear-gradient(135deg, #2196F3, #1976D2);
+    color:white;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+.btn-clean {
+    background:linear-gradient(135deg, #f44336, #f44336);
+    color:white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+button:hover { 
+    transform:translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.info { 
+    background:#e3f2fd; 
+    padding:18px; 
+    border-radius:12px; 
+    margin-bottom:20px; 
+    text-align:center;
+    font-weight:500;
+    border-left:4px solid #2196F3;
+    transition: all 0.3s ease;
+}
+
+.output-section h3 {
+    color:#2d3748;
+    margin-bottom:12px;
+    font-size:1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.markdown-output { 
+    background:#1a202c; 
+    color:#e2e8f0; 
+    padding:25px; 
+    border-radius:12px; 
+    margin-top:10px; 
+    font-family:'Courier New', monospace; 
+    white-space:pre-wrap; 
+    max-height:600px;
+    overflow-y:auto; 
+    line-height:1.5;
+    border:1px solid #2d3748;
+    font-size:14px;
+}
+
+.markdown-output::-webkit-scrollbar {
+    width:8px;
+}
+.markdown-output::-webkit-scrollbar-track {
+    background:#2d3748;
+    border-radius:4px;
+}
+.markdown-output::-webkit-scrollbar-thumb {
+    background:#4a5568;
+    border-radius:4px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    .container {
+        padding:20px;
+    }
+    h1 {
+        font-size:1.8rem;
+    }
+    .button-group {
+        flex-wrap: wrap;
+    }
+    button {
+        min-width: calc(50% - 6px);
+    }
+    .rekap-textarea {
+        height:150px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🛠️ REKAP CT 🛠️</h1>
+    </div>
+    
+    <div class="input-section">
+        <div class="textarea-container">
+            <textarea id="inputData" class="rekap-textarea" placeholder="Masukkan CT (contoh):
+04
+46
+94
+91
+61"></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="prosesRekapCT()">
+                <span>🚀</span>
+                <span>PROSES REKAP</span>
+            </button>
+            <button class="btn-copy" onclick="copyOutput()">
+                <span>📋</span>
+                <span>SALIN OUTPUT</span>
+            </button>
+            <button class="btn-clean" onclick="cleanAll()">
+                <span>🗑️</span>
+                <span>CLEAR</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="info" id="info">
+        💡 Masukkan CT (2-digit) dan klik "PROSES REKAP" - Sistem akan generate Ranking berdasarkan kumat
+    </div>
+
+    <div class="output-section">
+        <h3>📊 Hasil Rekap CT:</h3>
+        <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+    </div>
+</div>
+
+<script>
+function prosesRekapCT() {
+    const input = document.getElementById('inputData').value.trim();
+    if (!input) {
+        showInfo('Masukkan data CT terlebih dahulu!', 'error');
+        return;
+    }
+    
+    const lines = input.split('\n').map(line => line.trim()).filter(line => line);
+    
+    // Validasi semua line harus 2 digit
+    for (let line of lines) {
+        if (!/^\d{2}$/.test(line)) {
+            showInfo('Semua CT harus 2 digit!', 'error');
+            return;
+        }
+    }
+    
+    // Proses rekap CT
+    const result = hitungRekapCT(lines);
+    tampilkanHasil(result);
+    showInfo('Rekap CT berhasil diproses!', 'success');
+}
+
+function hitungRekapCT(controls) {
+    const allNumbers = generateAllNumbers(); // 00-99
+    const kumatPermutations = [];
+    
+    // Generate kumat permutations untuk setiap control
+    for (let control of controls) {
+        const kumatDigits = getKumatDigits(control);
+        const permutations = generatePermutations(kumatDigits);
+        kumatPermutations.push(permutations);
+    }
+    
+    // Hitung kena kumat untuk setiap angka
+    const results = {
+        lolosKumat: [],
+        kena1x: [],
+        kena2x: []
+    };
+    
+    for (let number of allNumbers) {
+        let kenaCount = 0;
+        
+        for (let permutations of kumatPermutations) {
+            if (permutations.has(number)) {
+                kenaCount++;
+            }
+        }
+        
+        if (kenaCount === 0 && !isTwin(number)) {
+            results.lolosKumat.push(number);
+        } else if (kenaCount === 1) {
+            results.kena1x.push(number);
+        } else if (kenaCount === 2) {
+            results.kena2x.push(number);
+        }
+    }
+    
+    return results;
+}
+
+function getKumatDigits(control) {
+    const allDigits = new Set('0123456789');
+    const controlDigits = new Set(control);
+    
+    // Kumat = semua digit yang tidak ada di control
+    const kumatDigits = new Set();
+    for (let digit of allDigits) {
+        if (!controlDigits.has(digit)) {
+            kumatDigits.add(digit);
+        }
+    }
+    
+    return kumatDigits;
+}
+
+function generatePermutations(digits) {
+    const permutations = new Set();
+    const digitArray = Array.from(digits);
+    
+    for (let i = 0; i < digitArray.length; i++) {
+        for (let j = 0; j < digitArray.length; j++) {
+            if (i !== j) { // Tidak termasuk twin
+                permutations.add(digitArray[i] + digitArray[j]);
+            }
+        }
+    }
+    
+    return permutations;
+}
+
+function generateAllNumbers() {
+    const numbers = [];
+    for (let i = 0; i <= 99; i++) {
+        numbers.push(i.toString().padStart(2, '0'));
+    }
+    return numbers;
+}
+
+function isTwin(number) {
+    return number[0] === number[1];
+}
+
+function tampilkanHasil(result) {
+    const output = document.getElementById('markdownOutput');
+    let text = '';
+    
+    text += `Lolos Kumat\n`;
+    text += `${result.lolosKumat.join('*')}*\n`;
+    text += `${result.lolosKumat.length} Angka\n\n`;
+    
+    text += `Kena Kumat 1x\n`;
+    text += `${result.kena1x.join('*')}*\n`;
+    text += `${result.kena1x.length} Angka\n\n`;
+    
+    text += `Kena Kumat 2x\n`;
+    text += `${result.kena2x.join('*')}*\n`;
+    text += `${result.kena2x.length} Angka\n`;
+    
+    output.textContent = text;
+}
+
+function copyOutput() {
+    const output = document.getElementById('markdownOutput');
+    const text = output.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        showInfo('Output berhasil disalin!', 'success');
+    }).catch(() => {
+        // Fallback untuk browser lama
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showInfo('Output berhasil disalin!', 'success');
+    });
+}
+
+function cleanAll() {
+    document.getElementById('inputData').value = '';
+    document.getElementById('markdownOutput').textContent = '// Output akan muncul di sini setelah proses data...';
+    showInfo('💡 Masukkan CT (2-digit) dan klik "PROSES REKAP"', 'default');
+}
+
+function showInfo(message, type) {
+    const infoDiv = document.getElementById('info');
+    infoDiv.textContent = message;
+    infoDiv.className = 'info';
+    if (type === 'error') {
+        infoDiv.style.background = '#ffebee';
+        infoDiv.style.borderLeftColor = '#f44336';
+        infoDiv.style.color = '#c62828';
+    } else if (type === 'success') {
+        infoDiv.style.background = '#e8f5e8';
+        infoDiv.style.borderLeftColor = '#4CAF50';
+        infoDiv.style.color = '#2e7d32';
+    } else {
+        infoDiv.style.background = '#e3f2fd';
+        infoDiv.style.borderLeftColor = '#2196F3';
+        infoDiv.style.color = '#1565c0';
+    }
+}
+</script>
+</body>
+</html>
