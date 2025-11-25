@@ -1696,6 +1696,60 @@ function showInfoCTKumat(message, type) {
     if (type === 'error') infoDiv.classList.add('error');
     else if (type === 'success') infoDiv.classList.add('success');
 }
+
+// =============================================
+// UTILITY FUNCTIONS
+// =============================================
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Text copied to clipboard');
+        }).catch(err => {
+            useFallbackCopy(text);
+        });
+    } else {
+        useFallbackCopy(text);
+    }
+}
+
+function useFallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        console.log('Text copied to clipboard (fallback)');
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+    document.body.removeChild(textArea);
+}
+
+// =============================================
+// INITIALIZATION
+// =============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Load theme
+    loadTheme();
+    
+    // Initialize BBFS digit checkboxes
+    updateDigitCheckboxes(0);
+    
+    // Add event listeners for radio buttons
+    document.getElementById('ModeCT').addEventListener('change', updateMode);
+    document.getElementById('ModeKumat').addEventListener('change', updateMode);
+    
+    // Add event listener for BBFS input
+    document.getElementById('inputAngka').addEventListener('input', function() {
+        const digitCount = this.value.length;
+        updateDigitCheckboxes(digitCount);
+    });
+});
 </script>
 </body>
 </html>
