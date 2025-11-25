@@ -850,8 +850,7 @@ SURAT:
         <div id="tab4" class="tab-content">
             <div class="input-section">
                 <div class="textarea-container">
-                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="
-Mode CT - Contoh:
+                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Mode CT - Contoh:
 04
 46
 94
@@ -1490,27 +1489,41 @@ function showInfoKombinasi(message, type) {
 // =============================================
 // TAB 4: REKAP CT & KUMAT FUNCTIONS
 // =============================================
-let currentMode = 'both';
+let currentMode = null; // Ubah dari 'both' menjadi null
 
 function updateMode() {
     const ctChecked = document.getElementById('ModeCT').checked;
     const kumatChecked = document.getElementById('ModeKumat').checked;
     
+    // Update placeholder berdasarkan mode yang dipilih
+    const textarea = document.getElementById('inputCTKumat');
+    
     if (ctChecked && kumatChecked) {
         currentMode = 'both';
+        textarea.placeholder = "Mode CT dan KUMAT aktif:\n\nCT Contoh:\n04\n46\n94\n\nKUMAT Contoh:\n12356789\n01235789";
         showInfoCTKumat('💡 Mode CT dan KUMAT aktif - Masukkan data keduanya', 'default');
     } else if (ctChecked) {
         currentMode = 'ct';
+        textarea.placeholder = "Mode CT aktif - Masukkan CT (2-7 digit):\n04\n46\n94\n91\n61";
         showInfoCTKumat('💡 Mode CT aktif - Masukkan data CT', 'default');
     } else if (kumatChecked) {
         currentMode = 'kumat';
+        textarea.placeholder = "Mode KUMAT aktif - Masukkan digit KUMAT:\n12356789\n01235789\n01235678";
         showInfoCTKumat('💡 Mode KUMAT aktif - Masukkan data KUMAT', 'default');
     } else {
+        currentMode = null;
+        textarea.placeholder = "Pilih mode terlebih dahulu, lalu masukkan data...";
         showInfoCTKumat('❌ Pilih minimal satu mode!', 'error');
     }
 }
 
 function prosesRekapCTKumat() {
+    // Validasi: pastikan mode sudah dipilih
+    if (currentMode === null) {
+        showInfoCTKumat('❌ Pilih mode terlebih dahulu!', 'error');
+        return;
+    }
+    
     const input = document.getElementById('inputCTKumat').value.trim();
     if (!input) {
         showInfoCTKumat('Masukkan data terlebih dahulu!', 'error');
@@ -1648,17 +1661,14 @@ function tampilkanHasilCTKumat(result) {
     const output = document.getElementById('markdownOutputCTKumat');
     let text = '';
     
-    text += `Ranking 1\n`;
-    text += `${result.lolosKumat.join('*')}*\n`;
-    text += `${result.lolosKumat.length} Line\n\n`;
+    text += `Ranking 1 (${result.lolosKumat.length} Line)\n`;
+    text += `${result.lolosKumat.join('*')}*\n\n`;
     
-    text += `Ranking 2\n`;
-    text += `${result.kena1x.join('*')}*\n`;
-    text += `${result.kena1x.length} Line\n\n`;
+    text += `Ranking 2 (${result.kena1x.length} Line)\n`;
+    text += `${result.kena1x.join('*')}*\n\n`;
     
-    text += `Ranking 3\n`;
+    text += `Ranking 3 (${result.kena2x.length} Line)\n`;
     text += `${result.kena2x.join('*')}*\n`;
-    text += `${result.kena2x.length} Line\n`;
     
     output.textContent = text;
 }
@@ -1671,8 +1681,12 @@ function copyOutputCTKumat() {
 
 function cleanAllCTKumat() {
     document.getElementById('inputCTKumat').value = '';
-    document.getElementById('markdownOutputCTKumat').textContent = '// Output akan muncul di sini setelah proses data...';
-    showInfoCTKumat('💡 Pilih mode yang diinginkan, masukkan data, lalu klik "PROSES REKAP"', 'default');
+    document.getElementById('markdownOutputCTKumat').textContent = '// Pilih mode dan masukkan data...';
+    // Reset checkbox mode
+    document.getElementById('ModeCT').checked = false;
+    document.getElementById('ModeKumat').checked = false;
+    currentMode = null;
+    showInfoCTKumat('💡 Pilih mode terlebih dahulu, lalu masukkan data', 'default');
 }
 
 function showInfoCTKumat(message, type) {
@@ -1682,59 +1696,6 @@ function showInfoCTKumat(message, type) {
     if (type === 'error') infoDiv.classList.add('error');
     else if (type === 'success') infoDiv.classList.add('success');
 }
-
-// =============================================
-// UTILITY FUNCTIONS
-// =============================================
-function copyToClipboard(text) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-}
-
-// =============================================
-// INITIALIZATION
-// =============================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Load saved theme
-    loadTheme();
-    
-    // Initialize BBFS digit checkboxes
-    document.getElementById('inputAngka').addEventListener('input', function(e) {
-        const value = e.target.value;
-        const digitCount = value.length;
-        if (digitCount > 6) {
-            e.target.value = value.slice(0, 6);
-        }
-        updateDigitCheckboxes(Math.min(digitCount, 6));
-    });
-    
-    // Initialize CT/KUMAT mode checkboxes
-    document.getElementById('ModeCT').addEventListener('change', updateMode);
-    document.getElementById('ModeKumat').addEventListener('change', updateMode);
-    updateMode(); // Initialize mode
-    
-    // Support Enter key untuk generate
-    document.getElementById('inputAngka').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') generatePermutasi();
-    });
-    
-    // Support Enter key untuk kombinasi
-    document.getElementById('inputKelompok').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') generateKombinasi();
-    });
-    
-    // Support Enter key untuk CT/KUMAT
-    document.getElementById('inputCTKumat').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') prosesRekapCTKumat();
-    });
-    
-    // Initialize dengan 0 digit
-    updateDigitCheckboxes(0);
-});
 </script>
 </body>
 </html>
