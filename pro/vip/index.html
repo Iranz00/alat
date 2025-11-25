@@ -847,59 +847,52 @@ SURAT:
         </div>
         
         <!-- TAB 4: REKAP CT & KUMAT -->
-        <div id="tab4" class="tab-content">
-            <div class="input-section">
-                <div class="textarea-container">
-                    <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Mode CT - Contoh:
-04
-46
-94
-Mode Kumat - Contoh:
-12356789
-01235789
-01235678"></textarea>
+<div id="tab4" class="tab-content">
+    <div class="input-section">
+        <!-- Pindahkan digit-selection ke atas -->
+        <div class="digit-selection">
+            <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
+            <div class="checkbox-group" id="modeCheckboxes">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="ModeCT" value="CT">
+                    <label for="ModeCT">MODE CT</label>
                 </div>
-                
-                <div class="digit-selection">
-                    <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
-                    <div class="checkbox-group" id="modeCheckboxes">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ModeCT" value="CT" checked>
-                            <label for="ModeCT">MODE CT</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ModeKumat" value="Kumat" checked>
-                            <label for="ModeKumat">MODE KUMAT</label>
-                        </div>
-                    </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="ModeKumat" value="Kumat">
+                    <label for="ModeKumat">MODE KUMAT</label>
                 </div>
-                
-                <div class="button-group">
-                    <button class="btn-submit" onclick="prosesRekapCTKumat()">
-                        <span>🚀</span>
-                        <span>GENERATE</span>
-                    </button>
-                    <button class="btn-copy" onclick="copyOutputCTKumat()">
-                        <span>📋</span>
-                        <span>SALIN OUTPUT</span>
-                    </button>
-                    <button class="btn-clean" onclick="cleanAllCTKumat()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="infoCTKumat">
-                💡 Pilih mode yang diinginkan, masukkan data, lalu klik "GENERATE"
-            </div>
-
-            <div class="output-section">
-                <h3>📊 Hasil Rekap CT & Kumat:</h3>
-                <div class="markdown-output" id="markdownOutputCTKumat">// Hasil Rekap akan muncul di sini setelah proses data...</div>
             </div>
         </div>
+        
+        <div class="textarea-container">
+            <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Pilih mode terlebih dahulu, lalu masukkan data..."></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="prosesRekapCTKumat()">
+                <span>🚀</span>
+                <span>GENERATE</span>
+            </button>
+            <button class="btn-copy" onclick="copyOutputCTKumat()">
+                <span>📋</span>
+                <span>SALIN OUTPUT</span>
+            </button>
+            <button class="btn-clean" onclick="cleanAllCTKumat()">
+                <span>🗑️</span>
+                <span>CLEAR</span>
+            </button>
+        </div>
     </div>
+    
+    <div class="info" id="infoCTKumat">
+        💡 Pilih mode terlebih dahulu, lalu masukkan data
+    </div>
+
+    <div class="output-section">
+        <h3>📊 Hasil Rekap CT & Kumat:</h3>
+        <div class="markdown-output" id="markdownOutputCTKumat">// Pilih mode dan masukkan data...</div>
+    </div>
+</div>
 </div>
 
 <script>
