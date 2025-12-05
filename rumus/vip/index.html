@@ -145,6 +145,11 @@ button {
     color:white;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
+.btn-copy-combined {
+    background:linear-gradient(135deg, #9C27B0, #7B1FA2);
+    color:white;
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+}
 button:hover { 
     transform:translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
@@ -328,6 +333,7 @@ A5ix-K6"></textarea>
             <br>
             <div class="button-group-double">
                 <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
+                <button class="btn-copy-combined" onclick="copyCombinedOutput()">🔗 SALIN GABUNGAN</button>
             </div>
         </div>
     </div>
@@ -362,38 +368,40 @@ let currentFormulas = [];
 let originalInputData = [];
 let aiHistory = [];
 
-// Data highlight untuk setiap rumus
-const highlightPatterns = [
-    ['30', '74', '07', '63', '07', '07', '74', '07', '63', '30', '41', '96', '41', '18', '74', '85'],
-    ['35', '80', '68', '68', '02', '02', '79', '13', '68', '13', '80', '02', '46', '68', '68', '35'],
-    ['36', '70', '81', '92', '03', '25', '70', '81', '36', '70', '81', '69', '58', '58', '58', '36'],
-    ['35', '80', '68', '02', '57', '79', '79', '57', '68', '79', '91', '80', '80', '68', '80', '46'],
-    ['23', '01', '01', '23', '56', '23', '89', '67', '56', '23', '12', '01', '34', '56', '34', '67']
-];
-
-function calculateFormula() {
-    const inputData = document.getElementById('inputData').value.trim();
-    
-    if (!inputData) {
-        showInfo('Masukkan data terlebih dahulu!', 'error');
-        return;
+// Fungsi untuk extract hanya bagian rumus (abaikan @AB #12, dll)
+function extractFormulaOnly(line) {
+    // Hapus bagian setelah tab (\t)
+    if (line.includes('\t')) {
+        line = line.split('\t')[0].trim();
     }
     
-    try {
-        const parsedData = parseInputData(inputData);
-        
-        if (currentFormulas.length === 0) {
-            showInfo('Tidak ada rumus yang terdeteksi! Pastikan ada rumus setelah garis "======"', 'error');
-            return;
-        }
-        
-        displayAllFormulaResults(currentFormulas);
-        showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
-        
-    } catch (error) {
-        showInfo(`Error: ${error.message}`, 'error');
-        console.error('Calculation error:', error);
+    // Hapus bagian setelah 2+ spasi (format: "rumus  @AB #12")
+    const doubleSpaceIndex = line.indexOf('  ');
+    if (doubleSpaceIndex !== -1) {
+        line = line.substring(0, doubleSpaceIndex).trim();
     }
+    
+    // Hapus bagian setelah "@" jika langsung menyusul
+    const atIndex = line.indexOf(' @');
+    if (atIndex !== -1) {
+        line = line.substring(0, atIndex).trim();
+    }
+    
+    // Hapus bagian setelah "#" jika langsung menyusul
+    const hashIndex = line.indexOf(' #');
+    if (hashIndex !== -1) {
+        line = line.substring(0, hashIndex).trim();
+    }
+    
+    // Normalisasi karakter khusus
+    line = line.replace(/[–—]/g, '-');
+    
+    // Hapus komentar
+    if (line.includes('//')) {
+        line = line.split('//')[0].trim();
+    }
+    
+    return line.trim();
 }
 
 function parseInputData(inputData) {
@@ -416,8 +424,12 @@ function parseInputData(inputData) {
         }
         
         if (foundSeparator && line) {
-            line = line.replace(/[–—]/g, '-');
-            tempFormulas.push(line);
+            // Extract hanya bagian rumus
+            const formula = extractFormulaOnly(line);
+            
+            if (formula && !formula.startsWith('//')) {
+                tempFormulas.push(formula);
+            }
         }
         
         if (!foundSeparator) {
@@ -440,12 +452,14 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                // EXTRACT SEMUA KOLOM AI (2-6 digit per kolom)
+                // Extract semua kolom AI (support 2-6 digit)
                 const aiMatch = line.match(/(\d{4})\s*=\s*(.+?)\s*ai$/i);
                 if (aiMatch) {
-                    const aiParts = aiMatch[2].split('.').map(part => part.trim());
+                    const aiParts = aiMatch[2].split('.').map(part => {
+                        const trimmed = part.trim();
+                        return (trimmed === 'Xx' || trimmed === 'xx' || trimmed === 'XX') ? 'Xx' : trimmed;
+                    });
                     
-                    // Simpan semua kolom AI (bisa 2-6 digit per kolom)
                     const aiColumns = [];
                     for (let i = 0; i < Math.min(aiParts.length, 6); i++) {
                         aiColumns.push(aiParts[i] || '');
@@ -497,6 +511,31 @@ function updateFormulaDisplay() {
     }
 }
 
+function calculateFormula() {
+    const inputData = document.getElementById('inputData').value.trim();
+    
+    if (!inputData) {
+        showInfo('Masukkan data terlebih dahulu!', 'error');
+        return;
+    }
+    
+    try {
+        const parsedData = parseInputData(inputData);
+        
+        if (currentFormulas.length === 0) {
+            showInfo('Tidak ada rumus yang terdeteksi! Pastikan ada rumus setelah garis "======"', 'error');
+            return;
+        }
+        
+        displayAllFormulaResults(currentFormulas);
+        showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
+        
+    } catch (error) {
+        showInfo(`Error: ${error.message}`, 'error');
+        console.error('Calculation error:', error);
+    }
+}
+
 function displayAllFormulaResults(formulas) {
     const output = document.getElementById('resultOutput');
     let outputHTML = '';
@@ -504,7 +543,6 @@ function displayAllFormulaResults(formulas) {
     // Untuk setiap rumus
     for (let i = 0; i < formulas.length; i++) {
         try {
-            // Hitung hasil AI untuk rumus ini
             const results = calculateAIForSingleFormula(formulas[i]);
             
             // Tentukan highlight data dari KOLOM INPUT yang sesuai
@@ -517,9 +555,11 @@ function displayAllFormulaResults(formulas) {
                 });
             }
             
-            // Generate output dengan highlight
             const formulaOutput = generateRotatedOutput(results, formulas[i], highlightData);
-            outputHTML += formulaOutput;
+            
+            // Tambah info rotasi
+            const rotationInfo = getRotationInfoForFormula({ data: results, formula: formulas[i] }, i);
+            outputHTML += formulaOutput + `\t${rotationInfo}`;
             
             if (i < formulas.length - 1) {
                 outputHTML += '\n\n';
@@ -529,7 +569,7 @@ function displayAllFormulaResults(formulas) {
             outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
             outputHTML += `// ${error.message}\n`;
             outputHTML += '======\n';
-            outputHTML += formulas[i] + '\n\n';
+            outputHTML += formulas[i] + '\t@XX #Xx\n\n';
         }
     }
     
@@ -575,13 +615,12 @@ function generateRotatedOutput(results, formula, highlightData) {
             const highlightAI = highlightData[i] || '';
             const rotatedResult = formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
             
-            // Tentukan suffix berdasarkan jumlah digit yang di-highlight
             let suffix = '';
-            const highlightedCount = rotatedResult.highlightPositions.length;
+            const highlightedCount = rotatedResult.highlightCount;
             
             if (highlightedCount === 2) {
                 suffix = ' ai';
-            } else if (highlightedCount > 2 && highlightedCount <= 6) {
+            } else if (highlightedCount > 2) {
                 suffix = ` (${highlightedCount} digit)`;
             }
             
@@ -601,7 +640,6 @@ function generateRotatedOutput(results, formula, highlightData) {
 }
 
 function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPositions) {
-    // Buat urutan digit dimulai dari calculatedAI
     let rotatedDigits = '';
     const allDigits = '0123456789';
     const startIndex = allDigits.indexOf(calculatedAI.toString());
@@ -616,7 +654,6 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
     if (highlightAI && highlightAI.trim() !== '') {
         const highlightDigits = highlightAI.toString().split('');
         
-        // Untuk setiap digit dalam highlightAI (support 2-6 digit)
         highlightDigits.forEach((digit, index) => {
             if (digit >= '0' && digit <= '9') {
                 const position = rotatedDigits.indexOf(digit);
@@ -630,11 +667,9 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
             }
         });
         
-        // Urutkan berdasarkan posisi
         highlightPositions.sort((a, b) => a.position - b.position);
     }
     
-    // Jika tidak ada highlight dari input, gunakan inherited positions
     if (highlightPositions.length === 0 && inheritedPositions) {
         inheritedPositions.forEach((pos, index) => {
             if (pos >= 0 && pos < rotatedDigits.length) {
@@ -647,19 +682,11 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
         });
     }
     
-    // Beri warna berdasarkan posisi highlight
     let result = '';
     const highlightColors = [
-        '#FF6B6B', // Merah - digit 1
-        '#4ECDC4', // Cyan - digit 2
-        '#45B7D1', // Biru muda - digit 3
-        '#96CEB4', // Hijau muda - digit 4
-        '#FFEAA7', // Kuning - digit 5
-        '#DDA0DD', // Ungu - digit 6
-        '#FFA07A', // Salmon - digit 7+
-        '#20B2AA', // Light sea green
-        '#778899', // Light slate gray
-        '#D8BFD8'  // Thistle
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+        '#FFEAA7', '#DDA0DD', '#FFA07A', '#20B2AA',
+        '#778899', '#D8BFD8'
     ];
     
     for (let i = 0; i < rotatedDigits.length; i++) {
@@ -677,7 +704,8 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
     
     return {
         rotatedDigits: result,
-        highlightPositions: highlightPositions.map(h => h.position)
+        highlightPositions: highlightPositions.map(h => h.position),
+        highlightCount: highlightPositions.length
     };
 }
 
@@ -689,7 +717,6 @@ function copyOutput() {
     let currentBlock = '';
     let blocks = [];
     let waitingForFormula = false;
-    let currentFormulaIndex = -1;
     
     for (let line of lines) {
         line = line.trim();
@@ -705,11 +732,12 @@ function copyOutput() {
         }
         
         if (waitingForFormula && line && !line.includes('//')) {
-            currentBlock += line + '\n';
+            // Extract hanya rumus (abaikan @AB #12)
+            const formulaOnly = extractFormulaOnly(line);
+            currentBlock += formulaOnly + '\n';
             waitingForFormula = false;
             blocks.push(currentBlock.trim());
             currentBlock = '';
-            currentFormulaIndex++;
             continue;
         }
         
@@ -717,7 +745,6 @@ function copyOutput() {
         if (numberMatch) {
             const number = numberMatch[1];
             
-            // Extract semua digit yang di-highlight
             const regex = /<span[^>]*>(\d)<\/span>/g;
             let match;
             let highlightedDigits = '';
@@ -727,14 +754,7 @@ function copyOutput() {
             }
             
             if (highlightedDigits) {
-                // Tentukan suffix
-                let suffix = '';
-                if (highlightedDigits.length === 2) {
-                    suffix = ' ai';
-                } else if (highlightedDigits.length > 2) {
-                    suffix = ` (${highlightedDigits.length} digit)`;
-                }
-                
+                const suffix = highlightedDigits.length === 2 ? ' ai' : '';
                 currentBlock += `${number} = ${highlightedDigits}${suffix}\n`;
             } else {
                 currentBlock += `${number} = \n`;
@@ -766,11 +786,237 @@ function copyOutput() {
     });
 }
 
+function copyCombinedOutput() {
+    const outputElement = document.getElementById('resultOutput');
+    
+    // Parse semua hasil
+    const lines = outputElement.innerHTML.split('\n');
+    const blocks = [];
+    let currentBlock = [];
+    let waitingForFormula = false;
+    let currentFormula = '';
+    
+    for (let line of lines) {
+        line = line.trim();
+        
+        if (line === '======') {
+            waitingForFormula = true;
+            if (currentBlock.length > 0) {
+                blocks.push({
+                    data: currentBlock,
+                    formula: currentFormula
+                });
+            }
+            currentBlock = [];
+            continue;
+        }
+        
+        if (waitingForFormula && line && !line.includes('//')) {
+            currentFormula = extractFormulaOnly(line);
+            waitingForFormula = false;
+            continue;
+        }
+        
+        if (line.includes('//')) {
+            continue;
+        }
+        
+        const numberMatch = line.match(/(\d{4})\s*=\s*(.*?)(?:\s+(ai|\(\d+ digit\)))?$/);
+        if (numberMatch) {
+            const number = numberMatch[1];
+            const digits = numberMatch[2] || '';
+            
+            const regex = /<span[^>]*>(\d)<\/span>/g;
+            let match;
+            let highlightedDigits = '';
+            
+            while ((match = regex.exec(digits)) !== null) {
+                highlightedDigits += match[1];
+            }
+            
+            currentBlock.push({
+                number: number,
+                ai: highlightedDigits
+            });
+        }
+    }
+    
+    if (currentBlock.length > 0) {
+        blocks.push({
+            data: currentBlock,
+            formula: currentFormula
+        });
+    }
+    
+    const combinedText = combineAllResults(blocks);
+    
+    if (!combinedText || combinedText.includes('Hasil perhitungan akan muncul di sini')) {
+        showInfo('Tidak ada output yang bisa disalin!', 'error');
+        return;
+    }
+    
+    navigator.clipboard.writeText(combinedText).then(() => {
+        showCopyNotification();
+    }).catch(err => {
+        const textArea = document.createElement('textarea');
+        textArea.value = combinedText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyNotification();
+    });
+}
+
+function combineAllResults(blocks) {
+    if (blocks.length === 0) return '';
+    
+    const maxLength = Math.max(...blocks.map(block => block.data.length));
+    const allNumbers = blocks[0].data.map(item => item.number);
+    
+    const combinedResults = [];
+    
+    for (let i = 0; i < maxLength; i++) {
+        const number = allNumbers[i] || '';
+        const columns = [];
+        
+        for (let j = 0; j < blocks.length; j++) {
+            const block = blocks[j];
+            const dataItem = block.data[i];
+            
+            if (dataItem && dataItem.ai) {
+                // Tentukan jumlah digit dari info rotasi
+                const rotationInfo = getRotationInfoForFormula(block, j);
+                const hashMatch = rotationInfo.match(/#(.+)$/);
+                const hashValue = hashMatch ? hashMatch[1] : 'Xx';
+                
+                if (hashValue === 'Xx' || hashValue === 'xx' || hashValue === 'XX') {
+                    const lettersMatch = rotationInfo.match(/@([A-J]+)/);
+                    const digitCount = lettersMatch ? lettersMatch[1].length : 2;
+                    columns.push('Xx'.repeat(Math.ceil(digitCount / 2)).slice(0, digitCount));
+                } else {
+                    columns.push(hashValue);
+                }
+            } else {
+                const rotationInfo = getRotationInfoForFormula(block, j);
+                const lettersMatch = rotationInfo.match(/@([A-J]+)/);
+                const digitCount = lettersMatch ? lettersMatch[1].length : 2;
+                columns.push('Xx'.repeat(Math.ceil(digitCount / 2)).slice(0, digitCount));
+            }
+        }
+        
+        while (columns.length < 4) {
+            columns.push('Xx');
+        }
+        
+        combinedResults.push(`${number} = ${columns.join(' . ')} ai`);
+    }
+    
+    let resultText = combinedResults.join('\n');
+    resultText += '\n======\n';
+    
+    const formulaLines = blocks.map((block, index) => {
+        const formula = block.formula;
+        const rotationInfo = getRotationInfoForFormula(block, index);
+        return `${formula}\t${rotationInfo}`;
+    });
+    
+    resultText += formulaLines.join('\n');
+    
+    return resultText;
+}
+
+function getRotationInfoForFormula(block, formulaIndex) {
+    if (!block.data || block.data.length === 0) {
+        return `@XX #Xx`;
+    }
+    
+    let lastValidData = null;
+    let lastIndex = -1;
+    
+    for (let i = block.data.length - 1; i >= 0; i--) {
+        if (block.data[i] && block.data[i].ai) {
+            lastValidData = block.data[i];
+            lastIndex = i;
+            break;
+        }
+    }
+    
+    if (!lastValidData) {
+        return `@XX #Xx`;
+    }
+    
+    const lastAI = lastValidData.ai;
+    
+    let highlightAI = '';
+    if (originalInputData.length > 0 && originalInputData[0].ai_columns) {
+        const aiColumnIndex = Math.min(formulaIndex, originalInputData[0].ai_columns.length - 1);
+        const inputItem = originalInputData[lastIndex];
+        if (inputItem && inputItem.ai_columns) {
+            highlightAI = inputItem.ai_columns[aiColumnIndex] || '';
+            if (highlightAI === 'Xx' || highlightAI === 'xx' || highlightAI === 'XX') {
+                highlightAI = '';
+            }
+        }
+    }
+    
+    const rotationLetters = getRotationLetters(lastAI, highlightAI);
+    
+    let hashValue;
+    if (!highlightAI || highlightAI.trim() === '') {
+        const digitCount = rotationLetters.length;
+        hashValue = 'Xx'.repeat(Math.ceil(digitCount / 2)).slice(0, digitCount);
+    } else {
+        hashValue = highlightAI;
+    }
+    
+    return `@${rotationLetters} #${hashValue}`;
+}
+
+function getRotationLetters(calculatedAI, highlightAI) {
+    if (!highlightAI || highlightAI.trim() === '') {
+        return 'XX';
+    }
+    
+    const allDigits = '0123456789';
+    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    
+    const positions = [];
+    const highlightDigits = highlightAI.toString().split('');
+    
+    for (let digit of highlightDigits) {
+        if (digit >= '0' && digit <= '9') {
+            for (let j = 0; j < allDigits.length; j++) {
+                const actualIndex = (startIndex + j) % allDigits.length;
+                if (allDigits[actualIndex] === digit) {
+                    positions.push(j);
+                    break;
+                }
+            }
+        }
+    }
+    
+    positions.sort((a, b) => a - b);
+    
+    const letters = positions.map(pos => {
+        if (pos < 10) {
+            return String.fromCharCode(65 + pos);
+        } else {
+            return String.fromCharCode(65 + (pos % 10));
+        }
+    });
+    
+    if (letters.length === 0) {
+        return 'XX';
+    }
+    
+    return letters.join('');
+}
+
 function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
     
-    // Regex untuk menemukan semua komponen
     const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
     let match;
     
@@ -832,7 +1078,6 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    // Normalisasi karakter
     component = component.replace(/[–—]/g, '-');
     
     const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
