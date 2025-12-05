@@ -279,10 +279,10 @@ button:active {
 4467 = 
 ======
 A3mb-A5m9.(ty)
-A8mb+E5ml.(ml)
-A4ml+C1ml
-A5-A7ix
-A9ty+C6ty.(m9)"></textarea>
+Js6ml+E2ty.(mb)
+J3D4mb-C5.(ix)
+J4D2ml+K3.(ty)
+A3+Js2-C1m8.(ty)"></textarea>
                 <div class="input-info" id="inputInfo">0 angka + 0 rumus terdeteksi</div>
             </div>
             
@@ -302,7 +302,7 @@ A9ty+C6ty.(m9)"></textarea>
                     <strong>Komponen yang didukung:</strong><br>
                     • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
                     • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-                    <small>Contoh: A3mb, Js2ty, J3D1ml, J4D3.(ix)</small>
+                    <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
                 </div>
             </div>
         </div>
@@ -310,20 +310,20 @@ A9ty+C6ty.(m9)"></textarea>
         <div class="output-section">
             <div class="section-title">📤 HASIL OUTPUT</div>
             <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Support semua komponen + highlight 2-6 digit:
+// Support 8 komponen + highlight 2-6 digit:
 
 // 8603 = 3456789012 ai
 // 2436 = 4567890123 ai  
-// 5678 = 5678901234 (3 digit)
-// 9012 = 6789012345 (4 digit)
+// 5678 = 5678901234 ai
+// 9012 = 6789012345 ai
 // ======
 // A3mb-A5m9.(ty)
 
-// 8603 = 4567890123 (Js3ml)
-// 2436 = 5678901234 (J3D2mb)
-// 5678 = 6789012345 (J4D1ml)
+// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
+// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
+// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
 // ======
-// Js3ml+E2ty.(mb)
+// Js6ml+E2ty.(mb)
 
 // ... dan seterusnya untuk setiap rumus</div>
             <br>
@@ -489,34 +489,39 @@ function updateFormulaDisplay() {
 function displayAllFormulaResults(formulas) {
     const output = document.getElementById('resultOutput');
     let outputHTML = '';
-    
-    const allFormulaResults = [];
-    
-    for (let i = 0; i < formulas.length; i++) {
-        const results = calculateAIForSingleFormula(formulas[i]);
-        allFormulaResults.push(results);
-    }
+    let hasError = false;
     
     for (let i = 0; i < formulas.length; i++) {
-        const formula = formulas[i];
-        const results = allFormulaResults[i];
-        
-        let highlightData = [];
-        if (i === 0) {
-            highlightData = originalInputData.map(item => item.ai);
-        } else {
-            highlightData = getHighlightDataForFormula(i);
-        }
-        
-        const formulaOutput = generateRotatedOutput(results, formula, highlightData);
-        outputHTML += formulaOutput;
-        
-        if (i < formulas.length - 1) {
-            outputHTML += '\n\n';
+        try {
+            const results = calculateAIForSingleFormula(formulas[i]);
+            
+            let highlightData = [];
+            if (i === 0) {
+                highlightData = originalInputData.map(item => item.ai);
+            } else {
+                highlightData = getHighlightDataForFormula(i);
+            }
+            
+            const formulaOutput = generateRotatedOutput(results, formulas[i], highlightData);
+            outputHTML += formulaOutput;
+            
+            if (i < formulas.length - 1) {
+                outputHTML += '\n\n';
+            }
+        } catch (error) {
+            outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
+            outputHTML += `// ${error.message}\n`;
+            outputHTML += '======\n';
+            outputHTML += formulas[i] + '\n\n';
+            hasError = true;
         }
     }
     
     output.innerHTML = outputHTML;
+    
+    if (hasError) {
+        showInfo('Ada error dalam perhitungan, lihat output untuk detail', 'error');
+    }
 }
 
 function getHighlightDataForFormula(formulaIndex) {
@@ -718,17 +723,17 @@ function copyOutput() {
 function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-    const components = workingFormula.split(/[+\-]/);
     
-    components.forEach(component => {
-        const match = component.trim().match(/^([AKCEJJsJ3DJ4D])(\d+)/);
-        if (match) {
-            const day = parseInt(match[2]);
-            if (day > maxDay) {
-                maxDay = day;
-            }
+    // Regex untuk menemukan semua komponen (A, C, K, E, J, Js, J3D, J4D)
+    const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
+    let match;
+    
+    while ((match = componentRegex.exec(workingFormula)) !== null) {
+        const day = parseInt(match[2]);
+        if (day > maxDay) {
+            maxDay = day;
         }
-    });
+    }
     
     return maxDay;
 }
@@ -781,9 +786,10 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    const match = component.match(/^([AKCEJJsJ3DJ4D])(\d+)(\w*)$/);
+    // Regex yang benar untuk semua komponen
+    const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
     if (!match) {
-        throw new Error(`Format komponen tidak valid: ${component}`);
+        throw new Error(`Format komponen tidak valid: ${component}. Contoh: A3, Js6ml, J3D4mb, J4D2ml.(ix)`);
     }
     
     const type = match[1];
@@ -801,26 +807,22 @@ function processComponent(component, currentDayIndex) {
     
     switch(type) {
         case 'A': value = parseInt(data.as); break;
-        case 'K': value = parseInt(data.kepala); break;
         case 'C': value = parseInt(data.cop); break;
+        case 'K': value = parseInt(data.kepala); break;
         case 'E': value = parseInt(data.ekor); break;
         case 'J': value = data.jumlah; break;
-        
-        case 'Js':
+        case 'Js': 
             value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
             value = reduceToSingleDigit(value);
             break;
-            
         case 'J3D':
             value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
             value = reduceToSingleDigit(value);
             break;
-            
         case 'J4D':
             value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
             value = reduceToSingleDigit(value);
             break;
-            
         default: 
             throw new Error(`Tipe komponen tidak dikenali: ${type}`);
     }
@@ -858,20 +860,20 @@ function reduceToSingleDigit(num) {
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Support semua komponen + highlight 2-6 digit:
+// Support 8 komponen + highlight 2-6 digit:
 
 // 8603 = 3456789012 ai
 // 2436 = 4567890123 ai  
-// 5678 = 5678901234 (3 digit)
-// 9012 = 6789012345 (4 digit)
+// 5678 = 5678901234 ai
+// 9012 = 6789012345 ai
 // ======
 // A3mb-A5m9.(ty)
 
-// 8603 = 4567890123 (Js3ml)
-// 2436 = 5678901234 (J3D2mb)
-// 5678 = 6789012345 (J4D1ml)
+// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
+// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
+// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
 // ======
-// Js3ml+E2ty.(mb)
+// Js6ml+E2ty.(mb)
 
 // ... dan seterusnya untuk setiap rumus`;
     document.getElementById('info').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
@@ -879,7 +881,7 @@ function clearAll() {
         <strong>Komponen yang didukung:</strong><br>
         • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
         • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-        <small>Contoh: A3mb, Js2ty, J3D1ml, J4D3.(ix)</small>
+        <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
     </div>`;
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
