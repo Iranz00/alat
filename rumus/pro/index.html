@@ -111,12 +111,6 @@ h1 {
     gap:12px; 
     margin-bottom:20px;
 }
-.button-group-double {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-}
 button { 
     padding:15px; 
     border:none; 
@@ -241,12 +235,6 @@ button {
     color: #FFD700;
     font-weight: bold;
 }
-.rumus-separator {
-    margin: 15px 0;
-    text-align: center;
-    color: #718096;
-    font-style: italic;
-}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -255,73 +243,64 @@ button {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    .button-group-double {
-        grid-template-columns: 1fr;
-    }
 }
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔮 KEY KALKULATOR MULTI POSISI</h1>
-        <div class="subtitle">Hitung 4 rumus untuk AA, BB, CC, DD. Support 1-5 digit & highlight warisan</div>
+        <h1>🔮 KEY KALKULATOR FLEKSIBEL</h1>
+        <div class="subtitle">Support 1-7 posisi, 1-5 digit, Xx/Xxx/Xxxx, warisan highlight</div>
     </div>
 
     <div class="grid-container">
         <div class="input-section">
             <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:
-3872 = 68 . 06 . 04 . 83 ai
-9680 = 02 . 28 . 82 . 27 ai
-1825 = Xx . 40 . 04 . 94 ai
-...
-8221 = AA . BB . CC . DD ai
+                <textarea id="inputData" placeholder="Format fleksibel:
+1. Single: 5902 = 59 e
+2. Multi: 3872 = 68 . 06 . 04 . 83 ai
+3. X value: 8221 = Xx . 591 ai
+4. Support 1-7 posisi (berdasarkan jumlah titik)
+5. Support 1-5 digit per posisi
+6. Suffix bebas: e/k/a/ai
 ======
-A7mb+E7ty.(mb)   ← Untuk AA
-A8mb+C4.(mb)     ← Untuk BB
-A5ix–K6          ← Untuk CC
-K4m9+K8m9.(m9)   ← Untuk DD
-
-Support 1-5 digit: 3 . 305 . 74 . 3057 ai"></textarea>
+Rumus sesuai jumlah posisi (1-7 rumus)
+Tipe data: A,C,K,E,J,Js,J3D,J4D
+Contoh: A3mb-Js5m9.(ty)"></textarea>
                 <div class="input-info" id="inputInfo">0 angka + 0 rumus terdeteksi</div>
             </div>
             
-            <div class="formula-label">Rumus Terdeteksi (AA, BB, CC, DD):</div>
+            <div class="formula-label">Rumus Terdeteksi:</div>
             <div class="formula-display" id="detectedFormula">Tidak ada rumus</div>
             
-            <div class="history-info" id="historyInfo">Butuh 0 hari history. 4 posisi: AA, BB, CC, DD</div>
+            <div class="history-info" id="historyInfo">Deteksi otomatis jumlah posisi dan rumus</div>
             
             <div class="button-group">
-                <button class="btn-calculate" onclick="calculateFormula()">🧮 HITUNG SEMUA RUMUS</button>
+                <button class="btn-calculate" onclick="calculateFormula()">🧮 HITUNG RUMUS</button>
                 <button class="btn-clear" onclick="clearAll()">🗑️ HAPUS SEMUA</button>
             </div>
             
-            <div class="info" id="info">Masukkan data dengan 4 posisi (AA.BB.CC.DD), lalu klik HITUNG</div>
+            <div class="info" id="info">Masukkan data, program auto-detect jumlah posisi berdasarkan titik (.)</div>
         </div>
 
         <div class="output-section">
-            <div class="section-title">📤 HASIL OUTPUT (DIPISAH PER RUMUS)</div>
-            <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Output dipisah per rumus:
-//
-// === RUMUS 1 (AA) ===
+            <div class="section-title">📤 HASIL OUTPUT</div>
+            <div class="result-box" id="resultOutput">// Output akan muncul di sini
+// Format dipisah per rumus
+// 
+// === RUMUS 1 (POSISI 1) ===
 // 3872 = 68 ai
-// 9680 = 02 ai
 // ...
-// 8221 = [hasil] ai
 // ======
 // A7mb+E7ty.(mb)
-//
-// === RUMUS 2 (BB) ===
+// 
+// === RUMUS 2 (POSISI 2) ===
 // 3872 = 06 ai
-// 9680 = 28 ai
 // ...
-// 8221 = [hasil] ai
 // ======
 // A8mb+C4.(mb)
-//
-// ... dan seterusnya untuk CC dan DD</div>
+// 
+// ... dst untuk setiap rumus</div>
             <br>
             <div class="button-group">
                 <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
@@ -335,7 +314,7 @@ Support 1-5 digit: 3 . 305 . 74 . 3057 ai"></textarea>
 </div>
 
 <script>
-// Tabel konversi mistik
+// TABEL KONVERSI BARU
 const mistikTables = {
     'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
     'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
@@ -364,11 +343,12 @@ const mistikTables = {
 };
 
 // Data global
-let dataHistory = [];       // Menyimpan data angka dan posisi
-let currentFormulas = [];   // Menyimpan 4 rumus (AA, BB, CC, DD)
-let lastCalculatedAI = null; // Untuk highlight warisan
+let dataHistory = [];
+let currentFormulas = [];
+let maxPositions = 0;
 
-// Fungsi utama: hitung semua rumus
+// ==================== FUNGSI UTAMA ====================
+
 function calculateFormula() {
     const inputData = document.getElementById('inputData').value.trim();
     
@@ -378,17 +358,23 @@ function calculateFormula() {
     }
     
     try {
-        // Parse input data
-        const parsedData = parseInputData(inputData);
+        // Parse input
+        parseInputData(inputData);
         
-        if (currentFormulas.length === 0 || currentFormulas.length !== 4) {
-            showInfo(`Harus ada tepat 4 rumus! (${currentFormulas.length} ditemukan)`, 'error');
+        if (currentFormulas.length === 0) {
+            showInfo('Tidak ada rumus ditemukan!', 'error');
             return;
         }
         
-        // Generate output untuk semua rumus
+        // Validasi jumlah rumus = jumlah posisi
+        if (currentFormulas.length !== maxPositions) {
+            showInfo(`Ditemukan ${maxPositions} posisi, butuh ${maxPositions} rumus. Ada ${currentFormulas.length} rumus.`, 'error');
+            return;
+        }
+        
+        // Generate output
         displayAllFormulaResults();
-        showInfo(`Perhitungan berhasil! 4 rumus diproses untuk AA, BB, CC, DD`, 'success');
+        showInfo(`Perhitungan berhasil! ${maxPositions} posisi, ${currentFormulas.length} rumus diproses`, 'success');
         
     } catch (error) {
         showInfo(`Error: ${error.message}`, 'error');
@@ -396,154 +382,144 @@ function calculateFormula() {
     }
 }
 
-// Parse input data dengan format baru
+// ==================== PARSING INPUT ====================
+
 function parseInputData(inputData) {
     dataHistory = [];
     currentFormulas = [];
+    maxPositions = 0;
     
-    const lines = inputData.split('\n').filter(line => line.trim());
+    const lines = inputData.split('\n').map(l => l.trim()).filter(l => l);
     let foundSeparator = false;
-    let formulaIndex = 0;
     
     for (let line of lines) {
-        line = line.trim();
-        
-        // Cari garis pemisah "======"
         if (line === '======' || line.startsWith('======')) {
             foundSeparator = true;
             continue;
         }
         
-        // Jika sudah menemukan separator, line berikutnya adalah rumus
-        if (foundSeparator && line) {
-            // Simpan maksimal 4 rumus (untuk AA, BB, CC, DD)
-            if (formulaIndex < 4) {
-                currentFormulas.push(line);
-                formulaIndex++;
-            }
+        if (foundSeparator) {
+            // Parse rumus (normalize minus)
+            const formula = normalizeFormula(line);
+            if (formula) currentFormulas.push(formula);
             continue;
         }
         
-        // Sebelum separator, proses data angka dengan format baru
-        if (!foundSeparator) {
-            // Format: XXXX = AA . BB . CC . DD ai
-            // Support Xx (kosong) dan 1-5 digit
-            const pattern = /^(\d{4})\s*=\s*([\dXx]{0,5})\s*\.\s*([\dXx]{0,5})\s*\.\s*([\dXx]{0,5})\s*\.\s*([\dXx]{0,5})\s*ai$/i;
-            const match = line.match(pattern);
-            
-            if (match) {
-                const number = match[1];
-                const aa = match[2].toUpperCase() === 'XX' ? '' : match[2];
-                const bb = match[3].toUpperCase() === 'XX' ? '' : match[3];
-                const cc = match[4].toUpperCase() === 'XX' ? '' : match[4];
-                const dd = match[5].toUpperCase() === 'XX' ? '' : match[5];
-                
-                // Extract components dari angka
-                const as = number[0];
-                const cop = number[1];
-                const kepala = number[2];
-                const ekor = number[3];
-                const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
-                
-                dataHistory.push({
-                    number: number,
-                    positions: {
-                        AA: aa,
-                        BB: bb,
-                        CC: cc,
-                        DD: dd
-                    },
-                    as: parseInt(as),
-                    cop: parseInt(cop),
-                    kepala: parseInt(kepala),
-                    ekor: parseInt(ekor),
-                    jumlah: jumlah
-                });
+        // Parse data angka
+        const parsed = parseDataLine(line);
+        if (parsed) {
+            dataHistory.push(parsed);
+            if (parsed.positionCount > maxPositions) {
+                maxPositions = parsed.positionCount;
             }
         }
     }
     
-    // Update tampilan informasi
+    // Update UI
     updateFormulaDisplay();
     updateInputInfo();
     
-    // Update info kebutuhan history
-    if (currentFormulas.length > 0) {
-        const maxDaysNeeded = currentFormulas.map(formula => findMaxDayInFormula(formula));
-        const maxDay = Math.max(...maxDaysNeeded);
-        document.getElementById('historyInfo').textContent = 
-            `Butuh ${maxDay} hari history. 4 posisi: AA, BB, CC, DD`;
+    document.getElementById('historyInfo').textContent = 
+        `Deteksi: ${maxPositions} posisi, ${currentFormulas.length} rumus`;
+    
+    return { dataHistory, currentFormulas, maxPositions };
+}
+
+function parseDataLine(line) {
+    // Pattern fleksibel: XXXX = value (dengan/tanpa suffix)
+    const match = line.match(/^(\d{4})\s*=\s*(.*?)(?:\s+([a-zA-Z]{1,2}))?$/);
+    if (!match) return null;
+    
+    const number = match[1];
+    const valuePart = match[2].trim();
+    const suffix = match[3] || 'ai';
+    
+    // Split by dots untuk dapat array values
+    let rawValues = [];
+    if (valuePart !== '') {
+        rawValues = valuePart.split(/\s*\.\s*/)
+            .map(v => v.trim())
+            .filter(v => v !== '');
     }
     
+    // Parse masing-masing value
+    const values = rawValues.map(parseValue);
+    const positionCount = values.length;
+    
+    // Extract komponen angka
+    const as = parseInt(number[0]);
+    const cop = parseInt(number[1]);
+    const kepala = parseInt(number[2]);
+    const ekor = parseInt(number[3]);
+    const jumlah = reduceToSingleDigit(kepala + ekor);
+    
     return {
-        data: dataHistory,
-        formulas: currentFormulas
+        number: number,
+        values: values,
+        positionCount: positionCount,
+        suffix: suffix,
+        as: as,
+        cop: cop,
+        kepala: kepala,
+        ekor: ekor,
+        jumlah: jumlah,
+        js: reduceToSingleDigit(Math.abs(kepala - ekor)),
+        j3d: reduceToSingleDigit(cop + kepala + ekor),
+        j4d: reduceToSingleDigit(as + cop + kepala + ekor)
     };
 }
 
-// Update display rumus yang terdeteksi
-function updateFormulaDisplay() {
-    const formulaDisplay = document.getElementById('detectedFormula');
-    const positionNames = ['AA', 'BB', 'CC', 'DD'];
+function parseValue(value) {
+    value = value.trim();
     
-    if (currentFormulas.length === 0) {
-        formulaDisplay.textContent = 'Tidak ada rumus';
-    } else {
-        formulaDisplay.innerHTML = currentFormulas.map((formula, index) => 
-            `<div class="formula-item"><span class="formula-index">${positionNames[index]}:</span> ${formula}</div>`
-        ).join('');
-    }
-}
-
-// Update info input
-function updateInputInfo() {
-    const input = document.getElementById('inputData').value.trim();
-    const lines = input.split('\n').filter(line => line.trim());
-    
-    let numberCount = 0;
-    let formulaCount = 0;
-    let foundSeparator = false;
-    
-    for (let line of lines) {
-        if (line.includes('======')) {
-            foundSeparator = true;
-            continue;
-        }
-        
-        if (!foundSeparator && line.match(/^\d{4}\s*=.*ai$/)) {
-            numberCount++;
-        }
-        
-        if (foundSeparator && line.trim() && formulaCount < 4) {
-            formulaCount++;
-        }
+    // Cek jika semua karakter adalah X/x
+    if (/^[Xx]+$/i.test(value)) {
+        return {
+            type: 'X',
+            original: value,
+            digitCount: value.length, // 2, 3, 4, 5
+            value: null
+        };
     }
     
-    document.getElementById('inputInfo').textContent = 
-        `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
+    // Cek jika angka 1-5 digit
+    if (/^\d{1,5}$/.test(value)) {
+        return {
+            type: 'NUMBER',
+            original: value,
+            digitCount: value.length,
+            value: value
+        };
+    }
+    
+    // Default null
+    return {
+        type: 'INVALID',
+        value: null
+    };
 }
 
-// Tampilkan hasil semua rumus
+function normalizeFormula(formula) {
+    // Normalize semua jenis minus ke hyphen
+    return formula.replace(/[–−]/g, '-').trim();
+}
+
+// ==================== PERHITUNGAN ====================
+
 function displayAllFormulaResults() {
     const output = document.getElementById('resultOutput');
     let allOutput = '';
     
-    const positionNames = ['AA', 'BB', 'CC', 'DD'];
+    const positionNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
     
-    // Hitung untuk setiap rumus (maksimal 4)
-    for (let i = 0; i < Math.min(currentFormulas.length, 4); i++) {
+    for (let i = 0; i < currentFormulas.length; i++) {
         const formula = currentFormulas[i];
-        const positionName = positionNames[i];
+        const positionName = positionNames[i] || `POSISI ${i+1}`;
         
-        // Header untuk rumus ini
         allOutput += `=== RUMUS ${i+1} (${positionName}) ===\n`;
+        allOutput += generateOutputForFormula(formula, i);
         
-        // Generate output untuk rumus ini
-        const formulaOutput = generateOutputForFormula(formula, i);
-        allOutput += formulaOutput;
-        
-        // Tambah pemisah antar rumus (kecuali rumus terakhir)
-        if (i < Math.min(currentFormulas.length, 4) - 1) {
+        if (i < currentFormulas.length - 1) {
             allOutput += '\n\n';
         }
     }
@@ -551,118 +527,119 @@ function displayAllFormulaResults() {
     output.innerHTML = allOutput;
 }
 
-// Generate output untuk satu rumus
-function generateOutputForFormula(formula, formulaIndex) {
-    const positionNames = ['AA', 'BB', 'CC', 'DD'];
-    const positionKey = positionNames[formulaIndex];
-    
+function generateOutputForFormula(formula, positionIndex) {
     let output = '';
-    let inheritedHighlightPositions = null;
+    let inheritedHighlight = null;
     
-    // Data history (kecuali baris terakhir)
     for (let i = 0; i < dataHistory.length; i++) {
         const data = dataHistory[i];
-        const highlightDigits = data.positions[positionKey]; // Bisa 1-5 digit atau kosong
+        const suffix = data.suffix;
         
-        // Untuk baris-baris sebelumnya, gunakan ekor sebagai calculatedAI
-        // Untuk baris terakhir (yang akan dihitung), gunakan rumus
-        let calculatedAI;
-        if (i === dataHistory.length - 1) {
-            // Baris terakhir: hitung dengan rumus
-            calculatedAI = calculateSingleAI(formula, i);
-        } else {
-            // Baris sebelumnya: gunakan ekor
-            calculatedAI = reduceToSingleDigit(data.ekor);
+        // Ambil value untuk posisi ini (isi dengan null jika tidak ada)
+        let value = null;
+        if (positionIndex < data.values.length) {
+            value = data.values[positionIndex];
         }
         
+        // Hitung dengan rumus
+        const calculatedAI = calculateSingleAI(formula, i);
+        
         // Format dengan highlight
-        const formatted = formatWithHighlightAndInheritance(
-            calculatedAI, 
-            highlightDigits, 
-            inheritedHighlightPositions,
-            i === dataHistory.length - 1 // isLastRow
+        const formatted = formatWithHighlight(
+            calculatedAI,
+            value,
+            inheritedHighlight
         );
         
-        output += `${data.number} = ${formatted.rotatedDigits} ai\n`;
-        inheritedHighlightPositions = formatted.highlightPositions;
+        output += `${data.number} = ${formatted.displayed} ${suffix}\n`;
+        inheritedHighlight = formatted.highlightPositions;
     }
     
-    // Tambah separator dan rumus
     output += '======\n';
     output += formula;
     
     return output;
 }
 
-// Format dengan highlight dan warisan
-function formatWithHighlightAndInheritance(calculatedAI, highlightDigits, inheritedPositions, isLastRow = false) {
-    // Buat rotasi 0-9 dimulai dari calculatedAI
-    const allDigits = '0123456789';
-    const startIndex = allDigits.indexOf(calculatedAI.toString());
-    let rotatedDigits = '';
+function formatWithHighlight(calculatedAI, inputValue, inheritedPositions) {
+    // Buat rotasi 0-9
+    const rotated = generateRotation(calculatedAI);
     
-    for (let i = 0; i < allDigits.length; i++) {
-        const actualIndex = (startIndex + i) % allDigits.length;
-        rotatedDigits += allDigits[actualIndex];
-    }
-    
-    // Tentukan posisi highlight
+    // Tentukan highlight positions
     let highlightPositions = inheritedPositions;
     
-    // Aturan highlight:
-    // 1. Jika ada highlightDigits dari input (bisa 1-5 digit), gunakan itu
-    // 2. Jika tidak ada highlightDigits (Xx atau kosong) DAN bukan baris terakhir:
-    //    - Jika ada warisan, gunakan warisan
-    //    - Jika tidak ada warisan, highlight berdasarkan calculatedAI
-    // 3. Baris terakhir: gunakan warisan atau highlight berdasarkan calculatedAI
-    
-    if (highlightDigits && highlightDigits.length > 0) {
-        // Ada highlight dari input: cari posisi digit-digit tersebut
-        highlightPositions = [];
-        const digitsArray = highlightDigits.toString().split('');
+    if (inputValue && inputValue.type === 'X') {
+        const xCount = inputValue.digitCount; // 2, 3, 4, 5
         
-        for (let digit of digitsArray) {
-            const position = rotatedDigits.indexOf(digit);
-            if (position !== -1 && !highlightPositions.includes(position)) {
-                highlightPositions.push(position);
+        if (highlightPositions && highlightPositions.length >= xCount) {
+            // Ambil xCount posisi pertama dari warisan
+            highlightPositions = highlightPositions.slice(0, xCount);
+        } else {
+            // Tidak ada/tidak cukup warisan
+            highlightPositions = [];
+            // Ambil dari perhitungan
+            for (let i = 0; i < xCount; i++) {
+                const pos = i; // Posisi i dalam rotasi
+                if (!highlightPositions.includes(pos)) {
+                    highlightPositions.push(pos);
+                }
+            }
+            
+            // Jika ada warisan meski kurang, tambahkan
+            if (inheritedPositions) {
+                for (let pos of inheritedPositions) {
+                    if (!highlightPositions.includes(pos)) {
+                        highlightPositions.push(pos);
+                    }
+                }
+                // Potong ke xCount
+                highlightPositions = highlightPositions.slice(0, xCount);
             }
         }
-        
-        // Urutkan posisi
-        highlightPositions.sort((a, b) => a - b);
-    } else if (!isLastRow) {
-        // Bukan baris terakhir dan tidak ada highlightDigits
-        if (!highlightPositions) {
-            // Tidak ada warisan: highlight berdasarkan calculatedAI
-            const position = rotatedDigits.indexOf(calculatedAI.toString());
-            highlightPositions = position !== -1 ? [position] : [];
-        }
-        // Jika ada warisan, tetap pakai warisan
-    } else {
-        // Baris terakhir: jika tidak ada warisan, highlight berdasarkan calculatedAI
-        if (!highlightPositions) {
-            const position = rotatedDigits.indexOf(calculatedAI.toString());
-            highlightPositions = position !== -1 ? [position] : [];
+    }
+    else if (inputValue && inputValue.type === 'NUMBER') {
+        // Untuk angka: highlight digit dari input
+        highlightPositions = [];
+        for (let digit of inputValue.value) {
+            const pos = rotated.indexOf(digit);
+            if (pos !== -1) highlightPositions.push(pos);
         }
     }
+    else if (!highlightPositions) {
+        // Default: highlight calculatedAI saja
+        const pos = rotated.indexOf(calculatedAI.toString());
+        highlightPositions = pos !== -1 ? [pos] : [];
+    }
     
-    // Generate output dengan highlight
-    let result = '';
-    for (let i = 0; i < rotatedDigits.length; i++) {
-        if (highlightPositions && highlightPositions.includes(i)) {
-            result += `<span style="color: #FF6B6B; font-weight: bold;">${rotatedDigits[i]}</span>`;
+    // Apply highlight
+    let displayed = '';
+    for (let i = 0; i < rotated.length; i++) {
+        if (highlightPositions.includes(i)) {
+            displayed += `<span style="color:#FF6B6B;font-weight:bold">${rotated[i]}</span>`;
         } else {
-            result += rotatedDigits[i];
+            displayed += rotated[i];
         }
     }
     
     return {
-        rotatedDigits: result,
+        displayed: displayed,
         highlightPositions: highlightPositions
     };
 }
 
-// Hitung single AI untuk satu rumus
+function generateRotation(calculatedAI) {
+    const allDigits = '0123456789';
+    const startIndex = allDigits.indexOf(calculatedAI.toString());
+    let rotated = '';
+    
+    for (let i = 0; i < allDigits.length; i++) {
+        const actualIndex = (startIndex + i) % allDigits.length;
+        rotated += allDigits[actualIndex];
+    }
+    
+    return rotated;
+}
+
 function calculateSingleAI(formula, currentDayIndex) {
     let workingFormula = formula;
     const finalConversion = workingFormula.match(/\.\((\w+)\)/);
@@ -703,18 +680,17 @@ function calculateSingleAI(formula, currentDayIndex) {
         total = parseInt(converted);
     }
     
-    const finalResult = reduceToSingleDigit(total);
-    return finalResult;
+    return reduceToSingleDigit(total);
 }
 
-// Proses komponen rumus
 function processComponent(component, currentDayIndex) {
-    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    // Match type baru: JS, J3D, J4D, atau A,C,K,E,J
+    const match = component.match(/^(JS|J3D|J4D|[AKCEJ])(\d+)(\w*)$/i);
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
     }
     
-    const type = match[1];
+    const type = match[1].toUpperCase();
     const dayOffset = parseInt(match[2]);
     const conversion = match[3];
     
@@ -733,6 +709,9 @@ function processComponent(component, currentDayIndex) {
         case 'C': value = data.cop; break;
         case 'E': value = data.ekor; break;
         case 'J': value = data.jumlah; break;
+        case 'JS': value = data.js; break;
+        case 'J3D': value = data.j3d; break;
+        case 'J4D': value = data.j4d; break;
         default: throw new Error(`Tipe tidak dikenal: ${type}`);
     }
     
@@ -744,7 +723,6 @@ function processComponent(component, currentDayIndex) {
     return value;
 }
 
-// Konversi mistik
 function convertMistik(number, table) {
     if (!mistikTables[table]) {
         throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
@@ -759,7 +737,6 @@ function convertMistik(number, table) {
     return mistikTables[table][digit];
 }
 
-// Kurangi ke satu digit
 function reduceToSingleDigit(num) {
     let result = num;
     while (result > 9) {
@@ -768,72 +745,60 @@ function reduceToSingleDigit(num) {
     return result;
 }
 
-// Cari hari maksimal yang dibutuhkan dalam rumus
-function findMaxDayInFormula(formula) {
-    let maxDay = 1;
-    let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-    const components = workingFormula.split(/[+\-]/);
+// ==================== UI FUNCTIONS ====================
+
+function updateFormulaDisplay() {
+    const formulaDisplay = document.getElementById('detectedFormula');
+    const positionNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
     
-    components.forEach(component => {
-        const match = component.trim().match(/^([AKCEJ])(\d+)/);
-        if (match) {
-            const day = parseInt(match[2]);
-            if (day > maxDay) {
-                maxDay = day;
-            }
-        }
-    });
-    
-    return maxDay;
+    if (currentFormulas.length === 0) {
+        formulaDisplay.textContent = 'Tidak ada rumus';
+    } else {
+        formulaDisplay.innerHTML = currentFormulas.map((formula, index) => 
+            `<div class="formula-item"><span class="formula-index">${positionNames[index] || index+1}:</span> ${formula}</div>`
+        ).join('');
+    }
 }
 
-// Salin output ke clipboard
-function copyOutput() {
-    const outputElement = document.getElementById('resultOutput');
-    let copyText = '';
+function updateInputInfo() {
+    const input = document.getElementById('inputData').value.trim();
+    const lines = input.split('\n').filter(line => line.trim());
     
-    // Konversi HTML ke plain text untuk clipboard
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = outputElement.innerHTML;
-    
-    // Ambil semua baris
-    const lines = tempDiv.textContent.split('\n');
-    
-    // Filter dan format
-    let currentBlock = '';
-    let blocks = [];
+    let numberCount = 0;
+    let formulaCount = 0;
+    let foundSeparator = false;
     
     for (let line of lines) {
-        line = line.trim();
-        
-        if (line.includes('===')) {
-            // Header rumus baru
-            if (currentBlock) {
-                blocks.push(currentBlock.trim());
-                currentBlock = '';
-            }
+        if (line.includes('======')) {
+            foundSeparator = true;
             continue;
         }
         
-        if (line) {
-            currentBlock += line + '\n';
+        if (!foundSeparator && line.match(/^\d{4}\s*=/)) {
+            numberCount++;
+        }
+        
+        if (foundSeparator && line.trim()) {
+            formulaCount++;
         }
     }
     
-    // Tambahkan blok terakhir
-    if (currentBlock) {
-        blocks.push(currentBlock.trim());
-    }
+    document.getElementById('inputInfo').textContent = 
+        `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
+}
+
+function copyOutput() {
+    const outputElement = document.getElementById('resultOutput');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = outputElement.innerHTML;
     
-    // Gabungkan semua blok dengan 2 baris kosong antar blok
-    copyText = blocks.join('\n\n\n');
+    let copyText = tempDiv.textContent;
     
-    if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
+    if (!copyText || copyText.includes('Output akan muncul di sini')) {
         showInfo('Tidak ada output yang bisa disalin!', 'error');
         return;
     }
     
-    // Salin ke clipboard
     navigator.clipboard.writeText(copyText).then(() => {
         showCopyNotification();
     }).catch(err => {
@@ -847,38 +812,33 @@ function copyOutput() {
     });
 }
 
-// Hapus semua
 function clearAll() {
     document.getElementById('inputData').value = '';
-    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Output dipisah per rumus:
-//
-// === RUMUS 1 (AA) ===
+    document.getElementById('resultOutput').innerHTML = `// Output akan muncul di sini
+// Format dipisah per rumus
+// 
+// === RUMUS 1 (POSISI 1) ===
 // 3872 = 68 ai
-// 9680 = 02 ai
 // ...
-// 8221 = [hasil] ai
 // ======
 // A7mb+E7ty.(mb)
-//
-// === RUMUS 2 (BB) ===
+// 
+// === RUMUS 2 (POSISI 2) ===
 // 3872 = 06 ai
-// 9680 = 28 ai
 // ...
-// 8221 = [hasil] ai
 // ======
 // A8mb+C4.(mb)
-//
-// ... dan seterusnya untuk CC dan DD`;
-    document.getElementById('info').textContent = 'Masukkan data dengan 4 posisi (AA.BB.CC.DD), lalu klik HITUNG';
+// 
+// ... dst untuk setiap rumus`;
+    document.getElementById('info').textContent = 'Masukkan data, program auto-detect jumlah posisi berdasarkan titik (.)';
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
-    document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. 4 posisi: AA, BB, CC, DD';
+    document.getElementById('historyInfo').textContent = 'Deteksi otomatis jumlah posisi dan rumus';
     dataHistory = [];
     currentFormulas = [];
+    maxPositions = 0;
 }
 
-// Tampilkan info
 function showInfo(message, type) {
     const infoDiv = document.getElementById('info');
     infoDiv.textContent = message;
@@ -890,7 +850,6 @@ function showInfo(message, type) {
     }
 }
 
-// Tampilkan notifikasi copy
 function showCopyNotification() {
     const notification = document.getElementById('copyNotification');
     notification.classList.add('show');
