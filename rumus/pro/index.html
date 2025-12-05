@@ -346,6 +346,7 @@ const mistikTables = {
 let dataHistory = [];
 let currentFormulas = [];
 let maxPositions = 0;
+let lastHighlights = []; // Untuk simpan highlight akhir tiap posisi
 
 // ==================== FUNGSI UTAMA ====================
 
@@ -388,6 +389,7 @@ function parseInputData(inputData) {
     dataHistory = [];
     currentFormulas = [];
     maxPositions = 0;
+    lastHighlights = [];
     
     const lines = inputData.split('\n').map(l => l.trim()).filter(l => l);
     let foundSeparator = false;
@@ -414,6 +416,9 @@ function parseInputData(inputData) {
             }
         }
     }
+    
+    // Reverse dataHistory: index 0 = terbaru (paling bawah)
+    dataHistory = dataHistory.reverse();
     
     // Update UI
     updateFormulaDisplay();
@@ -504,20 +509,25 @@ function normalizeFormula(formula) {
     return formula.replace(/[–−]/g, '-').trim();
 }
 
-// ==================== PERHITUNGAN ====================
+// ==================== PERHITUNGAN & HIGHLIGHT ====================
 
 function displayAllFormulaResults() {
     const output = document.getElementById('resultOutput');
     let allOutput = '';
     
     const positionNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    lastHighlights = []; // Reset warisan horizontal
     
     for (let i = 0; i < currentFormulas.length; i++) {
         const formula = currentFormulas[i];
         const positionName = positionNames[i] || `POSISI ${i+1}`;
         
         allOutput += `=== RUMUS ${i+1} (${positionName}) ===\n`;
-        allOutput += generateOutputForFormula(formula, i);
+        
+        // Ambil warisan horizontal dari posisi sebelumnya
+        const horizontalInheritance = lastHighlights[i-1] || null;
+        
+        allOutput += generateOutputForFormula(formula, i, horizontalInheritance);
         
         if (i < currentFormulas.length - 1) {
             allOutput += '\n\n';
@@ -527,9 +537,9 @@ function displayAllFormulaResults() {
     output.innerHTML = allOutput;
 }
 
-function generateOutputForFormula(formula, positionIndex) {
+function generateOutputForFormula(formula, positionIndex, horizontalInheritance) {
     let output = '';
-    let inheritedHighlight = null;
+    let verticalInheritance = horizontalInheritance; // Mulai dari warisan horizontal
     
     for (let i = 0; i < dataHistory.length; i++) {
         const data = dataHistory[i];
@@ -548,12 +558,15 @@ function generateOutputForFormula(formula, positionIndex) {
         const formatted = formatWithHighlight(
             calculatedAI,
             value,
-            inheritedHighlight
+            verticalInheritance
         );
         
         output += `${data.number} = ${formatted.displayed} ${suffix}\n`;
-        inheritedHighlight = formatted.highlightPositions;
+        verticalInheritance = formatted.highlightPositions;
     }
+    
+    // Simpan highlight terakhir untuk warisan horizontal ke posisi berikutnya
+    lastHighlights[positionIndex] = verticalInheritance;
     
     output += '======\n';
     output += formula;
@@ -561,64 +574,55 @@ function generateOutputForFormula(formula, positionIndex) {
     return output;
 }
 
+// FUNGSI HIGHLIGHT YANG DIPERBAIKI (mengikuti contoh kode Anda)
 function formatWithHighlight(calculatedAI, inputValue, inheritedPositions) {
     // Buat rotasi 0-9
     const rotated = generateRotation(calculatedAI);
     
-    // Tentukan highlight positions
+    // Tentukan highlight positions - LOGIKA SEDERHANA:
     let highlightPositions = inheritedPositions;
     
-    if (inputValue && inputValue.type === 'X') {
-        const xCount = inputValue.digitCount; // 2, 3, 4, 5
-        
-        if (highlightPositions && highlightPositions.length >= xCount) {
-            // Ambil xCount posisi pertama dari warisan
-            highlightPositions = highlightPositions.slice(0, xCount);
-        } else {
-            // Tidak ada/tidak cukup warisan
-            highlightPositions = [];
-            // Ambil dari perhitungan
-            for (let i = 0; i < xCount; i++) {
-                const pos = i; // Posisi i dalam rotasi
-                if (!highlightPositions.includes(pos)) {
-                    highlightPositions.push(pos);
-                }
-            }
-            
-            // Jika ada warisan meski kurang, tambahkan
-            if (inheritedPositions) {
-                for (let pos of inheritedPositions) {
-                    if (!highlightPositions.includes(pos)) {
-                        highlightPositions.push(pos);
-                    }
-                }
-                // Potong ke xCount
-                highlightPositions = highlightPositions.slice(0, xCount);
-            }
-        }
-    }
-    else if (inputValue && inputValue.type === 'NUMBER') {
-        // Untuk angka: highlight digit dari input
+    // JIKA ADA input angka → buat highlight baru
+    if (inputValue && inputValue.type === 'NUMBER' && inputValue.value) {
         highlightPositions = [];
         for (let digit of inputValue.value) {
             const pos = rotated.indexOf(digit);
             if (pos !== -1) highlightPositions.push(pos);
         }
+        highlightPositions.sort((a, b) => a - b);
     }
-    else if (!highlightPositions) {
-        // Default: highlight calculatedAI saja
-        const pos = rotated.indexOf(calculatedAI.toString());
-        highlightPositions = pos !== -1 ? [pos] : [];
+    // JIKA ADA Xx/Xxx DAN TIDAK ADA warisan → buat dari perhitungan
+    else if (inputValue && inputValue.type === 'X' && !inheritedPositions) {
+        const xCount = Math.min(inputValue.digitCount, 5); // Maks 5 digit
+        highlightPositions = [];
+        for (let i = 0; i < xCount; i++) {
+            const pos = i; // Posisi i dalam rotasi
+            highlightPositions.push(pos);
+        }
     }
+    // JIKA Xx/Xxx DAN ADA warisan → PAKAI WARISAN (ambil sesuai jumlah X)
+    else if (inputValue && inputValue.type === 'X' && inheritedPositions) {
+        const xCount = Math.min(inputValue.digitCount, 5);
+        highlightPositions = inheritedPositions.slice(0, xCount);
+    }
+    // JIKA TIDAK ADA input DAN TIDAK ADA warisan → tidak highlight (null)
+    else if (!inheritedPositions) {
+        highlightPositions = null;
+    }
+    // JIKA ADA warisan → PAKAI WARISAN (sudah di-set di awal)
     
     // Apply highlight
     let displayed = '';
-    for (let i = 0; i < rotated.length; i++) {
-        if (highlightPositions.includes(i)) {
-            displayed += `<span style="color:#FF6B6B;font-weight:bold">${rotated[i]}</span>`;
-        } else {
-            displayed += rotated[i];
+    if (highlightPositions) {
+        for (let i = 0; i < rotated.length; i++) {
+            if (highlightPositions.includes(i)) {
+                displayed += `<span style="color:#FF6B6B;font-weight:bold">${rotated[i]}</span>`;
+            } else {
+                displayed += rotated[i];
+            }
         }
+    } else {
+        displayed = rotated; // Tanpa highlight
     }
     
     return {
@@ -694,10 +698,12 @@ function processComponent(component, currentDayIndex) {
     const dayOffset = parseInt(match[2]);
     const conversion = match[3];
     
-    const targetDayIndex = currentDayIndex - (dayOffset - 1);
+    // PERBAIKAN LOGIKA: currentDayIndex = 0 untuk data TERBARU (paling bawah)
+    // dayOffset = 1 ambil data terbaru, dayOffset = 2 ambil data sebelumnya, dst
+    const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
-    if (targetDayIndex < 0) {
-        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
+    if (targetDayIndex >= dataHistory.length) {
+        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history, hanya ada ${dataHistory.length - currentDayIndex} hari)`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -837,6 +843,7 @@ function clearAll() {
     dataHistory = [];
     currentFormulas = [];
     maxPositions = 0;
+    lastHighlights = [];
 }
 
 function showInfo(message, type) {
