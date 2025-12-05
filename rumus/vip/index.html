@@ -859,7 +859,7 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    const match = component.match(/^([AKCEJ])(\d+)(\w*)$/);
+    const match = component.match(/^([AKCEJJsJ3DJ4D])(\d+)(\w*)$/); // Tambah Js, J3D, J4D
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
     }
@@ -877,13 +877,32 @@ function processComponent(component, currentDayIndex) {
     const data = dataHistory[targetDayIndex];
     let value;
     
+    // Ambil nilai berdasarkan jenis komponen
     switch(type) {
         case 'A': value = parseInt(data.as); break;
         case 'K': value = parseInt(data.kepala); break;
         case 'C': value = parseInt(data.cop); break;
         case 'E': value = parseInt(data.ekor); break;
         case 'J': value = data.jumlah; break;
-        default: throw new Error(`Tipe tidak dikenal: ${type}`);
+        
+        // KOMPONEN BARU:
+        case 'Js': // Js = K - E (KEPALA - EKOR)
+            value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
+            value = reduceToSingleDigit(value);
+            break;
+            
+        case 'J3D': // J3D = C + K + E (COP + KEPALA + EKOR)
+            value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
+            value = reduceToSingleDigit(value);
+            break;
+            
+        case 'J4D': // J4D = A + C + K + E (AS + COP + KEPALA + EKOR)
+            value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
+            value = reduceToSingleDigit(value);
+            break;
+            
+        default: 
+            throw new Error(`Tipe komponen tidak dikenali: ${type}`);
     }
     
     if (conversion) {
