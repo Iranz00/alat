@@ -145,11 +145,6 @@ button {
     color:white;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
-.btn-import { 
-    background:linear-gradient(135deg, #FF9800, #F57C00);
-    color:white;
-    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
-}
 button:hover { 
     transform:translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
@@ -213,63 +208,6 @@ button:active {
 .result-box::-webkit-scrollbar-thumb:hover {
     background:#718096;
 }
-.tables-grid { 
-    display:grid; 
-    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); 
-    gap:20px; 
-    margin-top:25px;
-}
-.table-container { 
-    background:white; 
-    padding:20px; 
-    border-radius:12px; 
-    border:2px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-}
-.table-container:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    border-color: #667eea;
-}
-.table-title { 
-    font-weight:bold; 
-    margin-bottom:12px; 
-    color:#2d3748; 
-    text-align:center;
-    font-size:16px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #e2e8f0;
-}
-.table-content { 
-    font-family:'Courier New',monospace; 
-    font-size:13px; 
-    line-height:1.6;
-    text-align: center;
-    color:#4a5568;
-}
-.explanation { 
-    background:#fff3cd; 
-    padding:25px; 
-    border-radius:12px; 
-    margin-top:25px; 
-    border:2px solid #ffeaa7;
-}
-.explanation h3 { 
-    color:#856404; 
-    margin-bottom:15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.explanation ul { 
-    color:#856404; 
-    padding-left:25px;
-    line-height: 1.6;
-}
-.explanation li { 
-    margin-bottom:8px;
-}
 .copy-notification {
     position: fixed;
     top: 20px;
@@ -310,12 +248,6 @@ button:active {
     color: #FFD700;
     font-weight: bold;
 }
-.rumus-separator {
-    margin: 15px 0;
-    text-align: center;
-    color: #718096;
-    font-style: italic;
-}
 @media (max-width: 768px) {
     .container {
         padding:20px;
@@ -323,10 +255,6 @@ button:active {
     .grid-container {
         grid-template-columns: 1fr;
         gap: 20px;
-    }
-    .tables-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
     }
     .button-group-double {
         grid-template-columns: 1fr;
@@ -338,7 +266,7 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KEY KALKULATOR</h1>
-        <div class="subtitle">Hitung rumus otomatis</div>
+        <div class="subtitle">Hitung rumus otomatis dengan 8 komponen</div>
     </div>
 
     <div class="grid-container">
@@ -368,28 +296,35 @@ A9ty+C6ty.(m9)"></textarea>
                 <button class="btn-clear" onclick="clearAll()">🗑️ HAPUS SEMUA</button>
             </div>
             
-            <div class="info" id="info">Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS</div>
+            <div class="info" id="info">
+                Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
+                <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
+                    <strong>Komponen yang didukung:</strong><br>
+                    • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
+                    • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
+                    <small>Contoh: A3mb, Js2ty, J3D1ml, J4D3.(ix)</small>
+                </div>
+            </div>
         </div>
 
         <div class="output-section">
             <div class="section-title">📤 HASIL OUTPUT</div>
             <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Format dengan rotasi angka dan highlight:
-// 
-// 8603 = 2345678901 ai
-// 2436 = 3456789012 ai  
-// ...
-// 4467 = 0123456789 ai
+// Support semua komponen + highlight 2-6 digit:
+
+// 8603 = 3456789012 ai
+// 2436 = 4567890123 ai  
+// 5678 = 5678901234 (3 digit)
+// 9012 = 6789012345 (4 digit)
 // ======
 // A3mb-A5m9.(ty)
-// 
-// 8603 = 3456789012 ai
-// 2436 = 4567890123 ai
-// ...
-// 4467 = 1234567890 ai  
+
+// 8603 = 4567890123 (Js3ml)
+// 2436 = 5678901234 (J3D2mb)
+// 5678 = 6789012345 (J4D1ml)
 // ======
-// A8mb+E5ml.(ml)
-// 
+// Js3ml+E2ty.(mb)
+
 // ... dan seterusnya untuk setiap rumus</div>
             <br>
             <div class="button-group-double">
@@ -426,18 +361,14 @@ const mistikTables = {
 let dataHistory = [];
 let currentFormulas = [];
 let originalInputData = [];
+let aiHistory = [];
 
-// Data highlight untuk setiap rumus berdasarkan contoh Anda
+// Data highlight untuk setiap rumus
 const highlightPatterns = [
-    // Rumus 1 - dari input asli
     ['30', '74', '07', '63', '07', '07', '74', '07', '63', '30', '41', '96', '41', '18', '74', '85'],
-    // Rumus 2 - dari contoh Anda
     ['35', '80', '68', '68', '02', '02', '79', '13', '68', '13', '80', '02', '46', '68', '68', '35'],
-    // Rumus 3 - dari contoh Anda  
     ['36', '70', '81', '92', '03', '25', '70', '81', '36', '70', '81', '69', '58', '58', '58', '36'],
-    // Rumus 4 - dari contoh Anda
     ['35', '80', '68', '02', '57', '79', '79', '57', '68', '79', '91', '80', '80', '68', '80', '46'],
-    // Rumus 5 - dari contoh Anda
     ['23', '01', '01', '23', '56', '23', '89', '67', '56', '23', '12', '01', '34', '56', '34', '67']
 ];
 
@@ -450,7 +381,6 @@ function calculateFormula() {
     }
     
     try {
-        // Parse data input dan extract rumus
         const parsedData = parseInputData(inputData);
         
         if (currentFormulas.length === 0) {
@@ -458,7 +388,6 @@ function calculateFormula() {
             return;
         }
         
-        // Calculate dan tampilkan hasil untuk semua rumus
         displayAllFormulaResults(currentFormulas);
         showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
         
@@ -472,6 +401,7 @@ function parseInputData(inputData) {
     dataHistory = [];
     currentFormulas = [];
     originalInputData = [];
+    aiHistory = [];
     
     const lines = inputData.split('\n').filter(line => line.trim());
     let foundSeparator = false;
@@ -481,24 +411,20 @@ function parseInputData(inputData) {
     for (let line of lines) {
         line = line.trim();
         
-        // Cari garis pemisah "======"
         if (line === '======' || line.startsWith('======')) {
             foundSeparator = true;
             continue;
         }
         
-        // Jika sudah menemukan separator, line berikutnya adalah rumus
         if (foundSeparator && line) {
             tempFormulas.push(line);
         }
         
-        // Sebelum separator, proses data angka
         if (!foundSeparator) {
             const numberMatch = line.match(/(\d{4})/);
             if (numberMatch) {
                 const number = numberMatch[1];
                 
-                // Extract components
                 const as = number[0];
                 const cop = number[1];
                 const kepala = number[2];
@@ -514,7 +440,6 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                // Simpan data input asli untuk highlight rumus pertama
                 const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)/);
                 if (originalMatch) {
                     originalInputData.push({
@@ -534,10 +459,8 @@ function parseInputData(inputData) {
     dataHistory = tempData;
     currentFormulas = tempFormulas;
     
-    // Update tampilan rumus yang terdeteksi
     updateFormulaDisplay();
     
-    // Update info kebutuhan history
     if (currentFormulas.length > 0) {
         const maxDaysNeeded = currentFormulas.map(formula => findMaxDayInFormula(formula));
         const maxDay = Math.max(...maxDaysNeeded);
@@ -567,31 +490,24 @@ function displayAllFormulaResults(formulas) {
     const output = document.getElementById('resultOutput');
     let outputHTML = '';
     
-    // Simpan semua hasil AI untuk highlight rumus selanjutnya
     const allFormulaResults = [];
     
-    // Calculate semua rumus dulu
     for (let i = 0; i < formulas.length; i++) {
         const results = calculateAIForSingleFormula(formulas[i]);
         allFormulaResults.push(results);
     }
     
-    // Generate output untuk setiap rumus
     for (let i = 0; i < formulas.length; i++) {
         const formula = formulas[i];
         const results = allFormulaResults[i];
         
-        // Tentukan highlight data yang benar
         let highlightData = [];
         if (i === 0) {
-            // Rumus pertama: pakai AI dari input asli (30, 74, 07, dll)
             highlightData = originalInputData.map(item => item.ai);
         } else {
-            // Rumus selanjutnya: pakai AI dari highlightPatterns
             highlightData = getHighlightDataForFormula(i);
         }
         
-        // Generate output dengan rotasi angka dan highlight YANG BENAR
         const formulaOutput = generateRotatedOutput(results, formula, highlightData);
         outputHTML += formulaOutput;
         
@@ -608,13 +524,14 @@ function getHighlightDataForFormula(formulaIndex) {
         return highlightPatterns[formulaIndex];
     }
     
-    // Fallback: return array kosong jika tidak ada pattern
     return originalInputData.map(() => '');
 }
 
 function calculateAIForSingleFormula(formula) {
     const results = [];
     const maxDayNeeded = findMaxDayInFormula(formula);
+    
+    aiHistory = [];
     
     for (let i = 0; i < dataHistory.length; i++) {
         if (i >= maxDayNeeded - 1) {
@@ -630,6 +547,7 @@ function calculateAIForSingleFormula(formula) {
                 ai: '',
                 canCalculate: false
             });
+            aiHistory[i] = null;
         }
     }
     
@@ -640,7 +558,6 @@ function generateRotatedOutput(results, formula, highlightData) {
     let output = '';
     let inheritedPositions = null;
     
-    // Tambahkan data hasil perhitungan dengan rotasi angka dan highlight YANG BENAR
     for (let i = 0; i < results.length; i++) {
         const result = results[i];
         
@@ -649,15 +566,13 @@ function generateRotatedOutput(results, formula, highlightData) {
             const rotatedResult = formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
             output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
             
-            // Wariskan posisi highlight untuk angka berikutnya
             inheritedPositions = rotatedResult.highlightPositions;
         } else {
             output += `${result.number} = \n`;
-            inheritedPositions = null; // Reset jika tidak bisa kalkulasi
+            inheritedPositions = null;
         }
     }
     
-    // Tambahkan separator dan rumus
     output += '======\n';
     output += formula;
     
@@ -665,7 +580,6 @@ function generateRotatedOutput(results, formula, highlightData) {
 }
 
 function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPositions) {
-    // Buat urutan digit dimulai dari calculatedAI
     let rotatedDigits = '';
     const allDigits = '0123456789';
     const startIndex = allDigits.indexOf(calculatedAI.toString());
@@ -675,30 +589,46 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
         rotatedDigits += allDigits[actualIndex];
     }
     
-    // Tentukan posisi highlight
     let highlightPositions = inheritedPositions;
     
-    // Jika ada highlightAI dari input, tentukan posisinya
-    if (highlightAI && highlightAI.length === 2 && !inheritedPositions) {
+    if (highlightAI && highlightAI.trim() !== '' && !inheritedPositions) {
         highlightPositions = [];
-        for (let i = 0; i < highlightAI.length; i++) {
-            const digit = highlightAI[i];
-            const position = rotatedDigits.indexOf(digit);
-            if (position !== -1) {
-                highlightPositions.push(position);
+        const highlightDigits = highlightAI.toString().split('');
+        
+        for (let digit of highlightDigits) {
+            if (digit >= '0' && digit <= '9') {
+                const position = rotatedDigits.indexOf(digit);
+                if (position !== -1 && !highlightPositions.includes(position)) {
+                    highlightPositions.push(position);
+                }
             }
         }
-        // Urutkan posisi
-        highlightPositions.sort((a, b) => a - b);
+        
+        if (highlightPositions.length > 0) {
+            highlightPositions.sort((a, b) => a - b);
+        } else {
+            highlightPositions = null;
+        }
     }
     
-    // Beri warna berdasarkan posisi highlight
     let result = '';
+    let colorIndex = 0;
+    const highlightColors = [
+        '#FF6B6B',
+        '#4ECDC4',
+        '#45B7D1',
+        '#96CEB4',
+        '#FFEAA7',
+        '#DDA0DD'
+    ];
+    
     for (let i = 0; i < rotatedDigits.length; i++) {
         const digit = rotatedDigits[i];
         
         if (highlightPositions && highlightPositions.includes(i)) {
-            result += `<span style="color: #FF6B6B; font-weight: bold;">${digit}</span>`;
+            const color = highlightColors[colorIndex % highlightColors.length];
+            result += `<span style="color: ${color}; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">${digit}</span>`;
+            colorIndex++;
         } else {
             result += digit;
         }
@@ -714,7 +644,6 @@ function copyOutput() {
     const outputElement = document.getElementById('resultOutput');
     let copyText = '';
     
-    // Parse output HTML
     const lines = outputElement.innerHTML.split('\n');
     let currentBlock = '';
     let blocks = [];
@@ -729,51 +658,43 @@ function copyOutput() {
             continue;
         }
         
-        // Skip komentar
         if (line.includes('//')) {
             continue;
         }
         
         if (waitingForFormula && line && !line.includes('//')) {
-            // Ini adalah rumus setelah ======
             currentBlock += line + '\n';
             waitingForFormula = false;
-            // Selesaikan blok ini dan simpan
             blocks.push(currentBlock.trim());
             currentBlock = '';
             continue;
         }
         
-        // Process line dengan angka
         const numberMatch = line.match(/(\d{4})\s*=/);
         if (numberMatch) {
             const number = numberMatch[1];
             
-            // Ekstrak angka yang di-highlight
-            const highlightedMatches = line.match(/<span[^>]*>(\d)<\/span>/g);
+            const regex = /<span[^>]*>(\d)<\/span>/g;
+            let match;
             let highlightedDigits = '';
             
-            if (highlightedMatches) {
-                highlightedDigits = highlightedMatches.map(span => {
-                    const match = span.match(/<span[^>]*>(\d)<\/span>/);
-                    return match ? match[1] : '';
-                }).join('');
+            while ((match = regex.exec(line)) !== null) {
+                highlightedDigits += match[1];
             }
             
             if (highlightedDigits) {
-                currentBlock += `${number} = ${highlightedDigits} ai\n`;
+                const suffix = highlightedDigits.length === 2 ? ' ai' : '';
+                currentBlock += `${number} = ${highlightedDigits}${suffix}\n`;
             } else {
                 currentBlock += `${number} = \n`;
             }
         }
     }
     
-    // Jika ada blok yang belum selesai
     if (currentBlock.trim()) {
         blocks.push(currentBlock.trim());
     }
     
-    // Gabungkan semua blok dengan SATU baris kosong antara blok
     copyText = blocks.join('\n\n');
     
     if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
@@ -781,7 +702,6 @@ function copyOutput() {
         return;
     }
     
-    // Salin ke clipboard
     navigator.clipboard.writeText(copyText).then(() => {
         showCopyNotification();
     }).catch(err => {
@@ -795,14 +715,13 @@ function copyOutput() {
     });
 }
 
-// ... (fungsi-fungsi helper lainnya tetap sama)
 function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
     const components = workingFormula.split(/[+\-]/);
     
     components.forEach(component => {
-        const match = component.trim().match(/^([AKCEJ])(\d+)/);
+        const match = component.trim().match(/^([AKCEJJsJ3DJ4D])(\d+)/);
         if (match) {
             const day = parseInt(match[2]);
             if (day > maxDay) {
@@ -855,11 +774,14 @@ function calculateSingleAI(formula, currentDayIndex) {
     }
     
     const finalResult = reduceToSingleDigit(total);
+    
+    aiHistory[currentDayIndex] = finalResult;
+    
     return finalResult;
 }
 
 function processComponent(component, currentDayIndex) {
-    const match = component.match(/^([AKCEJJsJ3DJ4D])(\d+)(\w*)$/); // Tambah Js, J3D, J4D
+    const match = component.match(/^([AKCEJJsJ3DJ4D])(\d+)(\w*)$/);
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
     }
@@ -877,7 +799,6 @@ function processComponent(component, currentDayIndex) {
     const data = dataHistory[targetDayIndex];
     let value;
     
-    // Ambil nilai berdasarkan jenis komponen
     switch(type) {
         case 'A': value = parseInt(data.as); break;
         case 'K': value = parseInt(data.kepala); break;
@@ -885,18 +806,17 @@ function processComponent(component, currentDayIndex) {
         case 'E': value = parseInt(data.ekor); break;
         case 'J': value = data.jumlah; break;
         
-        // KOMPONEN BARU:
-        case 'Js': // Js = K - E (KEPALA - EKOR)
+        case 'Js':
             value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
             value = reduceToSingleDigit(value);
             break;
             
-        case 'J3D': // J3D = C + K + E (COP + KEPALA + EKOR)
+        case 'J3D':
             value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
             value = reduceToSingleDigit(value);
             break;
             
-        case 'J4D': // J4D = A + C + K + E (AS + COP + KEPALA + EKOR)
+        case 'J4D':
             value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
             value = reduceToSingleDigit(value);
             break;
@@ -938,35 +858,41 @@ function reduceToSingleDigit(num) {
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Format dengan rotasi angka dan highlight:
-// 
-// 8603 = 2345678901 ai
-// 2436 = 3456789012 ai  
-// ...
-// 4467 = 0123456789 ai
+// Support semua komponen + highlight 2-6 digit:
+
+// 8603 = 3456789012 ai
+// 2436 = 4567890123 ai  
+// 5678 = 5678901234 (3 digit)
+// 9012 = 6789012345 (4 digit)
 // ======
 // A3mb-A5m9.(ty)
-// 
-// 8603 = 3456789012 ai
-// 2436 = 4567890123 ai
-// ...
-// 4467 = 1234567890 ai  
+
+// 8603 = 4567890123 (Js3ml)
+// 2436 = 5678901234 (J3D2mb)
+// 5678 = 6789012345 (J4D1ml)
 // ======
-// A8mb+E5ml.(ml)
-// 
+// Js3ml+E2ty.(mb)
+
 // ... dan seterusnya untuk setiap rumus`;
-    document.getElementById('info').textContent = 'Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS';
+    document.getElementById('info').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
+    <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
+        <strong>Komponen yang didukung:</strong><br>
+        • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
+        • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
+        <small>Contoh: A3mb, Js2ty, J3D1ml, J4D3.(ix)</small>
+    </div>`;
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
     document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
     dataHistory = [];
     currentFormulas = [];
     originalInputData = [];
+    aiHistory = [];
 }
 
 function showInfo(message, type) {
     const infoDiv = document.getElementById('info');
-    infoDiv.textContent = message;
+    infoDiv.innerHTML = message;
     infoDiv.className = 'info';
     if (type === 'error') {
         infoDiv.classList.add('error');
@@ -984,20 +910,6 @@ function updateInputInfo() {
     document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
 }
 
-function useOutputAsInput() {
-    const outputElement = document.getElementById('resultOutput');
-    const outputText = outputElement.textContent || outputElement.innerText;
-    
-    if (!outputText || outputText.includes('Hasil perhitungan akan muncul di sini')) {
-        showInfo('Tidak ada output yang bisa digunakan!', 'error');
-        return;
-    }
-    
-    document.getElementById('inputData').value = outputText;
-    updateInputInfo();
-    showInfo('Output berhasil digunakan sebagai input baru!', 'success');
-}
-
 function showCopyNotification() {
     const notification = document.getElementById('copyNotification');
     notification.classList.add('show');
@@ -1006,7 +918,6 @@ function showCopyNotification() {
     }, 3000);
 }
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('inputData').addEventListener('input', updateInputInfo);
     updateInputInfo();
