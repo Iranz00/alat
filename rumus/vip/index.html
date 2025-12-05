@@ -266,23 +266,22 @@ button:active {
 <div class="container">
     <div class="header">
         <h1>🔮 KEY KALKULATOR</h1>
-        <div class="subtitle">Hitung rumus otomatis dengan 8 komponen</div>
+        <div class="subtitle">Hitung rumus otomatis dengan multi kolom AI</div>
     </div>
 
     <div class="grid-container">
         <div class="input-section">
             <div class="data-input">
                 <textarea id="inputData" placeholder="Masukkan data dengan format:
-8603 = 30 ai
-2436 = 74 ai
+6987 = 02 . 75 . 27 . 37 ai
+7070 = 68 . 97 . 16 . 60 ai
+1567 = 80 . 42 . 05 . 48 ai
 ...
-4467 = 
 ======
-A3mb-A5m9.(ty)
-Js6ml+E2ty.(mb)
-J3D4mb-C5.(ix)
-J4D2ml+K3.(ty)
-A3+Js2-C1m8.(ty)"></textarea>
+A7mb+E7ty.(mb)
+C3ml-E3ty.(m9)
+A6ix+E4
+A5ix-K6"></textarea>
                 <div class="input-info" id="inputInfo">0 angka + 0 rumus terdeteksi</div>
             </div>
             
@@ -299,10 +298,13 @@ A3+Js2-C1m8.(ty)"></textarea>
             <div class="info" id="info">
                 Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
                 <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
+                    <strong>Format Input Multi Kolom:</strong><br>
+                    • <code>6987 = 02 . 75 . 27 . 37 ai</code><br>
+                    • Kolom 1 → Rumus 1, Kolom 2 → Rumus 2, Kolom 3 → Rumus 3, Kolom 4 → Rumus 4<br>
+                    • Support highlight 2-6 digit<br>
                     <strong>Komponen yang didukung:</strong><br>
                     • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
                     • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-                    <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
                 </div>
             </div>
         </div>
@@ -310,20 +312,17 @@ A3+Js2-C1m8.(ty)"></textarea>
         <div class="output-section">
             <div class="section-title">📤 HASIL OUTPUT</div>
             <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Support 8 komponen + highlight 2-6 digit:
+// Support multi kolom + highlight 2-6 digit:
 
-// 8603 = 3456789012 ai
-// 2436 = 4567890123 ai  
-// 5678 = 5678901234 ai
-// 9012 = 6789012345 ai
+// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">2</span>3456789 ai
+// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>9012345 ai
 // ======
-// A3mb-A5m9.(ty)
+// A7mb+E7ty.(mb)
 
-// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
-// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
-// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
+// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>8901234 ai
+// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span>0123456 ai
 // ======
-// Js6ml+E2ty.(mb)
+// C3ml-E3ty.(m9)
 
 // ... dan seterusnya untuk setiap rumus</div>
             <br>
@@ -417,6 +416,7 @@ function parseInputData(inputData) {
         }
         
         if (foundSeparator && line) {
+            line = line.replace(/[–—]/g, '-');
             tempFormulas.push(line);
         }
         
@@ -440,16 +440,27 @@ function parseInputData(inputData) {
                     jumlah: jumlah
                 });
                 
-                const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)/);
-                if (originalMatch) {
+                // EXTRACT SEMUA KOLOM AI (2-6 digit per kolom)
+                const aiMatch = line.match(/(\d{4})\s*=\s*(.+?)\s*ai$/i);
+                if (aiMatch) {
+                    const aiParts = aiMatch[2].split('.').map(part => part.trim());
+                    
+                    // Simpan semua kolom AI (bisa 2-6 digit per kolom)
+                    const aiColumns = [];
+                    for (let i = 0; i < Math.min(aiParts.length, 6); i++) {
+                        aiColumns.push(aiParts[i] || '');
+                    }
+                    
                     originalInputData.push({
-                        number: originalMatch[1],
-                        ai: originalMatch[2] || ''
+                        number: aiMatch[1],
+                        ai_columns: aiColumns,
+                        type: 'ai'
                     });
                 } else {
                     originalInputData.push({
                         number: number,
-                        ai: ''
+                        ai_columns: [],
+                        type: ''
                     });
                 }
             }
@@ -489,47 +500,40 @@ function updateFormulaDisplay() {
 function displayAllFormulaResults(formulas) {
     const output = document.getElementById('resultOutput');
     let outputHTML = '';
-    let hasError = false;
     
+    // Untuk setiap rumus
     for (let i = 0; i < formulas.length; i++) {
         try {
+            // Hitung hasil AI untuk rumus ini
             const results = calculateAIForSingleFormula(formulas[i]);
             
+            // Tentukan highlight data dari KOLOM INPUT yang sesuai
             let highlightData = [];
-            if (i === 0) {
-                highlightData = originalInputData.map(item => item.ai);
-            } else {
-                highlightData = getHighlightDataForFormula(i);
+            if (originalInputData.length > 0 && originalInputData[0].ai_columns) {
+                const aiColumnIndex = Math.min(i, originalInputData[0].ai_columns.length - 1);
+                highlightData = originalInputData.map(item => {
+                    const aiValue = item.ai_columns[aiColumnIndex] || '';
+                    return (aiValue === 'Xx' || aiValue === 'xx' || aiValue === 'XX') ? '' : aiValue;
+                });
             }
             
+            // Generate output dengan highlight
             const formulaOutput = generateRotatedOutput(results, formulas[i], highlightData);
             outputHTML += formulaOutput;
             
             if (i < formulas.length - 1) {
                 outputHTML += '\n\n';
             }
+            
         } catch (error) {
             outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
             outputHTML += `// ${error.message}\n`;
             outputHTML += '======\n';
             outputHTML += formulas[i] + '\n\n';
-            hasError = true;
         }
     }
     
     output.innerHTML = outputHTML;
-    
-    if (hasError) {
-        showInfo('Ada error dalam perhitungan, lihat output untuk detail', 'error');
-    }
-}
-
-function getHighlightDataForFormula(formulaIndex) {
-    if (formulaIndex < highlightPatterns.length) {
-        return highlightPatterns[formulaIndex];
-    }
-    
-    return originalInputData.map(() => '');
 }
 
 function calculateAIForSingleFormula(formula) {
@@ -546,6 +550,7 @@ function calculateAIForSingleFormula(formula) {
                 ai: aiResult,
                 canCalculate: true
             });
+            aiHistory[i] = aiResult;
         } else {
             results.push({
                 number: dataHistory[i].number,
@@ -569,7 +574,18 @@ function generateRotatedOutput(results, formula, highlightData) {
         if (result.canCalculate) {
             const highlightAI = highlightData[i] || '';
             const rotatedResult = formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
-            output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
+            
+            // Tentukan suffix berdasarkan jumlah digit yang di-highlight
+            let suffix = '';
+            const highlightedCount = rotatedResult.highlightPositions.length;
+            
+            if (highlightedCount === 2) {
+                suffix = ' ai';
+            } else if (highlightedCount > 2 && highlightedCount <= 6) {
+                suffix = ` (${highlightedCount} digit)`;
+            }
+            
+            output += `${result.number} = ${rotatedResult.rotatedDigits}${suffix}\n`;
             
             inheritedPositions = rotatedResult.highlightPositions;
         } else {
@@ -585,6 +601,7 @@ function generateRotatedOutput(results, formula, highlightData) {
 }
 
 function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPositions) {
+    // Buat urutan digit dimulai dari calculatedAI
     let rotatedDigits = '';
     const allDigits = '0123456789';
     const startIndex = allDigits.indexOf(calculatedAI.toString());
@@ -594,46 +611,65 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
         rotatedDigits += allDigits[actualIndex];
     }
     
-    let highlightPositions = inheritedPositions;
+    let highlightPositions = [];
     
-    if (highlightAI && highlightAI.trim() !== '' && !inheritedPositions) {
-        highlightPositions = [];
+    if (highlightAI && highlightAI.trim() !== '') {
         const highlightDigits = highlightAI.toString().split('');
         
-        for (let digit of highlightDigits) {
+        // Untuk setiap digit dalam highlightAI (support 2-6 digit)
+        highlightDigits.forEach((digit, index) => {
             if (digit >= '0' && digit <= '9') {
                 const position = rotatedDigits.indexOf(digit);
-                if (position !== -1 && !highlightPositions.includes(position)) {
-                    highlightPositions.push(position);
+                if (position !== -1 && !highlightPositions.some(p => p.position === position)) {
+                    highlightPositions.push({
+                        position: position,
+                        digit: digit,
+                        index: index
+                    });
                 }
             }
-        }
+        });
         
-        if (highlightPositions.length > 0) {
-            highlightPositions.sort((a, b) => a - b);
-        } else {
-            highlightPositions = null;
-        }
+        // Urutkan berdasarkan posisi
+        highlightPositions.sort((a, b) => a.position - b.position);
     }
     
+    // Jika tidak ada highlight dari input, gunakan inherited positions
+    if (highlightPositions.length === 0 && inheritedPositions) {
+        inheritedPositions.forEach((pos, index) => {
+            if (pos >= 0 && pos < rotatedDigits.length) {
+                highlightPositions.push({
+                    position: pos,
+                    digit: rotatedDigits[pos],
+                    index: index
+                });
+            }
+        });
+    }
+    
+    // Beri warna berdasarkan posisi highlight
     let result = '';
-    let colorIndex = 0;
     const highlightColors = [
-        '#FF6B6B',
-        '#4ECDC4',
-        '#45B7D1',
-        '#96CEB4',
-        '#FFEAA7',
-        '#DDA0DD'
+        '#FF6B6B', // Merah - digit 1
+        '#4ECDC4', // Cyan - digit 2
+        '#45B7D1', // Biru muda - digit 3
+        '#96CEB4', // Hijau muda - digit 4
+        '#FFEAA7', // Kuning - digit 5
+        '#DDA0DD', // Ungu - digit 6
+        '#FFA07A', // Salmon - digit 7+
+        '#20B2AA', // Light sea green
+        '#778899', // Light slate gray
+        '#D8BFD8'  // Thistle
     ];
     
     for (let i = 0; i < rotatedDigits.length; i++) {
         const digit = rotatedDigits[i];
+        const highlight = highlightPositions.find(h => h.position === i);
         
-        if (highlightPositions && highlightPositions.includes(i)) {
-            const color = highlightColors[colorIndex % highlightColors.length];
+        if (highlight) {
+            const colorIndex = highlight.index % highlightColors.length;
+            const color = highlightColors[colorIndex];
             result += `<span style="color: ${color}; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">${digit}</span>`;
-            colorIndex++;
         } else {
             result += digit;
         }
@@ -641,7 +677,7 @@ function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPos
     
     return {
         rotatedDigits: result,
-        highlightPositions: highlightPositions
+        highlightPositions: highlightPositions.map(h => h.position)
     };
 }
 
@@ -653,6 +689,7 @@ function copyOutput() {
     let currentBlock = '';
     let blocks = [];
     let waitingForFormula = false;
+    let currentFormulaIndex = -1;
     
     for (let line of lines) {
         line = line.trim();
@@ -672,6 +709,7 @@ function copyOutput() {
             waitingForFormula = false;
             blocks.push(currentBlock.trim());
             currentBlock = '';
+            currentFormulaIndex++;
             continue;
         }
         
@@ -679,6 +717,7 @@ function copyOutput() {
         if (numberMatch) {
             const number = numberMatch[1];
             
+            // Extract semua digit yang di-highlight
             const regex = /<span[^>]*>(\d)<\/span>/g;
             let match;
             let highlightedDigits = '';
@@ -688,7 +727,14 @@ function copyOutput() {
             }
             
             if (highlightedDigits) {
-                const suffix = highlightedDigits.length === 2 ? ' ai' : '';
+                // Tentukan suffix
+                let suffix = '';
+                if (highlightedDigits.length === 2) {
+                    suffix = ' ai';
+                } else if (highlightedDigits.length > 2) {
+                    suffix = ` (${highlightedDigits.length} digit)`;
+                }
+                
                 currentBlock += `${number} = ${highlightedDigits}${suffix}\n`;
             } else {
                 currentBlock += `${number} = \n`;
@@ -724,7 +770,7 @@ function findMaxDayInFormula(formula) {
     let maxDay = 1;
     let workingFormula = formula.replace(/\.\((\w+)\)/, '');
     
-    // Regex untuk menemukan semua komponen (A, C, K, E, J, Js, J3D, J4D)
+    // Regex untuk menemukan semua komponen
     const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
     let match;
     
@@ -786,10 +832,12 @@ function calculateSingleAI(formula, currentDayIndex) {
 }
 
 function processComponent(component, currentDayIndex) {
-    // Regex yang benar untuk semua komponen
+    // Normalisasi karakter
+    component = component.replace(/[–—]/g, '-');
+    
     const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
     if (!match) {
-        throw new Error(`Format komponen tidak valid: ${component}. Contoh: A3, Js6ml, J3D4mb, J4D2ml.(ix)`);
+        throw new Error(`Format komponen tidak valid: ${component}`);
     }
     
     const type = match[1];
@@ -798,7 +846,7 @@ function processComponent(component, currentDayIndex) {
     
     const targetDayIndex = currentDayIndex - (dayOffset - 1);
     
-    if (targetDayIndex < 0) {
+    if (targetDayIndex < 0 || targetDayIndex >= dataHistory.length) {
         throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
     }
     
@@ -860,28 +908,28 @@ function reduceToSingleDigit(num) {
 function clearAll() {
     document.getElementById('inputData').value = '';
     document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Support 8 komponen + highlight 2-6 digit:
+// Support multi kolom + highlight 2-6 digit:
 
-// 8603 = 3456789012 ai
-// 2436 = 4567890123 ai  
-// 5678 = 5678901234 ai
-// 9012 = 6789012345 ai
+// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">2</span>3456789 ai
+// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>9012345 ai
 // ======
-// A3mb-A5m9.(ty)
+// A7mb+E7ty.(mb)
 
-// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
-// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
-// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
+// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>8901234 ai
+// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span>0123456 ai
 // ======
-// Js6ml+E2ty.(mb)
+// C3ml-E3ty.(m9)
 
 // ... dan seterusnya untuk setiap rumus`;
     document.getElementById('info').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
     <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
+        <strong>Format Input Multi Kolom:</strong><br>
+        • <code>6987 = 02 . 75 . 27 . 37 ai</code><br>
+        • Kolom 1 → Rumus 1, Kolom 2 → Rumus 2, Kolom 3 → Rumus 3, Kolom 4 → Rumus 4<br>
+        • Support highlight 2-6 digit<br>
         <strong>Komponen yang didukung:</strong><br>
         • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
         • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-        <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
     </div>`;
     document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
     document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
