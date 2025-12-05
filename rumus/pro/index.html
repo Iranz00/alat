@@ -420,12 +420,15 @@ function parseInputData(inputData) {
     // Reverse dataHistory: index 0 = terbaru (paling bawah)
     dataHistory = dataHistory.reverse();
     
+    console.log('Data history length:', dataHistory.length);
+    console.log('Data numbers:', dataHistory.map(d => d.number));
+    
     // Update UI
     updateFormulaDisplay();
     updateInputInfo();
     
     document.getElementById('historyInfo').textContent = 
-        `Deteksi: ${maxPositions} posisi, ${currentFormulas.length} rumus`;
+        `Deteksi: ${maxPositions} posisi, ${currentFormulas.length} rumus, ${dataHistory.length} data`;
     
     return { dataHistory, currentFormulas, maxPositions };
 }
@@ -574,7 +577,7 @@ function generateOutputForFormula(formula, positionIndex, horizontalInheritance)
     return output;
 }
 
-// FUNGSI HIGHLIGHT YANG DIPERBAIKI (mengikuti contoh kode Anda)
+// FUNGSI HIGHLIGHT YANG DIPERBAIKI
 function formatWithHighlight(calculatedAI, inputValue, inheritedPositions) {
     // Buat rotasi 0-9
     const rotated = generateRotation(calculatedAI);
@@ -664,12 +667,18 @@ function calculateSingleAI(formula, currentDayIndex) {
         }
         
         if (component) {
-            const value = processComponent(component, currentDayIndex);
-            
-            if (currentOperator === '+') {
-                total += value;
-            } else if (currentOperator === '-') {
-                total -= value;
+            try {
+                const value = processComponent(component, currentDayIndex);
+                
+                if (currentOperator === '+') {
+                    total += value;
+                } else if (currentOperator === '-') {
+                    total -= value;
+                }
+            } catch (error) {
+                // Jika error karena kurang history, skip komponen ini
+                console.warn(`Skip komponen ${component}: ${error.message}`);
+                // Tidak tambahkan/tambah nilai 0
             }
         }
     }
@@ -698,12 +707,23 @@ function processComponent(component, currentDayIndex) {
     const dayOffset = parseInt(match[2]);
     const conversion = match[3];
     
-    // PERBAIKAN LOGIKA: currentDayIndex = 0 untuk data TERBARU (paling bawah)
-    // dayOffset = 1 ambil data terbaru, dayOffset = 2 ambil data sebelumnya, dst
+    // LOGIKA YANG BENAR:
+    // currentDayIndex = 0 untuk baris PALING BAWAH (terbaru)
+    // dayOffset = 1 → ambil data saat ini (index 0)
+    // dayOffset = 2 → ambil 1 baris sebelumnya (index 1)
+    // dayOffset = 3 → ambil 2 baris sebelumnya (index 2)
+    // dst...
+    
     const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
+    // VALIDASI: targetDayIndex tidak boleh melebihi dataHistory.length
     if (targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history, hanya ada ${dataHistory.length - currentDayIndex} hari)`);
+        const availableDays = dataHistory.length - currentDayIndex;
+        throw new Error(`Data tidak tersedia untuk ${type}${dayOffset} (butuh ${dayOffset} hari dari baris ini, hanya ada ${availableDays} hari)`);
+    }
+    
+    if (targetDayIndex < 0) {
+        throw new Error(`Index tidak valid: ${targetDayIndex} untuk ${component}`);
     }
     
     const data = dataHistory[targetDayIndex];
