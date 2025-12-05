@@ -139,6 +139,10 @@ button {
     color:white;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
+.btn-calculate:hover, .btn-clear:hover, .btn-copy:hover { 
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
 .info { 
     background:#e3f2fd; 
     padding:18px; 
@@ -289,13 +293,13 @@ Contoh: A3mb-Js5m9.(ty)"></textarea>
 // Format dipisah per rumus
 // 
 // === RUMUS 1 (POSISI 1) ===
-// 3872 = 68 ai
+// 3872 = 68 . 0123456789 ai
 // ...
 // ======
 // A7mb+E7ty.(mb)
 // 
 // === RUMUS 2 (POSISI 2) ===
-// 3872 = 06 ai
+// 3872 = 06 . 0123456789 ai
 // ...
 // ======
 // A8mb+C4.(mb)
@@ -314,7 +318,7 @@ Contoh: A3mb-Js5m9.(ty)"></textarea>
 </div>
 
 <script>
-// TABEL KONVERSI BARU
+// TABEL KONVERSI
 const mistikTables = {
     'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
     'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
@@ -346,7 +350,7 @@ const mistikTables = {
 let dataHistory = [];
 let currentFormulas = [];
 let maxPositions = 0;
-let lastHighlights = []; // Untuk simpan highlight akhir tiap posisi
+let lastHighlights = [];
 
 // ==================== FUNGSI UTAMA ====================
 
@@ -419,9 +423,6 @@ function parseInputData(inputData) {
     
     // Reverse dataHistory: index 0 = terbaru (paling bawah)
     dataHistory = dataHistory.reverse();
-    
-    console.log('Data history length:', dataHistory.length);
-    console.log('Data numbers:', dataHistory.map(d => d.number));
     
     // Update UI
     updateFormulaDisplay();
@@ -512,7 +513,7 @@ function normalizeFormula(formula) {
     return formula.replace(/[–−]/g, '-').trim();
 }
 
-// ==================== PERHITUNGAN & HIGHLIGHT ====================
+// ==================== PERHITUNGAN & HIGHLIGHT YANG BENAR ====================
 
 function displayAllFormulaResults() {
     const output = document.getElementById('resultOutput');
@@ -557,8 +558,8 @@ function generateOutputForFormula(formula, positionIndex, horizontalInheritance)
         // Hitung dengan rumus
         const calculatedAI = calculateSingleAI(formula, i);
         
-        // Format dengan highlight
-        const formatted = formatWithHighlight(
+        // Format dengan highlight YANG BENAR
+        const formatted = formatWithHighlightCorrect(
             calculatedAI,
             value,
             verticalInheritance
@@ -577,60 +578,72 @@ function generateOutputForFormula(formula, positionIndex, horizontalInheritance)
     return output;
 }
 
-// FUNGSI HIGHLIGHT YANG DIPERBAIKI
-function formatWithHighlight(calculatedAI, inputValue, inheritedPositions) {
-    // Buat rotasi 0-9
+// FUNGSI HIGHLIGHT YANG BENAR
+function formatWithHighlightCorrect(calculatedAI, inputValue, inheritedPositions) {
+    // Buat rotasi 0-9 dimulai dari calculatedAI
     const rotated = generateRotation(calculatedAI);
     
-    // Tentukan highlight positions - LOGIKA SEDERHANA:
-    let highlightPositions = inheritedPositions;
+    // Tentukan highlight positions dengan LOGIKA YANG BENAR
+    let highlightPositions = null;
+    let highlightedValue = '';
     
-    // JIKA ADA input angka → buat highlight baru
+    // CASE 1: Ada input angka eksplisit
     if (inputValue && inputValue.type === 'NUMBER' && inputValue.value) {
         highlightPositions = [];
         for (let digit of inputValue.value) {
             const pos = rotated.indexOf(digit);
-            if (pos !== -1) highlightPositions.push(pos);
-        }
-        highlightPositions.sort((a, b) => a - b);
-    }
-    // JIKA ADA Xx/Xxx DAN TIDAK ADA warisan → buat dari perhitungan
-    else if (inputValue && inputValue.type === 'X' && !inheritedPositions) {
-        const xCount = Math.min(inputValue.digitCount, 5); // Maks 5 digit
-        highlightPositions = [];
-        for (let i = 0; i < xCount; i++) {
-            const pos = i; // Posisi i dalam rotasi
-            highlightPositions.push(pos);
-        }
-    }
-    // JIKA Xx/Xxx DAN ADA warisan → PAKAI WARISAN (ambil sesuai jumlah X)
-    else if (inputValue && inputValue.type === 'X' && inheritedPositions) {
-        const xCount = Math.min(inputValue.digitCount, 5);
-        highlightPositions = inheritedPositions.slice(0, xCount);
-    }
-    // JIKA TIDAK ADA input DAN TIDAK ADA warisan → tidak highlight (null)
-    else if (!inheritedPositions) {
-        highlightPositions = null;
-    }
-    // JIKA ADA warisan → PAKAI WARISAN (sudah di-set di awal)
-    
-    // Apply highlight
-    let displayed = '';
-    if (highlightPositions) {
-        for (let i = 0; i < rotated.length; i++) {
-            if (highlightPositions.includes(i)) {
-                displayed += `<span style="color:#FF6B6B;font-weight:bold">${rotated[i]}</span>`;
-            } else {
-                displayed += rotated[i];
+            if (pos !== -1 && !highlightPositions.includes(pos)) {
+                highlightPositions.push(pos);
             }
         }
-    } else {
-        displayed = rotated; // Tanpa highlight
+        highlightPositions.sort((a, b) => a - b);
+        highlightedValue = inputValue.value;
+    }
+    // CASE 2: Ada input X
+    else if (inputValue && inputValue.type === 'X') {
+        const xCount = Math.min(inputValue.digitCount, 5);
+        
+        // Jika ada warisan, pakai warisan
+        if (inheritedPositions) {
+            highlightPositions = inheritedPositions.slice(0, xCount);
+            highlightedValue = highlightPositions.map(pos => rotated[pos]).join('');
+        } 
+        // Jika tidak ada warisan, buat dari calculatedAI (ambil digit pertama)
+        else {
+            highlightPositions = [];
+            for (let i = 0; i < xCount; i++) {
+                highlightPositions.push(i);
+            }
+            highlightedValue = rotated.substring(0, xCount);
+        }
+    }
+    // CASE 3: Tidak ada input tapi ada warisan
+    else if (inheritedPositions) {
+        highlightPositions = [...inheritedPositions];
+        highlightedValue = highlightPositions.map(pos => rotated[pos]).join('');
+    }
+    // CASE 4: Tidak ada input dan tidak ada warisan -> tidak ada highlight
+    
+    // Format rotasi dengan highlight
+    let formattedRotation = '';
+    for (let i = 0; i < rotated.length; i++) {
+        if (highlightPositions && highlightPositions.includes(i)) {
+            formattedRotation += `<span style="color:#FF6B6B;font-weight:bold">${rotated[i]}</span>`;
+        } else {
+            formattedRotation += rotated[i];
+        }
+    }
+    
+    // Format output akhir
+    let finalDisplay = formattedRotation;
+    if (highlightedValue) {
+        finalDisplay = `${highlightedValue} . ${formattedRotation}`;
     }
     
     return {
-        displayed: displayed,
-        highlightPositions: highlightPositions
+        displayed: finalDisplay,
+        highlightPositions: highlightPositions,
+        highlightedValue: highlightedValue
     };
 }
 
@@ -668,7 +681,7 @@ function calculateSingleAI(formula, currentDayIndex) {
         
         if (component) {
             try {
-                const value = processComponent(component, currentDayIndex);
+                const value = processComponentCorrect(component, currentDayIndex);
                 
                 if (currentOperator === '+') {
                     total += value;
@@ -676,9 +689,7 @@ function calculateSingleAI(formula, currentDayIndex) {
                     total -= value;
                 }
             } catch (error) {
-                // Jika error karena kurang history, skip komponen ini
                 console.warn(`Skip komponen ${component}: ${error.message}`);
-                // Tidak tambahkan/tambah nilai 0
             }
         }
     }
@@ -696,8 +707,8 @@ function calculateSingleAI(formula, currentDayIndex) {
     return reduceToSingleDigit(total);
 }
 
-function processComponent(component, currentDayIndex) {
-    // Match type baru: JS, J3D, J4D, atau A,C,K,E,J
+function processComponentCorrect(component, currentDayIndex) {
+    // Match type: A,C,K,E,J,JS,J3D,J4D
     const match = component.match(/^(JS|J3D|J4D|[AKCEJ])(\d+)(\w*)$/i);
     if (!match) {
         throw new Error(`Format komponen tidak valid: ${component}`);
@@ -707,23 +718,19 @@ function processComponent(component, currentDayIndex) {
     const dayOffset = parseInt(match[2]);
     const conversion = match[3];
     
-    // LOGIKA YANG BENAR:
+    // LOGIKA INDEX YANG BENAR:
     // currentDayIndex = 0 untuk baris PALING BAWAH (terbaru)
-    // dayOffset = 1 → ambil data saat ini (index 0)
-    // dayOffset = 2 → ambil 1 baris sebelumnya (index 1)
-    // dayOffset = 3 → ambil 2 baris sebelumnya (index 2)
-    // dst...
-    
+    // dayOffset = 1 -> ambil data saat ini (index 0)
+    // dayOffset = 2 -> ambil 1 baris sebelumnya (index 1)
     const targetDayIndex = currentDayIndex + (dayOffset - 1);
     
-    // VALIDASI: targetDayIndex tidak boleh melebihi dataHistory.length
+    // Validasi index
     if (targetDayIndex >= dataHistory.length) {
-        const availableDays = dataHistory.length - currentDayIndex;
-        throw new Error(`Data tidak tersedia untuk ${type}${dayOffset} (butuh ${dayOffset} hari dari baris ini, hanya ada ${availableDays} hari)`);
+        throw new Error(`Data tidak tersedia untuk ${type}${dayOffset}`);
     }
     
     if (targetDayIndex < 0) {
-        throw new Error(`Index tidak valid: ${targetDayIndex} untuk ${component}`);
+        throw new Error(`Index tidak valid: ${targetDayIndex}`);
     }
     
     const data = dataHistory[targetDayIndex];
@@ -844,13 +851,13 @@ function clearAll() {
 // Format dipisah per rumus
 // 
 // === RUMUS 1 (POSISI 1) ===
-// 3872 = 68 ai
+// 3872 = 68 . 0123456789 ai
 // ...
 // ======
 // A7mb+E7ty.(mb)
 // 
 // === RUMUS 2 (POSISI 2) ===
-// 3872 = 06 ai
+// 3872 = 06 . 0123456789 ai
 // ...
 // ======
 // A8mb+C4.(mb)
