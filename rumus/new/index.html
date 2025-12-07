@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Prediksi Mod+ - Brute Force Lengkap</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); 
+    min-height:100vh; 
+    padding:20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.container { 
+    max-width:1400px; 
+    width:100%;
+    margin:0 auto; 
+    background:white; 
+    border-radius:20px; 
+    padding:30px; 
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+.header { 
+    text-align:center; 
+    margin-bottom:25px; 
+    padding-bottom:15px;
+    border-bottom:3px solid #e9ecef;
+}
+h1 { 
+    color:#0c2461; 
+    margin-bottom:5px; 
+    font-size:2rem;
+    font-weight:700;
+}
+.subtitle { 
+    text-align:center; 
+    color:#4a69bd; 
+    font-size:13px; 
+    margin-bottom:5px;
+    line-height:1.5;
+}
+.grid-container { 
+    display:grid; 
+    grid-template-columns:1fr 1.2fr; 
+    gap:20px; 
+    margin-bottom:25px;
+}
+.input-section, .output-section { 
+    background:#f8f9fa; 
+    padding:20px; 
+    border-radius:12px; 
+    border:2px solid #e9ecef;
+}
+.section-title { 
+    color:#0c2461; 
+    margin-bottom:12px; 
+    font-size:15px; 
+    font-weight:bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.data-input textarea { 
+    width:100%; 
+    height:140px; 
+    padding:12px; 
+    border:2px solid #4a69bd; 
+    border-radius:8px; 
+    font-size:13px; 
+    resize:vertical; 
+    margin-bottom:12px;
+    font-family: 'Courier New', monospace;
+    background: white;
+}
+.controls { 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.control-group {
+    display: flex;
+    flex-direction: column;
+}
+.control-group label {
+    font-size: 12px;
+    color: #1e3799;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+.control-group input, .control-group select {
+    padding: 8px 10px;
+    border: 2px solid #4a69bd;
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+}
+.button-group { 
+    display:grid; 
+    grid-template-columns: repeat(4, 1fr);
+    gap:8px; 
+    margin-bottom:12px;
+}
+button { 
+    padding:10px 12px; 
+    border:none; 
+    border-radius:6px; 
+    font-size:12px; 
+    font-weight:600; 
+    cursor:pointer; 
+    transition:all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.btn-run { 
+    background:linear-gradient(135deg, #2ecc71, #27ae60);
+    color:white;
+    grid-column: span 2;
+}
+.btn-stop {
+    background:linear-gradient(135deg, #e74c3c, #c0392b);
+    color:white;
+    grid-column: span 2;
+}
+.btn-continue {
+    background:linear-gradient(135deg, #9b59b6, #8e44ad);
+    color:white;
+}
+.btn-clear { 
+    background:linear-gradient(135deg, #e67e22, #d35400);
+    color:white;
+}
+.btn-clear-output {
+    background:linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color:white;
+}
+.btn-copy {
+    background:linear-gradient(135deg, #1abc9c, #16a085);
+    color:white;
+}
+button:hover:not(:disabled) { 
+    transform:translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.stat-box {
+    background: #e8f4fc;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid #3498db;
+}
+.stat-label {
+    font-size: 10px;
+    color: #3498db;
+    margin-bottom: 2px;
+}
+.stat-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: #0c2461;
+}
+.result-box { 
+    background:#0d1b2a; 
+    color:#e2e8f0; 
+    padding:15px; 
+    border-radius:10px; 
+    font-family:'Consolas', 'Courier New', monospace; 
+    white-space:pre; 
+    line-height:1.3;
+    border:2px solid #1e3799;
+    font-size:12px;
+    overflow-y: auto;
+    height: 500px;
+}
+.info-status {
+    background: #e8f4fc;
+    border: 1px solid #3498db;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #0c2461;
+}
+.info-status .warning {
+    color: #e74c3c;
+    font-weight: bold;
+}
+.info-status .success {
+    color: #27ae60;
+    font-weight: bold;
+}
+.info-status .info-line {
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+.info-status .label {
+    color: #3498db;
+    font-weight: 600;
+}
+.info-status .value {
+    font-weight: bold;
+}
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2ecc71;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transform: translateX(150%);
+    transition: transform 0.3s ease;
+}
+.copy-notification.show {
+    transform: translateX(0);
+}
+@media (max-width: 768px) {
+    .grid-container { grid-template-columns: 1fr; }
+    .button-group { grid-template-columns: 1fr 1fr; }
+    .btn-run, .btn-stop { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔍 Auto Prediksi Mod+</h1>
+        <div class="subtitle">Brute Force Lengkap | Format: [RumusAI] [PolaN]</div>
+    </div>
+    
+    <div class="grid-container">
+        <!-- INPUT SECTION -->
+        <div class="input-section">
+            <div class="section-title">📥 INPUT DATA</div>
+            
+            <div class="data-input">
+                <textarea id="numbers" placeholder="Masukkan angka 4D (satu per baris):
+6834
+6176
+2243
+1563
+6271
+2518
+4892
+7361"></textarea>
+                
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">DATA</div>
+                        <div class="stat-value" id="dataCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">RUMUS</div>
+                        <div class="stat-value" id="formulaCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">PROSES</div>
+                        <div class="stat-value" id="processedCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">HASIL</div>
+                        <div class="stat-value" id="foundCount">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Hari Prediksi</label>
+                    <input type="text" id="daysToPredict" value="16" pattern="[0-9]*" maxlength="2" title="1-50 hari">
+                </div>
+                <div class="control-group">
+                    <label>Digit Prediksi</label>
+                    <input type="text" id="digitCount" value="3" pattern="[1-7]" maxlength="1" title="1-7 digit">
+                </div>
+                <div class="control-group">
+                    <label>Patah</label>
+                    <input type="text" id="patah" value="" pattern="[0-5]*" maxlength="1" placeholder="Kosong = 0" title="0-5 patah">
+                </div>
+                <div class="control-group">
+                    <label>Prediksi Bagian</label>
+                    <select id="targetType">
+                        <option value="all" selected>Semua (Auto Detect)</option>
+                        <option value="A">AS (Digit 1)</option>
+                        <option value="C">COP (Digit 2)</option>
+                        <option value="K">KEPALA (Digit 3)</option>
+                        <option value="E">EKOR (Digit 4)</option>
+                        <option value="J">JUMLAH (K+E)</option>
+                        <option value="AC">AC (2D Depan)</option>
+                        <option value="CK">CK (2D Tengah)</option>
+                        <option value="KE">KE (2D Tail)</option>
+                        <option value="CB">CB (4D Lengkap)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Mode</label>
+                    <select id="searchMode">
+                        <option value="full">LENGKAP</option>
+                        <option value="quick">CEPAT</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-run" onclick="startSearch()" id="runBtn">🚀 CARI RUMUS</button>
+                <button class="btn-stop" onclick="stopSearch()" id="stopBtn" disabled>⏹️ STOP</button>
+                <button class="btn-continue" onclick="continueSearch()" id="continueBtn" disabled>▶️ LANJUT</button>
+                <button class="btn-clear" onclick="clearAll()">🗑️ HAPUS DATA</button>
+            </div>
+            
+            <div class="info-status" id="infoStatus">
+                <!-- Akan diisi oleh JavaScript -->
+            </div>
+        </div>
+        
+        <!-- OUTPUT SECTION -->
+        <div class="output-section">
+            <div class="section-title">📊 HASIL REAL-TIME</div>
+            <div class="result-box" id="resultOutput"></div>
+            <div class="button-group" style="margin-top:10px;">
+                <button class="btn-clear-output" onclick="clearOutput()">🗑️ HAPUS OUTPUT</button>
+                <button class="btn-copy" onclick="copyOutput()">📋 SALIN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="copy-notification" id="copyNotification">
+    ✅ Output disalin!
+</div>
+
+<script>
+// ==================== KONFIGURASI ====================
+const mistikTables = {
+    'IX': {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'},
+    'ML': {'0':'1','1':'0','2':'5','3':'8','4':'7','5':'2','6':'9','7':'4','8':'3','9':'6'},
+    'MB': {'0':'8','1':'7','2':'6','3':'9','4':'5','5':'4','6':'2','7':'1','8':'0','9':'3'},
+    'TY': {'0':'7','1':'4','2':'9','3':'6','4':'1','5':'8','6':'3','7':'0','8':'5','9':'2'},
+    'M9': {'0':'9','1':'8','2':'7','3':'6','4':'5','5':'4','6':'3','7':'2','8':'1','9':'0'}
+};
+
+let dataHistory = [];
+let allCombinations = [];
+let foundResults = [];
+let isSearching = false;
+let isPaused = false;
+let currentIndex = 0;
+let startTime = null;
+let stopRequested = false;
+let currentPatahLimit = 0;
+const testPriorityOrder = ['A', 'C', 'K', 'E', 'J', 'AC', 'CK', 'KE', 'CB'];
+
+// ==================== FUNGSI UTAMA ====================
+
+function updateDataCount() {
+    const input = document.getElementById('numbers').value.trim();
+    const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+    document.getElementById('dataCount').textContent = lines.length;
+    updateStatusInfo();
+    return lines.length;
+}
+
+function validateNumberInput(input, min, max) {
+    let value = input.value.replace(/[^\d]/g, '');
+    
+    if (value === '') {
+        input.value = '';
+        return false;
+    }
+    
+    let numValue = parseInt(value);
+    if (numValue < min) numValue = min;
+    if (numValue > max) numValue = max;
+    
+    input.value = numValue;
+    updateStatusInfo();
+    return true;
+}
+
+function validateTextareaInput(textarea) {
+    const original = textarea.value;
+    let cleaned = '';
+    
+    const lines = original.split('\n');
+    for (let line of lines) {
+        let cleanLine = line.replace(/[^\d]/g, '');
+        if (cleanLine.length > 4) cleanLine = cleanLine.substring(0, 4);
+        if (cleanLine.length === 4) cleaned += cleanLine + '\n';
+    }
+    
+    cleaned = cleaned.trim();
+    if (cleaned !== original) {
+        textarea.value = cleaned;
+    }
+    
+    updateDataCount();
+}
+
+function reduceToSingleDigit(num) {
+    let n = Math.abs(num);
+    while (n > 9) n = n.toString().split('').reduce((sum, d) => sum + parseInt(d), 0);
+    return n;
+}
+
+function convertMistik(number, table) {
+    const digit = reduceToSingleDigit(parseInt(number)).toString();
+    return mistikTables[table]?.[digit] || digit;
+}
+
+// ==================== FUNGSI PERHITUNGAN ====================
+
+function processComponent(component, currentDayIndex, data) {
+    const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d{1,2})(\w*)$/);
+    if (!match) throw new Error(`Komponen tidak valid: ${component}`);
+    
+    const [_, type, dayStr, mistik] = match;
+    const dayOffset = parseInt(dayStr);
+    const targetDayIndex = currentDayIndex - (dayOffset - 1);
+    
+    if (targetDayIndex < 0) throw new Error(`Data tidak cukup untuk ${component}`);
+    
+    const d = data[targetDayIndex];
+    let val;
+    
+    switch(type) {
+        case 'A': val = parseInt(d[0]); break;
+        case 'C': val = parseInt(d[1]); break;
+        case 'K': val = parseInt(d[2]); break;
+        case 'E': val = parseInt(d[3]); break;
+        case 'J':  
+            val = parseInt(d[2]) + parseInt(d[3]);
+            val = reduceToSingleDigit(val);
+            break;
+        case 'Js': 
+            val = Math.abs(parseInt(d[2]) - parseInt(d[3]));
+            val = reduceToSingleDigit(val);
+            break;
+        case 'J3D':
+            val = parseInt(d[1]) + parseInt(d[2]) + parseInt(d[3]);
+            val = reduceToSingleDigit(val);
+            break;
+        case 'J4D':
+            val = parseInt(d[0]) + parseInt(d[1]) + parseInt(d[2]) + parseInt(d[3]);
+            val = reduceToSingleDigit(val);
+            break;
+        default: throw new Error(`Komponen tidak dikenal: ${type}`);
+    }
+    
+    if (mistik) {
+        const m = mistik.toUpperCase();
+        if (['IX','ML','MB','TY','M9'].includes(m)) {
+            val = parseInt(convertMistik(val, m));
+        }
+    }
+    
+    return val;
+}
+
+function calculateAI(formula, idx, data) {
+    let workingFormula = formula;
+    let finalMistik = null;
+    
+    const finalMatch = workingFormula.match(/\.\((\w+)\)$/);
+    if (finalMatch) {
+        finalMistik = finalMatch[1].toUpperCase();
+        workingFormula = workingFormula.replace(/\.\((\w+)\)$/, '');
+    }
+    
+    const parts = workingFormula.split(/([+\-])/).filter(p => p.trim());
+    let total = 0;
+    let currentOp = '+';
+    
+    for (let part of parts) {
+        if (part === '+' || part === '-') {
+            currentOp = part;
+            continue;
+        }
+        
+        const val = processComponent(part.trim(), idx, data);
+        
+        if (currentOp === '+') {
+            total += val;
+        } else {
+            total -= val;
+        }
+    }
+    
+    if (finalMistik && ['IX','ML','MB','TY','M9'].includes(finalMistik)) {
+        total = parseInt(convertMistik(total, finalMistik));
+    }
+    
+    return reduceToSingleDigit(total);
+}
+
+function generateRotation(ai) {
+    const rotation = [];
+    for (let i = 0; i < 10; i++) {
+        rotation.push((ai + i) % 10);
+    }
+    return rotation;
+}
+
+function applyPatternToRotation(rotation, pattern) {
+    const steps = pattern.match(/N(\d)/g);
+    if (!steps || steps.length === 0) return '';
+    
+    const startPos = parseInt(steps[0].substring(1));
+    let currentPosition = startPos;
+    let result = rotation[currentPosition].toString();
+    
+    for (let i = 1; i < steps.length; i++) {
+        const jump = parseInt(steps[i].substring(1));
+        currentPosition = (currentPosition + jump) % 10;
+        result += rotation[currentPosition].toString();
+    }
+    
+    return result;
+}
+
+function getTargetDigits(nextData, targetType) {
+    switch(targetType) {
+        case 'A': return nextData[0];
+        case 'C': return nextData[1];
+        case 'K': return nextData[2];
+        case 'E': return nextData[3];
+        case 'J': 
+            const k = parseInt(nextData[2]);
+            const e = parseInt(nextData[3]);
+            const sum = k + e;
+            return reduceToSingleDigit(sum).toString();
+        case 'AC': return nextData[0] + nextData[1];
+        case 'CK': return nextData[1] + nextData[2];
+        case 'KE': return nextData[2] + nextData[3];
+        case 'CB': return nextData;
+        default: return nextData;
+    }
+}
+
+function checkPrediction(predictionDigits, targetDigits, targetType) {
+    if (['A', 'C', 'K', 'E', 'J'].includes(targetType)) {
+        for (let digit of predictionDigits) {
+            if (digit === targetDigits) {
+                return { hit: true, matchedDigit: digit };
+            }
+        }
+        return { hit: false, matchedDigit: '' };
+    }
+    
+    else if (['AC', 'CK', 'KE', 'CB'].includes(targetType)) {
+        for (let digit of targetDigits) {
+            if (predictionDigits.includes(digit)) {
+                return { hit: true, matchedDigit: digit };
+            }
+        }
+        return { hit: false, matchedDigit: '' };
+    }
+    
+    return { hit: false, matchedDigit: '' };
+}
+
+// ==================== GENERATE KOMBINASI ====================
+
+function generateAIFormulas(mode, dataLength, daysToTest) {
+    const comps = ['A','C','K','E','J','Js','J3D','J4D'];
+    const maxOffset = Math.max(1, Math.min(10, dataLength - daysToTest - 3));
+    const offsets = [];
+    
+    for (let i = 1; i <= maxOffset; i++) {
+        offsets.push(i.toString());
+    }
+    
+    if (offsets.length === 0) offsets.push('1');
+    
+    const formulas = new Set();
+    
+    if (mode === 'full') {
+        const mistiks = ['', 'ix','ml','mb','ty','m9'];
+        const finals = ['', '.(ix)', '.(ml)', '.(mb)', '.(ty)', '.(m9)'];
+        
+        for (let c of comps) {
+            for (let o of offsets) {
+                for (let m of mistiks) {
+                    for (let f of finals) {
+                        formulas.add(`${c}${o}${m}${f}`);
+                    }
+                }
+            }
+        }
+        
+        for (let c1 of comps) {
+            for (let o1 of offsets) {
+                for (let m1 of mistiks) {
+                    for (let op of ['+', '-']) {
+                        for (let c2 of comps) {
+                            for (let o2 of offsets) {
+                                for (let m2 of mistiks) {
+                                    for (let f of finals) {
+                                        formulas.add(`${c1}${o1}${m1}${op}${c2}${o2}${m2}${f}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        for (let c of comps) {
+            for (let o of offsets) {
+                formulas.add(`${c}${o}`);
+            }
+        }
+        
+        for (let c1 of comps) {
+            for (let o1 of offsets) {
+                for (let op of ['+', '-']) {
+                    for (let c2 of comps) {
+                        for (let o2 of offsets) {
+                            formulas.add(`${c1}${o1}${op}${c2}${o2}`);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return Array.from(formulas);
+}
+
+function generatePatterns(digitCount) {
+    const patterns = [];
+    
+    function generate(current, depth) {
+        if (depth === digitCount) {
+            patterns.push('N' + current.join('N'));
+            return;
+        }
+        
+        for (let n = 0; n <= 9; n++) {
+            generate([...current, n], depth + 1);
+        }
+    }
+    
+    generate([], 0);
+    return patterns;
+}
+
+function generateAllCombinations(mode, digitCount, dataLength, daysToTest) {
+    const aiFormulas = generateAIFormulas(mode, dataLength, daysToTest);
+    const patterns = generatePatterns(digitCount);
+    
+    const combinations = [];
+    for (const ai of aiFormulas) {
+        for (const pattern of patterns) {
+            combinations.push({ ai, pattern });
+        }
+    }
+    
+    return combinations;
+}
+
+// ==================== FUNGSI TESTING ====================
+
+function testSingleTargetType(aiFormula, pattern, data, daysToTest, patahLimit, targetType) {
+    const startIdx = 5;
+    if (data.length - startIdx <= daysToTest) return null;
+    
+    let hits = 0;
+    let attempts = 0;
+    let patah = 0;
+    const predictions = [];
+    const failedPredictions = [];
+    
+    for (let i = startIdx; i < data.length - 1 && attempts < daysToTest; i++) {
+        try {
+            const ai = calculateAI(aiFormula, i, data);
+            const rotation = generateRotation(ai);
+            const pred = applyPatternToRotation(rotation, pattern);
+            const nextData = data[i + 1];
+            const targetDigits = getTargetDigits(nextData, targetType);
+            
+            const check = checkPrediction(pred, targetDigits, targetType);
+            
+            predictions.push({
+                input: data[i],
+                prediction: pred,
+                target: nextData,
+                targetDigits: targetDigits,
+                hit: check.hit,
+                matchedDigit: check.matchedDigit,
+                ai: ai
+            });
+            
+            attempts++;
+            
+            if (check.hit) {
+                hits++;
+            } else {
+                patah++;
+                failedPredictions.push({
+                    index: attempts,
+                    input: data[i],
+                    prediction: pred,
+                    target: nextData,
+                    targetDigits: targetDigits
+                });
+            }
+            
+            if (patah > patahLimit) {
+                return null;
+            }
+            
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    if (attempts < daysToTest) return null;
+    
+    return {
+        fullFormula: `${aiFormula} ${pattern}`,
+        aiFormula,
+        pattern,
+        targetType,
+        hits,
+        attempts,
+        patah,
+        accuracy: hits / attempts,
+        predictions,
+        failedPredictions,
+        passed: patah <= patahLimit
+    };
+}
+
+function testCombination(aiFormula, pattern, data, daysToTest, patahLimit, targetType) {
+    if (targetType === 'all') {
+        for (const type of testPriorityOrder) {
+            const result = testSingleTargetType(aiFormula, pattern, data, daysToTest, patahLimit, type);
+            if (result && result.passed) {
+                result.targetType = type;
+                return result;
+            }
+        }
+        return null;
+    } else {
+        return testSingleTargetType(aiFormula, pattern, data, daysToTest, patahLimit, targetType);
+    }
+}
+
+// ==================== FUNGSI PENCARIAN ====================
+
+function startSearch() {
+    if (isSearching) return;
+    
+    const input = document.getElementById('numbers').value.trim();
+    const digitCount = parseInt(document.getElementById('digitCount').value) || 3;
+    const daysToPredict = parseInt(document.getElementById('daysToPredict').value) || 16;
+    const searchMode = document.getElementById('searchMode').value;
+    const targetType = document.getElementById('targetType').value;
+    
+    const patahInput = document.getElementById('patah').value;
+    if (patahInput === '') {
+        currentPatahLimit = 0;
+    } else {
+        currentPatahLimit = parseInt(patahInput);
+        if (isNaN(currentPatahLimit) || currentPatahLimit < 0 || currentPatahLimit > 5) {
+            alert('Patah harus 0 sampai 5!');
+            return;
+        }
+    }
+    
+    if (!input) {
+        alert('Masukkan data terlebih dahulu!');
+        return;
+    }
+    
+    if (isNaN(digitCount) || digitCount < 1 || digitCount > 7) {
+        alert('Digit Prediksi harus 1 sampai 7!');
+        return;
+    }
+    
+    if (isNaN(daysToPredict) || daysToPredict < 1 || daysToPredict > 50) {
+        alert('Hari Prediksi harus 1 sampai 50!');
+        return;
+    }
+    
+    const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+    dataHistory = lines;
+    
+    const maxOffset = Math.max(1, Math.min(10, lines.length - daysToPredict - 3));
+    if (maxOffset <= 0) {
+        alert(`Data tidak cukup!\n\nData: ${lines.length} angka\nPrediksi: ${daysToPredict} hari\nMinimal data: ${daysToPredict + 6} angka`);
+        return;
+    }
+    
+    isSearching = true;
+    isPaused = false;
+    stopRequested = false;
+    currentIndex = 0;
+    foundResults = [];
+    startTime = new Date();
+    
+    allCombinations = generateAllCombinations(searchMode, digitCount, lines.length, daysToPredict);
+    
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+    document.getElementById('continueBtn').disabled = true;
+    document.getElementById('foundCount').textContent = '0';
+    document.getElementById('processedCount').textContent = '0';
+    document.getElementById('formulaCount').textContent = allCombinations.length.toLocaleString();
+    
+    let output = `Data: ${lines.length} angka | Prediksi: ${daysToPredict} hari\n`;
+    output += `Mode: ${searchMode === 'full' ? 'LENGKAP' : 'CEPAT'}\n`;
+    output += `Digit: ${digitCount} | Target: ${getTargetTypeName(targetType)}\n`;
+    output += `Patah: ${currentPatahLimit}x\n`;
+    output += `Kombinasi: ${allCombinations.length.toLocaleString()}\n`;
+    
+    if (maxOffset < 10) {
+        output += `⚠️ Offset tersedia: 1-${maxOffset} (A1-${maxOffset}, C1-${maxOffset}, dll)\n`;
+    }
+    
+    output += '\n';
+    document.getElementById('resultOutput').textContent = output;
+    
+    processNextCombination();
+}
+
+function processNextCombination() {
+    if (stopRequested || !isSearching || isPaused || currentIndex >= allCombinations.length) {
+        if (currentIndex >= allCombinations.length) {
+            finishSearch();
+        }
+        return;
+    }
+    
+    const batchSize = 100;
+    const daysToPredict = parseInt(document.getElementById('daysToPredict').value) || 16;
+    const targetType = document.getElementById('targetType').value;
+    
+    const end = Math.min(currentIndex + batchSize, allCombinations.length);
+    
+    for (let i = currentIndex; i < end; i++) {
+        const { ai, pattern } = allCombinations[i];
+        const result = testCombination(ai, pattern, dataHistory, daysToPredict, currentPatahLimit, targetType);
+        
+        if (result && result.passed) {
+            foundResults.push(result);
+            document.getElementById('foundCount').textContent = foundResults.length;
+            displayResult(result);
+            
+            stopSearch();
+            return;
+        }
+    }
+    
+    currentIndex = end;
+    document.getElementById('processedCount').textContent = currentIndex.toLocaleString();
+    
+    if (currentIndex < allCombinations.length) {
+        setTimeout(processNextCombination, 10);
+    } else {
+        finishSearch();
+    }
+}
+
+function displayResult(result) {
+    const elapsed = Math.floor((new Date() - startTime) / 1000);
+    const resultNumber = foundResults.length;
+    
+    const targetDisplayNames = {
+        'A': 'AS', 'C': 'COP', 'K': 'KEPALA', 'E': 'EKOR',
+        'J': 'JUMLAH', 'AC': 'AC', 'CK': 'CK', 'KE': 'KE', 'CB': 'CB'
+    };
+    
+    let output = document.getElementById('resultOutput').textContent;
+    
+    let resultText = `\n🔔 HASIL #${resultNumber} (${elapsed} detik)\n`;
+    resultText += `Target: ${targetDisplayNames[result.targetType] || result.targetType}\n\n`;
+    
+    for (let i = 0; i < result.predictions.length; i++) {
+        const p = result.predictions[i];
+        const mark = p.hit ? '✅' : '❌';
+        const matchInfo = p.matchedDigit ? ` (match: ${p.matchedDigit})` : '';
+        resultText += `${p.input} = ${p.prediction} → ${p.targetDigits} ${mark}${matchInfo}\n`;
+    }
+    
+    resultText += `======\nFormula: ${result.fullFormula}\n`;
+    resultText += `✅ Benar: ${result.hits} dari ${result.attempts}\n`;
+    resultText += `❌ Patah: ${result.patah}x\n`;
+    
+    if (result.failedPredictions.length > 0) {
+        resultText += `Patah di: `;
+        const failedIndices = result.failedPredictions.map(fp => `#${fp.index}`).join(', ');
+        resultText += failedIndices + '\n';
+    }
+    
+    output += resultText;
+    document.getElementById('resultOutput').textContent = output;
+    
+    const resultBox = document.getElementById('resultOutput');
+    resultBox.scrollTop = resultBox.scrollHeight;
+}
+
+function stopSearch() {
+    stopRequested = true;
+    isSearching = false;
+    
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('continueBtn').disabled = false;
+    
+    const elapsed = Math.floor((new Date() - startTime) / 1000);
+    let output = document.getElementById('resultOutput').textContent;
+    output += `\n⏹️ DIHENTIKAN (${elapsed} detik) | Ditemukan: ${foundResults.length} rumus\n`;
+    document.getElementById('resultOutput').textContent = output;
+}
+
+function continueSearch() {
+    if (!isSearching && currentIndex < allCombinations.length) {
+        isSearching = true;
+        stopRequested = false;
+        
+        document.getElementById('runBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('continueBtn').disabled = true;
+        
+        let output = document.getElementById('resultOutput').textContent;
+        const remaining = allCombinations.length - currentIndex;
+        const processed = currentIndex;
+        const found = foundResults.length;
+        
+        output += '\n════════════════════════════════════════\n';
+        output += `▶️ LANJUT PENCARIAN\n`;
+        output += `Diproses: ${processed.toLocaleString()} kombinasi\n`;
+        output += `Ditemukan: ${found} rumus valid\n`;
+        output += `Sisa: ${remaining.toLocaleString()} kombinasi\n`;
+        output += `Batas Patah: ${currentPatahLimit}x\n`;
+        output += '════════════════════════════════════════\n\n';
+        
+        document.getElementById('resultOutput').textContent = output;
+        
+        const resultBox = document.getElementById('resultOutput');
+        resultBox.scrollTop = resultBox.scrollHeight;
+        
+        processNextCombination();
+    }
+}
+
+function finishSearch() {
+    isSearching = false;
+    stopRequested = false;
+    
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('continueBtn').disabled = true;
+    
+    const elapsed = Math.floor((new Date() - startTime) / 1000);
+    let output = document.getElementById('resultOutput').textContent;
+    
+    if (foundResults.length > 0) {
+        foundResults.sort((a, b) => {
+            if (a.patah !== b.patah) return a.patah - b.patah;
+            return b.accuracy - a.accuracy;
+        });
+        
+        const best = foundResults[0];
+        output += `\n🏆 RUMUS TERBAIK:\nFormula: ${best.fullFormula}\n`;
+        output += `Target: ${getTargetTypeName(best.targetType)}\n`;
+        output += `✅ ${best.hits}/${best.attempts} | ❌ ${best.patah}x\n`;
+    } else {
+        output += `\n😞 TIDAK ADA RUMUS YANG MEMENUHI KRITERIA\n`;
+        output += `Coba kurangi "Patah" atau tambah data input.\n`;
+    }
+    
+    output += `\n🏁 SELESAI (${elapsed} detik) | Total ditemukan: ${foundResults.length}\n`;
+    document.getElementById('resultOutput').textContent = output;
+}
+
+// ==================== FUNGSI BANTUAN ====================
+
+function getTargetTypeName(type) {
+    const names = {
+        'A': 'AS (Digit 1)', 'C': 'COP (Digit 2)', 'K': 'KEPALA (Digit 3)', 'E': 'EKOR (Digit 4)',
+        'J': 'JUMLAH (K+E)', 'AC': 'AC (2D Depan)', 'CK': 'CK (2D Tengah)', 'KE': 'KE (2D Tail)', 
+        'CB': 'CB (4D Lengkap)', 'all': 'Semua (Auto)'
+    };
+    return names[type] || type;
+}
+
+function calculateMaxOffset(dataCount, daysToPredict) {
+    if (dataCount === 0 || daysToPredict === 0) return 0;
+    const buffer = 5;
+    const maxOffset = dataCount - daysToPredict - buffer;
+    return Math.max(0, Math.min(10, maxOffset));
+}
+
+function updateStatusInfo() {
+    const statusDiv = document.getElementById('infoStatus');
+    
+    const input = document.getElementById('numbers').value.trim();
+    const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+    const dataCount = lines.length;
+    
+    const daysToPredict = parseInt(document.getElementById('daysToPredict').value) || 16;
+    const digitCount = parseInt(document.getElementById('digitCount').value) || 3;
+    const patah = document.getElementById('patah').value;
+    const mode = document.getElementById('searchMode').value;
+    const targetType = document.getElementById('targetType').value;
+    
+    const maxOffset = calculateMaxOffset(dataCount, daysToPredict);
+    const canUseFullOffset = maxOffset >= 10;
+    
+    let html = '<div class="info-line">';
+    html += `<span class="label">Data:</span>`;
+    html += `<span class="value">${dataCount} angka</span>`;
+    html += '</div>';
+    
+    html += '<div class="info-line">';
+    html += `<span class="label">Prediksi:</span>`;
+    html += `<span class="value">${daysToPredict} hari</span>`;
+    html += '</div>';
+    
+    html += '<div class="info-line">';
+    html += `<span class="label">Mode:</span>`;
+    html += `<span class="value">${mode === 'full' ? 'LENGKAP' : 'CEPAT'}</span>`;
+    html += '</div>';
+    
+    html += '<div class="info-line">';
+    html += `<span class="label">Digit Prediksi:</span>`;
+    html += `<span class="value">${digitCount} digit</span>`;
+    html += '</div>';
+    
+    html += '<div class="info-line">';
+    html += `<span class="label">Target:</span>`;
+    html += `<span class="value">${getTargetTypeName(targetType)}</span>`;
+    html += '</div>';
+    
+    html += '<div class="info-line">';
+    html += `<span class="label">Patah:</span>`;
+    html += `<span class="value">${patah === '' ? '0' : patah}x</span>`;
+    html += '</div>';
+    
+    if (dataCount > 0 && daysToPredict > 0) {
+        html += '<div class="info-line">';
+        html += `<span class="label">Offset Tersedia:</span>`;
+        
+        if (maxOffset <= 0) {
+            html += `<span class="value warning">Tidak cukup</span>`;
+        } else if (canUseFullOffset) {
+            html += `<span class="value success">1-10 (full)</span>`;
+        } else {
+            html += `<span class="value warning">1-${maxOffset} saja</span>`;
+        }
+        html += '</div>';
+        
+        if (maxOffset <= 0) {
+            html += '<div class="warning">';
+            html += `❌ Data tidak cukup untuk prediksi ${daysToPredict} hari`;
+            html += '</div>';
+        } else if (!canUseFullOffset) {
+            html += '<div class="warning">';
+            html += `⚠️ Hanya offset 1-${maxOffset} yang tersedia`;
+            html += '</div>';
+        }
+    }
+    
+    statusDiv.innerHTML = html;
+}
+
+function clearAll() {
+    if (isSearching) {
+        alert('Hentikan proses terlebih dahulu!');
+        return;
+    }
+    
+    if (!confirm('Hapus SEMUA data dan hasil?')) return;
+    
+    document.getElementById('numbers').value = '';
+    document.getElementById('resultOutput').textContent = '';
+    
+    document.getElementById('dataCount').textContent = '0';
+    document.getElementById('formulaCount').textContent = '0';
+    document.getElementById('processedCount').textContent = '0';
+    document.getElementById('foundCount').textContent = '0';
+    
+    document.getElementById('daysToPredict').value = '16';
+    document.getElementById('digitCount').value = '3';
+    document.getElementById('patah').value = '';
+    document.getElementById('targetType').value = 'all';
+    document.getElementById('searchMode').value = 'full';
+    
+    dataHistory = [];
+    allCombinations = [];
+    foundResults = [];
+    currentIndex = 0;
+    currentPatahLimit = 0;
+    
+    updateDataCount();
+}
+
+function clearOutput() {
+    if (isSearching) {
+        alert('Hentikan proses terlebih dahulu!');
+        return;
+    }
+    
+    if (!confirm('Hapus semua hasil output?')) return;
+    
+    document.getElementById('resultOutput').textContent = '';
+}
+
+function copyOutput() {
+    const text = document.getElementById('resultOutput').textContent;
+    if (!text) return;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        showCopyNotification();
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showCopyNotification();
+    });
+}
+
+function showCopyNotification() {
+    const n = document.getElementById('copyNotification');
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 2000);
+}
+
+// ==================== INISIALISASI ====================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const daysInput = document.getElementById('daysToPredict');
+    daysInput.addEventListener('input', function() {
+        validateNumberInput(this, 1, 50);
+    });
+    
+    const digitInput = document.getElementById('digitCount');
+    digitInput.addEventListener('input', function() {
+        validateNumberInput(this, 1, 7);
+    });
+    
+    const patahInput = document.getElementById('patah');
+    patahInput.addEventListener('input', function() {
+        let value = this.value.replace(/[^\d]/g, '');
+        if (value === '') {
+            this.value = '';
+        } else {
+            let numValue = parseInt(value);
+            if (numValue > 5) numValue = 5;
+            this.value = numValue;
+        }
+        updateStatusInfo();
+    });
+    
+    const numbersTextarea = document.getElementById('numbers');
+    numbersTextarea.addEventListener('input', function() {
+        validateTextareaInput(this);
+    });
+    
+    const inputsToWatch = ['daysToPredict', 'digitCount', 'patah', 'targetType', 'searchMode'];
+    inputsToWatch.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', updateStatusInfo);
+        }
+    });
+    
+    updateDataCount();
+});
+</script>
+</body>
+</html>
