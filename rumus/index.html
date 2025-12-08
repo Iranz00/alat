@@ -1168,7 +1168,7 @@ A3+Js2-C1m8.(ty)"></textarea>
             }, 3000);
         }
         
-        // ========== PROGRAM 1: KEY KALKULATOR ==========
+        // ========== PROGRAM 1: KEY KALKULATOR (UPDATED) ==========
         const Program1 = {
             // Tabel konversi mistik
             mistikTables: {
@@ -1191,6 +1191,7 @@ A3+Js2-C1m8.(ty)"></textarea>
 
             dataHistory: [],
             currentFormulas: [],
+            formulaPatterns: [], // Simpan pola N untuk setiap rumus
             originalInputData: [],
             aiHistory: [],
             processComponentDepth: 0,
@@ -1257,6 +1258,7 @@ A3+Js2-C1m8.(ty)"></textarea>
             parseInputData: function(inputData) {
                 this.dataHistory = [];
                 this.currentFormulas = [];
+                this.formulaPatterns = [];
                 this.originalInputData = [];
                 this.aiHistory = [];
                 
@@ -1281,7 +1283,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                     if (line === '' && i > 0) {
                         const prevLine = lines[i-1].trim();
                         if (prevLine === '') {
-                            separatorIndex = i - 1; // Mulai dari line kosong pertama
+                            separatorIndex = i - 1;
                             foundSeparator = true;
                             separatorType = 'double-empty';
                             break;
@@ -1298,8 +1300,6 @@ A3+Js2-C1m8.(ty)"></textarea>
                         }
                     }
                 }
-                
-                console.log(`Separator type: ${separatorType}, found: ${foundSeparator}, index: ${separatorIndex}`);
                 
                 // Proses data sebelum separator
                 const dataLines = separatorIndex >= 0 ? lines.slice(0, separatorIndex) : lines;
@@ -1346,8 +1346,10 @@ A3+Js2-C1m8.(ty)"></textarea>
                     }
                 }
                 
-                // Proses rumus setelah separator
+                // Proses rumus setelah separator - FIXED: Pisahkan rumus dari pola N/karakter lain
                 const tempFormulas = [];
+                const tempPatterns = [];
+                
                 if (foundSeparator && separatorIndex < lines.length - 1) {
                     const formulaStartIndex = separatorIndex + (separatorType === 'double-empty' ? 2 : 1);
                     const formulaLines = lines.slice(formulaStartIndex);
@@ -1356,32 +1358,59 @@ A3+Js2-C1m8.(ty)"></textarea>
                         line = line.trim();
                         if (line === '') continue;
                         
-                        // Hanya tambah line yang mirip rumus
+                        // Hanya ambil line yang seperti rumus
                         if (line.match(/[A-Za-z]/) && !line.includes('//')) {
-                            tempFormulas.push(line);
+                            let formulaOnly = line;
+                            let pattern = null;
+                            
+                            // PISAHKAN: ambil hanya sampai spasi pertama
+                            const spaceIndex = line.indexOf(' ');
+                            if (spaceIndex !== -1) {
+                                formulaOnly = line.substring(0, spaceIndex).trim();
+                                const afterSpace = line.substring(spaceIndex + 1).trim();
+                                
+                                // Cek jika setelah spasi adalah pola N (N diikuti angka)
+                                if (afterSpace.match(/^N\d+(?:N\d+)*$/)) {
+                                    pattern = afterSpace;
+                                }
+                            }
+                            
+                            // Juga handle jika ada spasi sebelum tanda kurung
+                            formulaOnly = formulaOnly.replace(/\s+\.\(/, '.(');
+                            
+                            if (this.looksLikeFormula(formulaOnly)) {
+                                tempFormulas.push(formulaOnly);
+                                tempPatterns.push(pattern); // Simpan pola N (bisa null)
+                            }
                         }
                     }
                 }
                 
                 // Jika tidak ada separator, coba deteksi rumus di akhir
                 if (!foundSeparator && lines.length > 0) {
-                    // Cari dari akhir, line pertama yang seperti rumus
                     for (let i = lines.length - 1; i >= 0; i--) {
                         const line = lines[i].trim();
                         if (line === '') continue;
                         
-                        // Jika line mengandung karakter rumus dan tidak seperti data angka
                         if (line.match(/[A-Za-z]/) && !line.match(/^\d{4}\s*=/)) {
                             if (this.looksLikeFormula(line)) {
-                                // Semua line setelah ini adalah rumus
-                                const formulaStart = i;
-                                const formulaLines = lines.slice(formulaStart);
+                                let formulaOnly = line;
+                                let pattern = null;
                                 
-                                for (let formulaLine of formulaLines) {
-                                    formulaLine = formulaLine.trim();
-                                    if (formulaLine && this.looksLikeFormula(formulaLine)) {
-                                        tempFormulas.push(formulaLine);
+                                const spaceIndex = line.indexOf(' ');
+                                if (spaceIndex !== -1) {
+                                    formulaOnly = line.substring(0, spaceIndex).trim();
+                                    const afterSpace = line.substring(spaceIndex + 1).trim();
+                                    
+                                    if (afterSpace.match(/^N\d+(?:N\d+)*$/)) {
+                                        pattern = afterSpace;
                                     }
+                                }
+                                formulaOnly = formulaOnly.replace(/\s+\.\(/, '.(');
+                                
+                                if (this.looksLikeFormula(formulaOnly)) {
+                                    tempFormulas.push(formulaOnly);
+                                    tempPatterns.push(pattern);
                                 }
                                 break;
                             }
@@ -1391,6 +1420,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                 
                 this.dataHistory = tempData;
                 this.currentFormulas = tempFormulas;
+                this.formulaPatterns = tempPatterns;
                 
                 this.updateFormulaDisplay();
                 
@@ -1403,8 +1433,6 @@ A3+Js2-C1m8.(ty)"></textarea>
                     document.getElementById('historyInfo1').textContent = 
                         `Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
                 }
-                
-                console.log(`Format: ${separatorType}, Data: ${this.dataHistory.length}, Rumus: ${this.currentFormulas.length}`);
                 
                 return {
                     data: this.dataHistory,
@@ -1453,7 +1481,6 @@ A3+Js2-C1m8.(ty)"></textarea>
                         if (operator === '-') {
                             throw new Error(`Rumus ${formula} tidak valid: pengurangan dengan komponen sama (${comp1}-${comp2})`);
                         }
-                        // Jika operator '+', BOLEH (A1+A1 valid)
                     }
                 }
                 
@@ -1469,6 +1496,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                     formulaDisplay.innerHTML = this.currentFormulas.map((formula, index) => 
                         `<div style="margin-bottom: 5px; padding: 3px 0;">
                             <span style="color: #FFD700; font-weight: bold;">R${index + 1}:</span> ${formula}
+                            ${this.formulaPatterns[index] ? `<br><small style="color: #4ECDC4;">Pola: ${this.formulaPatterns[index]}</small>` : ''}
                         </div>`
                     ).join('');
                 }
@@ -1490,7 +1518,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                             highlightData = this.getHighlightDataForFormula(i);
                         }
                         
-                        const formulaOutput = this.generateRotatedOutput(results, formulas[i], highlightData);
+                        // GUNAKAN POLA N DARI INPUT JIKA ADA
+                        const customPattern = this.formulaPatterns[i];
+                        const formulaOutput = this.generateRotatedOutput(results, formulas[i], highlightData, customPattern);
                         outputHTML += formulaOutput;
                         
                         if (i < formulas.length - 1) {
@@ -1547,16 +1577,39 @@ A3+Js2-C1m8.(ty)"></textarea>
                 return results;
             },
 
-            generateRotatedOutput: function(results, formula, highlightData) {
+            generateRotatedOutput: function(results, formula, highlightData, customPattern) {
                 let output = '';
                 let inheritedPositions = null;
+                
+                // Jika ada custom pattern dari input, parse posisinya
+                let customHighlightPositions = null;
+                if (customPattern) {
+                    customHighlightPositions = [];
+                    const steps = customPattern.match(/N(\d)/g);
+                    if (steps) {
+                        for (let step of steps) {
+                            const pos = parseInt(step.substring(1));
+                            if (pos >= 0 && pos <= 9 && !customHighlightPositions.includes(pos)) {
+                                customHighlightPositions.push(pos);
+                            }
+                        }
+                        customHighlightPositions.sort((a, b) => a - b);
+                    }
+                }
                 
                 for (let i = 0; i < results.length; i++) {
                     const result = results[i];
                     
                     if (result.canCalculate) {
                         const highlightAI = highlightData[i] || '';
-                        const rotatedResult = this.formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
+                        
+                        // Gunakan custom pattern jika ada, jika tidak gunakan warisan
+                        const rotatedResult = this.formatAIWithColorAndInheritance(
+                            result.ai, 
+                            highlightAI, 
+                            customPattern ? customHighlightPositions : inheritedPositions,
+                            customPattern ? true : false
+                        );
                         output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
                         
                         inheritedPositions = rotatedResult.highlightPositions;
@@ -1567,12 +1620,13 @@ A3+Js2-C1m8.(ty)"></textarea>
                 }
                 
                 output += '======\n';
-                output += formula;
+                // Tampilkan rumus dengan pola N jika ada
+                output += customPattern ? `${formula} ${customPattern}` : formula;
                 
                 return output;
             },
 
-            formatAIWithColorAndInheritance: function(calculatedAI, highlightAI, inheritedPositions) {
+            formatAIWithColorAndInheritance: function(calculatedAI, highlightAI, highlightPositions, useCustomPattern = false) {
                 let rotatedDigits = '';
                 const allDigits = '0123456789';
                 const startIndex = allDigits.indexOf(calculatedAI.toString());
@@ -1582,9 +1636,8 @@ A3+Js2-C1m8.(ty)"></textarea>
                     rotatedDigits += allDigits[actualIndex];
                 }
                 
-                let highlightPositions = inheritedPositions;
-                
-                if (highlightAI && highlightAI.trim() !== '' && !inheritedPositions) {
+                // Jika pakai custom pattern, langsung pakai highlightPositions dari pattern
+                if (!useCustomPattern && highlightAI && highlightAI.trim() !== '' && !highlightPositions) {
                     highlightPositions = [];
                     const highlightDigits = highlightAI.toString().split('');
                     
@@ -1640,9 +1693,8 @@ A3+Js2-C1m8.(ty)"></textarea>
                 const lines = outputElement.innerHTML.split('\n');
                 let dataLines = [];
                 let currentFormula = '';
+                let currentPattern = 'N0N1'; // Default
                 let waitingForFormula = false;
-                let highlightPositions = [];
-                let firstHighlightFound = false;
                 
                 for (let line of lines) {
                     line = line.trim();
@@ -1654,19 +1706,12 @@ A3+Js2-C1m8.(ty)"></textarea>
                         const regex = /<span[^>]*>(\d)<\/span>/g;
                         let match;
                         let highlightedDigits = '';
-                        let positions = [];
                         
                         while ((match = regex.exec(line)) !== null) {
                             highlightedDigits += match[1];
-                            positions.push(match.index % 10);
                         }
                         
                         if (highlightedDigits) {
-                            if (!firstHighlightFound && positions.length > 0) {
-                                highlightPositions = positions.map(pos => `N${pos}`);
-                                firstHighlightFound = true;
-                            }
-                            
                             const suffix = this.determineMajoritySuffix();
                             dataLines.push(`${number} = ${highlightedDigits} ${suffix}`);
                         } else {
@@ -1680,17 +1725,23 @@ A3+Js2-C1m8.(ty)"></textarea>
                     }
                     
                     if (waitingForFormula && line && !line.includes('//') && !line.includes('<')) {
-                        currentFormula = line;
+                        // Ambil rumus dan pola N dari output
+                        const formulaMatch = line.match(/^([A-Za-z0-9+\-\.\(\)]+)(?:\s+(N\d+(?:N\d+)*))?$/);
+                        if (formulaMatch) {
+                            currentFormula = formulaMatch[1];
+                            currentPattern = formulaMatch[2] || 'N0N1';
+                        } else {
+                            // Jika tidak match regex, ambil semua sebagai rumus
+                            currentFormula = line;
+                        }
                         waitingForFormula = false;
                     }
                 }
                 
-                const polaN = highlightPositions.length > 0 ? highlightPositions.join('') : 'N0N1';
-                
                 copyText = dataLines.join('\n');
                 if (currentFormula) {
                     copyText += '\n======\n';
-                    copyText += `${currentFormula} ${polaN}`;
+                    copyText += `${currentFormula} ${currentPattern}`;
                 }
                 
                 if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
@@ -1896,18 +1947,11 @@ A3+Js2-C1m8.(ty)"></textarea>
             clearAll: function() {
                 document.getElementById('inputData1').value = '';
                 document.getElementById('resultOutput1').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Support 8 komponen + highlight 2-6 digit:
+// Mendukung menghitung 1-6 digit:
 
-// 8603 = 3456789012 ai
-// 2436 = 4567890123 ai  
-// 5678 = 5678901234 ai
-// 9012 = 6789012345 ai
-// ======
-// A3mb-A5m9.(ty)
-
-// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
-// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
-// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
+// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234
+// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567
+// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789
 // ======
 // Js6ml+E2ty.(mb)
 
@@ -1924,6 +1968,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                 document.getElementById('historyInfo1').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
                 this.dataHistory = [];
                 this.currentFormulas = [];
+                this.formulaPatterns = [];
                 this.originalInputData = [];
                 this.aiHistory = [];
                 this.processComponentDepth = 0;
@@ -2792,46 +2837,89 @@ A3+Js2-C1m8.(ty)"></textarea>
                 
                 let resultText = `\n🎯 HASIL #${resultNumber}\n`;
                 resultText += `Target: ${targetDisplayNames[result.targetType] || result.targetType}\n`;
-                resultText += `Pattern: ${result.pattern}\n`;
                 
+                // Tampilkan prediksi sebelumnya
                 for (let i = 0; i < result.predictions.length; i++) {
                     const p = result.predictions[i];
-                    const mark = p.hit ? '✅' : '❌';
-                    resultText += `${p.input} = ${p.prediction} → ${p.target} ${mark}\n`;
+                    const suffix = targetSuffix[result.targetType] || 'ai';
+                    // SELALU tampilkan suffix, baik HIT maupun PATAH
+                    const mark = p.hit ? ` ${suffix} ✅` : ` ${suffix} ❌`;
+                    resultText += `${p.input} = ${p.prediction}${mark}\n`;
                 }
                 
                 const lastIndex = this.dataHistory.length - 1;
+                const currentInput = this.dataHistory[lastIndex];
                 let latestPrediction = '?';
+                let actualTarget = '?';
+                let nextMark = ` ${targetSuffix[result.targetType] || 'ai'} ❌`; // Default dengan suffix
+                let statusSuffix = targetSuffix[result.targetType] || 'ai';
+                
                 try {
                     const ai = this.calculateAI(result.aiFormula, lastIndex, this.dataHistory);
                     const rotation = this.generateRotation(ai);
                     const pred = this.applyPatternToRotation(rotation, result.pattern);
                     latestPrediction = pred;
-                    resultText += `${this.dataHistory[lastIndex]} = ${pred} → prediksi selanjutnya\n`;
+                    
+                    // CARI DATA BERIKUTNYA UNTUK VERIFIKASI
+                    if (lastIndex + 1 < this.dataHistory.length) {
+                        const nextData = this.dataHistory[lastIndex + 1];
+                        actualTarget = this.getTargetDigits(nextData, result.targetType);
+                        
+                        // CEK APAKAH PREDIKSI BENAR
+                        const check = this.checkPrediction(pred, actualTarget, result.targetType);
+                        
+                        // SELALU gunakan suffix, baik HIT maupun PATAH
+                        if (check.hit) {
+                            nextMark = ` ${statusSuffix} ✅`;
+                        } else {
+                            nextMark = ` ${statusSuffix} ❌`;
+                        }
+                        
+                        // UPDATE STATISTIK
+                        result.attempts += 1;
+                        if (check.hit) {
+                            result.hits += 1;
+                        } else {
+                            result.patah += 1;
+                        }
+                        result.accuracy = result.hits / result.attempts;
+                    } else {
+                        // JIKA BELUM ADA DATA BERIKUTNYA (PREDIKSI MASA DEPAN)
+                        actualTarget = pred;
+                        // Prediksi masa depan selalu dianggap HIT untuk display
+                        nextMark = ` ${statusSuffix} ✅`;
+                    }
+                    
+                    // FORMAT KONSISTEN: selalu dengan suffix
+                    resultText += `${currentInput} = ${pred}${nextMark}\n`;
+                    
                 } catch (e) {
-                    resultText += `${this.dataHistory[lastIndex]} = ? → prediksi selanjutnya\n`;
+                    resultText += `${currentInput} = ? ${statusSuffix} ❌\n`;
                 }
                 
                 resultText += `======\n`;
-                resultText += `${result.fullFormula}\n`; // Already includes pola N
+                resultText += `${result.fullFormula}\n`;
                 resultText += `✅ ${result.hits}/${result.attempts} | ❌ ${result.patah}x\n`;
                 
                 output += resultText;
                 document.getElementById('resultOutput2').textContent = output;
                 
-                // SIMPAN DATA UNTUK COPY (FIXED - sudah include pola N di fullFormula)
+                // SIMPAN DATA UNTUK COPY (format berbeda)
                 result.copyData = [];
                 const suffix = targetSuffix[result.targetType] || 'ai';
                 
                 for (let i = 0; i < result.predictions.length; i++) {
                     const p = result.predictions[i];
+                    // Copy data: suffix untuk hit, 'x' untuk patah
                     const status = p.hit ? suffix : 'x';
                     result.copyData.push(`${p.input} = ${p.prediction} ${status}`);
                 }
                 
                 if (latestPrediction !== '?') {
-                    const latestInput = this.dataHistory[lastIndex];
-                    result.copyData.push(`${latestInput} = ${latestPrediction} ${suffix}`);
+                    // Untuk copy data: gunakan suffix jika hit, 'x' jika patah
+                    const copyStatus = (lastIndex + 1 < this.dataHistory.length) ? 
+                        (nextMark.includes('✅') ? suffix : 'x') : suffix;
+                    result.copyData.push(`${currentInput} = ${latestPrediction} ${copyStatus}`);
                 }
                 
                 const resultBox = document.getElementById('resultOutput2');
