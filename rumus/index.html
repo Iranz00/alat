@@ -1,984 +1,3319 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Key Kalkulator Multi Rumus - RAN</title>
-<style>
-/* CSS */
-* { 
-    margin:0; 
-    padding:0; 
-    box-sizing:border-box; 
-}
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    min-height:100vh; 
-    padding:20px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-}
-.container { 
-    max-width:1200px; 
-    width:100%;
-    margin:0 auto; 
-    background:white; 
-    border-radius:20px; 
-    padding:30px; 
-    box-shadow:0 20px 40px rgba(0,0,0,0.15);
-}
-.header { 
-    text-align:center; 
-    margin-bottom:25px; 
-}
-h1 { 
-    color:#2d3748; 
-    margin-bottom:8px; 
-    font-size:2.2rem;
-    font-weight:700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-.subtitle { 
-    text-align:center; 
-    color:#718096; 
-    font-size:15px; 
-    margin-bottom:25px;
-    line-height:1.5;
-}
-.grid-container { 
-    display:grid; 
-    grid-template-columns:1fr 1fr; 
-    gap:25px; 
-    margin-bottom:25px;
-}
-.input-section, .output-section { 
-    background:#f8f9fa; 
-    padding:25px; 
-    border-radius:15px; 
-    border:2px solid #e9ecef;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-}
-.section-title { 
-    color:#2d3748; 
-    margin-bottom:20px; 
-    font-size:18px; 
-    font-weight:bold;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.data-input { 
-    margin-bottom:20px;
-}
-.data-input textarea { 
-    width:100%; 
-    height:200px; 
-    padding:15px; 
-    border:2px solid #e2e8f0; 
-    border-radius:12px; 
-    font-size:15px; 
-    resize:vertical; 
-    margin-bottom:10px;
-    font-family: 'Courier New', monospace;
-    transition: all 0.3s ease;
-    background: white;
-}
-.data-input textarea:focus { 
-    border-color:#667eea; 
-    outline:none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-.formula-display {
-    background: #1a202c;
-    color: #e2e8f0;
-    padding: 15px;
-    border-radius: 12px;
-    font-family: 'Courier New', monospace;
-    margin-bottom: 20px;
-    border: 2px solid #2d3748;
-    font-size: 14px;
-    text-align: left;
-    max-height: 150px;
-    overflow-y: auto;
-}
-.button-group { 
-    display:flex; 
-    gap:12px; 
-    margin-bottom:20px;
-}
-.button-group-double {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-button { 
-    padding:15px; 
-    border:none; 
-    border-radius:12px; 
-    font-size:15px; 
-    font-weight:600; 
-    cursor:pointer; 
-    transition:all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-calculate { 
-    background:linear-gradient(135deg, #4CAF50, #45a049);
-    color:white;
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-}
-.btn-clear { 
-    background:linear-gradient(135deg, #ff6b6b, #ee5a52);
-    color:white;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-.btn-copy { 
-    background:linear-gradient(135deg, #2196F3, #1976D2);
-    color:white;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
-}
-button:hover { 
-    transform:translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-button:active {
-    transform:translateY(-1px);
-}
-.info { 
-    background:#e3f2fd; 
-    padding:18px; 
-    border-radius:12px; 
-    margin-bottom:20px; 
-    text-align:center;
-    font-weight:500;
-    border-left:4px solid #2196F3;
-    transition: all 0.3s ease;
-}
-.info.success {
-    background:#e8f5e8;
-    border-left-color:#4CAF50;
-    color:#2e7d32;
-}
-.info.error {
-    background:#ffebee;
-    border-left-color:#f44336;
-    color:#c62828;
-}
-.input-info { 
-    text-align:center; 
-    color:#718096; 
-    font-size:13px; 
-    margin-bottom:15px;
-    font-weight: 500;
-}
-.result-box { 
-    background:#1a202c; 
-    color:#e2e8f0; 
-    padding:25px; 
-    border-radius:12px; 
-    font-family:'Courier New',monospace; 
-    min-height:200px; 
-    white-space:pre-wrap; 
-    line-height:1.6;
-    border:1px solid #2d3748;
-    font-size:14px;
-    overflow-y: auto;
-    max-height: 400px;
-    position: relative;
-}
-.result-box::-webkit-scrollbar {
-    width:8px;
-}
-.result-box::-webkit-scrollbar-track {
-    background:#2d3748;
-    border-radius:4px;
-}
-.result-box::-webkit-scrollbar-thumb {
-    background:#4a5568;
-    border-radius:4px;
-}
-.result-box::-webkit-scrollbar-thumb:hover {
-    background:#718096;
-}
-.copy-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #4CAF50;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
-    transform: translateX(150%);
-    transition: transform 0.3s ease;
-}
-.copy-notification.show {
-    transform: translateX(0);
-}
-.formula-label {
-    color: #a0aec0;
-    font-size: 12px;
-    margin-bottom: 5px;
-    text-align: center;
-}
-.history-info {
-    background: #e8f5e8;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    font-size: 12px;
-    color: #2e7d32;
-    text-align: center;
-    border-left: 4px solid #4CAF50;
-}
-.formula-item {
-    margin-bottom: 5px;
-    padding: 3px 0;
-}
-.formula-index {
-    color: #FFD700;
-    font-weight: bold;
-}
-@media (max-width: 768px) {
-    .container {
-        padding:20px;
-    }
-    .grid-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    .button-group-double {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Tools - Kalkulator & Auto Prediksi</title>
+    <style>
+        /* ========== GLOBAL RESET & FONTS ========== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        /* ========== DARK MODE THEME ========== */
+        body.dark-theme {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: #e2e8f0;
+        }
+        
+        /* ========== CONTAINERS ========== */
+        .main-container { 
+            max-width: 1400px; 
+            width: 100%;
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 20px; 
+            padding: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .main-container {
+            background: #2d3748;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+        
+        .header h1 { 
+            color: #2d3748; 
+            margin-bottom: 8px; 
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .header h1 {
+            color: #e2e8f0;
+        }
+        
+        .subtitle { 
+            text-align: center; 
+            color: #718096; 
+            font-size: 15px; 
+            margin-bottom: 25px;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .subtitle {
+            color: #a0aec0;
+        }
+        
+        /* ========== THEME TOGGLE ========== */
+        .theme-toggle {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .theme-toggle button {
+            background: linear-gradient(135deg, #4a5568, #718096);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .theme-toggle button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        body.dark-theme .theme-toggle button {
+            background: linear-gradient(135deg, #718096, #4a5568);
+        }
+        
+        /* ========== TAB SYSTEM ========== */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+        
+        body.dark-theme .tab-buttons {
+            background: #4a5568;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #4a5568;
+        }
+        
+        body.dark-theme .tab-btn {
+            color: #cbd5e0;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        body.dark-theme .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-btn.active {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            color: #667eea;
+        }
+        
+        body.dark-theme .tab-btn.active {
+            background: #2d3748;
+            color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ========== PROGRAM 1 STYLES ========== */
+        .grid-container-1 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 25px; 
+            margin-bottom: 25px;
+        }
+        
+        .input-section-1, .output-section-1 { 
+            background: #f8f9fa; 
+            padding: 25px; 
+            border-radius: 15px; 
+            border: 2px solid #e9ecef;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .input-section-1,
+        body.dark-theme .output-section-1 {
+            background: #4a5568;
+            border-color: #718096;
+        }
+        
+        .section-title-1 { 
+            color: #2d3748; 
+            margin-bottom: 20px; 
+            font-size: 18px; 
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .section-title-1 {
+            color: #e2e8f0;
+        }
+        
+        .data-input-1 { 
+            margin-bottom: 20px;
+        }
+        
+        .data-input-1 textarea { 
+            width: 100%; 
+            height: 200px; 
+            padding: 15px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 15px; 
+            resize: vertical; 
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+        }
+        
+        body.dark-theme .data-input-1 textarea {
+            background: #2d3748;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+        
+        .data-input-1 textarea:focus { 
+            border-color: #667eea; 
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        body.dark-theme .data-input-1 textarea:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .formula-display-1 {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            border: 2px solid #2d3748;
+            font-size: 14px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .button-group-1 { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 20px;
+        }
+        
+        .button-group-double-1 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .button-1 { 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 15px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+        }
+        
+        .btn-calculate-1 { 
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-clear-1 { 
+            background: linear-gradient(135deg, #f44336, #f44336);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-copy-1 { 
+            background: linear-gradient(135deg, #009688, #00796B);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        .button-1:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .button-1:active {
+            transform: translateY(-1px);
+        }
+        
+        .info-1 { 
+            background: #e3f2fd; 
+            padding: 18px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            text-align: center;
+            font-weight: 500;
+            border-left: 4px solid #2196F3;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+        
+        body.dark-theme .info-1 {
+            background: #4a5568;
+            border-left-color: #667eea;
+            color: #e2e8f0;
+        }
+        
+        .info-1.success {
+            background: #e8f5e8;
+            border-left-color: #4CAF50;
+            color: #2e7d32;
+        }
+        
+        body.dark-theme .info-1.success {
+            background: #2d5c2d;
+            border-left-color: #4CAF50;
+            color: #e8f5e8;
+        }
+        
+        .info-1.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+        
+        body.dark-theme .info-1.error {
+            background: #5c2d2d;
+            border-left-color: #f44336;
+            color: #ffebee;
+        }
+        
+        .input-info-1 { 
+            text-align: center; 
+            color: #718096; 
+            font-size: 13px; 
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        body.dark-theme .input-info-1 {
+            color: #a0aec0;
+        }
+        
+        .result-box-1 { 
+            background: #1a202c; 
+            color: #e2e8f0; 
+            padding: 25px; 
+            border-radius: 12px; 
+            font-family: 'Courier New', monospace; 
+            min-height: 200px; 
+            white-space: pre-wrap; 
+            line-height: 1.6;
+            border: 1px solid #2d3748;
+            font-size: 14px;
+            overflow-y: auto;
+            max-height: 400px;
+            position: relative;
+        }
+        
+        .result-box-1::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .result-box-1::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 4px;
+        }
+        
+        .result-box-1::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        
+        .result-box-1::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+        
+        .formula-label-1 {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        
+        .history-info-1 {
+            background: #e8f5e8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #2e7d32;
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        body.dark-theme .history-info-1 {
+            background: #2d5c2d;
+            color: #e8f5e8;
+        }
+        
+        /* ========== PROGRAM 2 STYLES ========== */
+        .grid-container-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1.2fr; 
+            gap: 20px; 
+            margin-bottom: 25px;
+        }
+        
+        .input-section-2, .output-section-2 { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .input-section-2,
+        body.dark-theme .output-section-2 {
+            background: #4a5568;
+            border-color: #718096;
+        }
+        
+        .section-title-2 { 
+            color: #0c2461; 
+            margin-bottom: 12px; 
+            font-size: 15px; 
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .section-title-2 {
+            color: #e2e8f0;
+        }
+        
+        .data-input-2 textarea { 
+            width: 100%; 
+            height: 140px; 
+            padding: 12px; 
+            border: 2px solid #4a69bd; 
+            border-radius: 8px; 
+            font-size: 13px; 
+            resize: vertical; 
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            background: white;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .data-input-2 textarea {
+            background: #2d3748;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+        
+        .data-input-2 textarea:focus {
+            border-color: #4a69bd;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.1);
+        }
+        
+        body.dark-theme .data-input-2 textarea:focus {
+            box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
+        }
+        
+        .controls-2 { 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .control-group-2 {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-group-2 label {
+            font-size: 12px;
+            color: #1e3799;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .control-group-2 label {
+            color: #a0aec0;
+        }
+        
+        .control-group-2 input, .control-group-2 select {
+            padding: 8px 10px;
+            border: 2px solid #4a69bd;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .control-group-2 input,
+        body.dark-theme .control-group-2 select {
+            background: #2d3748;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+        
+        .button-group-2 { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px; 
+            margin-bottom: 12px;
+        }
+        
+        .button-2 { 
+            padding: 10px 12px; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: white;
+        }
+        
+        .btn-run-2 { 
+            background: linear-gradient(135deg, #009688, #00796B);
+            grid-column: span 2;
+        }
+        
+        .btn-stop-2 {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            grid-column: span 2;
+        }
+        
+        .btn-continue-2 {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .btn-clear-2 { 
+            background: linear-gradient(135deg, #f44336, #f44336);
+        }
+        
+        .btn-clear-output-2 {
+            background: linear-gradient(135deg, #f44336, #f44336);
+        }
+        
+        .btn-copy-2 {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+        
+        .button-2:hover:not(:disabled) { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .button-2:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .stats-2 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .stat-box-2 {
+            background: #e8f4fc;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .stat-box-2 {
+            background: #2d3748;
+            border-color: #4a69bd;
+        }
+        
+        .stat-label-2 {
+            font-size: 10px;
+            color: #3498db;
+            margin-bottom: 2px;
+        }
+        
+        body.dark-theme .stat-label-2 {
+            color: #a0aec0;
+        }
+        
+        .stat-value-2 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0c2461;
+        }
+        
+        body.dark-theme .stat-value-2 {
+            color: #e2e8f0;
+        }
+        
+        .result-box-2 { 
+            background: #0d1b2a; 
+            color: #e2e8f0; 
+            padding: 15px; 
+            border-radius: 10px; 
+            font-family: 'Consolas', 'Courier New', monospace; 
+            white-space: pre; 
+            line-height: 1.3;
+            border: 2px solid #1e3799;
+            font-size: 12px;
+            overflow-y: auto;
+            height: 500px;
+        }
+        
+        .info-status-2 {
+            background: #e8f4fc;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #0c2461;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .info-status-2 {
+            background: #4a5568;
+            border-color: #667eea;
+            color: #e2e8f0;
+        }
+        
+        .info-status-2 .warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .info-status-2 .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .info-status-2 .info-line-2 {
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .info-status-2 .label-2 {
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .info-status-2 .label-2 {
+            color: #a0aec0;
+        }
+        
+        .info-status-2 .value-2 {
+            font-weight: bold;
+        }
+        
+        .progress-bar-2 {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        body.dark-theme .progress-bar-2 {
+            background: #4a5568;
+        }
+        
+        .progress-fill-2 {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #3498db);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .auto-continue-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-theme .auto-continue-checkbox {
+            background: #4a5568;
+            border-color: #718096;
+        }
+        
+        .auto-continue-checkbox input {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .auto-continue-checkbox label {
+            font-size: 12px;
+            color: #495057;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        body.dark-theme .auto-continue-checkbox label {
+            color: #e2e8f0;
+        }
+        
+        /* ========== SHARED COMPONENTS ========== */
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+        
+        .version-info {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        body.dark-theme .version-info {
+            border-top-color: #718096;
+            color: #a0aec0;
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 1100px) {
+            .grid-container-1,
+            .grid-container-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .main-container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+            
+            .button-group-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .btn-run-2, .btn-stop-2 {
+                grid-column: span 1;
+            }
+            
+            .controls-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .result-box-2 {
+                height: 400px;
+            }
+            
+            .button-group-1 {
+                flex-direction: column;
+            }
+            
+            .button-group-double-1 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .button-group-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-btn {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+            
+            .data-input-1 textarea {
+                height: 150px;
+            }
+            
+            .result-box-1 {
+                max-height: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>🔮 KEY KALKULATOR</h1>
-        <div class="subtitle">Hitung rumus otomatis dengan multi kolom AI</div>
-    </div>
-
-    <div class="grid-container">
-        <div class="input-section">
-            <div class="data-input">
-                <textarea id="inputData" placeholder="Masukkan data dengan format:
-6987 = 02 . 75 . 27 . 37 ai
-7070 = 68 . 97 . 16 . 60 ai
-1567 = 80 . 42 . 05 . 48 ai
+    <div class="main-container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🔮 PREDIKSI TOOLS</h1>
+            <div class="subtitle">Kalkulator Rumus & Auto Prediksi dalam Satu Aplikasi</div>
+        </div>
+        
+        <!-- THEME TOGGLE -->
+        <div class="theme-toggle">
+            <button id="themeButton">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Mode Gelap</span>
+            </button>
+        </div>
+        
+        <!-- TAB SYSTEM -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn" data-tab="program2">
+                    <span>🔍</span>
+                    <span>Rumus Otomatis</span>
+                </button>
+                <button class="tab-btn active" data-tab="program1">
+                    <span>⏳</span>
+                    <span>Rumus Semi-Auto</span>
+                </button>
+            </div>
+            
+            <!-- PROGRAM 1 CONTENT -->
+            <div id="program1" class="tab-content active">
+                <div class="grid-container-1">
+                    <div class="input-section-1">
+                        <div class="data-input-1">
+                            <textarea id="inputData1" placeholder="Masukkan data dengan format:
+8603 = 30 ai
+2436 = 74 ai
 ...
+4467 = 
+
+ATAU
+
+8603 = 30 ai
+2436 = 74 ai
 ======
-A7mb+E7ty.(mb)
-C3ml-E3ty.(m9)
-A6ix+E4
-A5ix-K6"></textarea>
-                <div class="input-info" id="inputInfo">0 angka + 0 rumus terdeteksi</div>
+A3mb-A5m9.(ty)
+Js6ml+E2ty.(mb)
+J3D4mb-C5.(ix)
+J4D2ml+K3.(ty)
+A3+Js2-C1m8.(ty)"></textarea>
+                            <div class="input-info-1" id="inputInfo1">0 angka + 0 rumus terdeteksi</div>
+                        </div>
+                        
+                        <div class="formula-label-1">Rumus Terdeteksi:</div>
+                        <div class="formula-display-1" id="detectedFormula1">Tidak ada rumus</div>
+                        
+                        <div class="history-info-1" id="historyInfo1">Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.</div>
+                        
+                        <div class="button-group-1">
+                            <button class="button-1 btn-calculate-1" onclick="Program1.calculateFormula()">🧮 HITUNG RUMUS</button>
+                            <button class="button-1 btn-clear-1" onclick="Program1.clearAll()">🗑️ HAPUS SEMUA</button>
+                        </div>
+                        
+                    </div>
+
+                    <div class="output-section-1">
+                        <div class="section-title-1">📤 HASIL OUTPUT</div>
+                        <div class="result-box-1" id="resultOutput1">// Hasil perhitungan akan muncul di sini
+// Support 1 - 6 digit:
+
+// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234
+// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567
+// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789
+// ======
+// Js6ml+E2ty.(mb)
+
+// ... dan seterusnya untuk setiap rumus</div>
+                        <br>
+                        <div class="button-group-double-1">
+                            <button class="button-1 btn-copy-1" onclick="Program1.copyOutput()">📋 SALIN OUTPUT</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="formula-label">Rumus Terdeteksi:</div>
-            <div class="formula-display" id="detectedFormula">Tidak ada rumus</div>
-            
-            <div class="history-info" id="historyInfo">Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.</div>
-            
-            <div class="button-group">
-                <button class="btn-calculate" onclick="calculateFormula()">🧮 HITUNG RUMUS</button>
-                <button class="btn-clear" onclick="clearAll()">🗑️ HAPUS SEMUA</button>
-            </div>
-            
-            <div class="info" id="info">
-                Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
-                <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
-                    <strong>Format Input Multi Kolom:</strong><br>
-                    • <code>6987 = 02 . 75 . 27 . 37 ai</code><br>
-                    • Kolom 1 → Rumus 1, Kolom 2 → Rumus 2, Kolom 3 → Rumus 3, Kolom 4 → Rumus 4<br>
-                    • Support highlight 2-6 digit<br>
-                    <strong>Komponen yang didukung:</strong><br>
-                    • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
-                    • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
+            <!-- PROGRAM 2 CONTENT -->
+            <div id="program2" class="tab-content">
+                <div class="grid-container-2">
+                    <div class="input-section-2">
+                        <div class="section-title-2">📥 INPUT DATA</div>
+                        
+                        <div class="data-input-2">
+                            <textarea id="numbers2" placeholder="Masukkan angka 4D (satu per baris):
+6834
+6176
+2243
+1563
+6271
+2518
+4892
+7361"></textarea>
+                            
+                            <div class="stats-2">
+                                <div class="stat-box-2">
+                                    <div class="stat-label-2">DATA</div>
+                                    <div class="stat-value-2" id="dataCount2">0</div>
+                                </div>
+                                <div class="stat-box-2">
+                                    <div class="stat-label-2">KOMBINASI</div>
+                                    <div class="stat-value-2" id="formulaCount2">0</div>
+                                </div>
+                                <div class="stat-box-2">
+                                    <div class="stat-label-2">HASIL</div>
+                                    <div class="stat-value-2" id="foundCount2">0</div>
+                                </div>
+                                <div class="stat-box-2">
+                                    <div class="stat-label-2">PROSES</div>
+                                    <div class="stat-value-2" id="processedCount2">0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-bar-2">
+                                <div class="progress-fill-2" id="progressFill2"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="controls-2">
+                            <div class="control-group-2">
+                                <label>Hari Prediksi</label>
+                                <input type="text" id="daysToPredict2" value="16" pattern="[0-9]*" maxlength="2" title="1-50 hari">
+                            </div>
+                            <div class="control-group-2">
+                                <label>Digit Prediksi</label>
+                                <input type="text" id="digitCount2" value="3" pattern="[1-7]" maxlength="1" title="1-7 digit">
+                            </div>
+                            <div class="control-group-2">
+                                <label>Patah</label>
+                                <input type="text" id="patah2" value="" pattern="[0-5]*" maxlength="1" placeholder="Kosong = 0" title="0-5 patah">
+                            </div>
+                            <div class="control-group-2">
+                                <label>Prediksi Bagian</label>
+                                <select id="targetType2">
+                                    <option value="all" selected>Semua (Auto Detect)</option>
+                                    <option value="A">AS (Ribuan)</option>
+                                    <option value="C">COP (Ratusan)</option>
+                                    <option value="K">KEPALA (Puluhan)</option>
+                                    <option value="E">EKOR (Satuan)</option>
+                                    <option value="J">JUMLAH (K+E)</option>
+                                    <option value="AC">AC (2D Depan)</option>
+                                    <option value="CK">CK (2D Tengah)</option>
+                                    <option value="KE">KE (2D Belakang)</option>
+                                    <option value="CB">CB (4D Lengkap)</option>
+                                </select>
+                            </div>
+                            <div class="control-group-2">
+                                <label>Mode</label>
+                                <select id="searchMode2">
+                                    <option value="full">LENGKAP</option>
+                                    <option value="quick">CEPAT</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="auto-continue-checkbox">
+                            <input type="checkbox" id="autoContinue2">
+                            <label for="autoContinue2">Auto-continue semua sesi (pause 5 detik antar sesi)</label>
+                        </div>
+                
+                        <div style="margin-top: 20px;"></div>
+                
+                        <div class="button-group-2">
+                            <button class="button-2 btn-run-2" onclick="Program2.startSearch()" id="runBtn2">🚀 CARI RUMUS</button>
+                            <button class="button-2 btn-stop-2" onclick="Program2.stopSearch()" id="stopBtn2" disabled>⏹️ STOP</button>
+                            <button class="button-2 btn-continue-2" onclick="Program2.continueSearch()" id="continueBtn2" disabled>▶️ LANJUT</button>
+                            <button class="button-2 btn-clear-2" onclick="Program2.clearAll()">🗑️ HAPUS DATA</button>
+                        </div>
+                        
+                        <div class="info-status-2" id="infoStatus2">
+                            <!-- Akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="output-section-2">
+                        <div class="section-title-2">📊 HASIL REAL-TIME</div>
+                        <div class="result-box-2" id="resultOutput2"></div>
+                        <div class="button-group-2" style="margin-top:10px;">
+                            <button class="button-2 btn-clear-output-2" onclick="Program2.clearOutput()">🗑️ HAPUS OUTPUT</button>
+                            <button class="button-2 btn-copy-2" onclick="Program2.copyOutput()">📋 SALIN</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="output-section">
-            <div class="section-title">📤 HASIL OUTPUT</div>
-            <div class="result-box" id="resultOutput">// Hasil perhitungan akan muncul di sini
-// Support multi kolom + highlight 2-6 digit:
-
-// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">2</span>3456789 ai
-// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>9012345 ai
-// ======
-// A7mb+E7ty.(mb)
-
-// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>8901234 ai
-// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span>0123456 ai
-// ======
-// C3ml-E3ty.(m9)
-
-// ... dan seterusnya untuk setiap rumus</div>
-            <br>
-            <div class="button-group-double">
-                <button class="btn-copy" onclick="copyOutput()">📋 SALIN OUTPUT</button>
-            </div>
-        </div>
     </div>
-</div>
 
-<div class="copy-notification" id="copyNotification">
-    ✅ Output berhasil disalin ke clipboard!
-</div>
+    <!-- SHARED COPY NOTIFICATION -->
+    <div class="copy-notification" id="copyNotification">
+        ✅ Output berhasil disalin ke clipboard!
+    </div>
 
-<script>
-// Tabel konversi mistik
-const mistikTables = {
-    'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
-    'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
-    'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
-    'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
-    'M0': {'0':'6', '1':'5', '2':'8', '3':'7', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
-    'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
-    'M2': {'0':'2', '1':'8', '2':'0', '3':'9', '4':'7', '5':'6', '6':'5', '7':'4', '8':'1', '9':'3'},
-    'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
-    'M4': {'0':'6', '1':'5', '2':'3', '3':'2', '4':'7', '5':'1', '6':'0', '7':'4', '8':'9', '9':'8'},
-    'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
-    'M6': {'0':'6', '1':'8', '2':'4', '3':'5', '4':'2', '5':'3', '6':'0', '7':'9', '8':'1', '9':'7'},
-    'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
-    'M8': {'0':'8', '1':'7', '2':'6', '3':'5', '4':'9', '5':'3', '6':'1', '7':'2', '8':'0', '9':'4'},
-    'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'},
-    'M10': {'0':'4', '1':'2', '2':'1', '3':'8', '4':'0', '5':'6', '6':'5', '7':'9', '8':'3', '9':'7'},
-};
-
-let dataHistory = [];
-let currentFormulas = [];
-let originalInputData = [];
-let aiHistory = [];
-
-// Data highlight untuk setiap rumus
-const highlightPatterns = [
-    ['30', '74', '07', '63', '07', '07', '74', '07', '63', '30', '41', '96', '41', '18', '74', '85'],
-    ['35', '80', '68', '68', '02', '02', '79', '13', '68', '13', '80', '02', '46', '68', '68', '35'],
-    ['36', '70', '81', '92', '03', '25', '70', '81', '36', '70', '81', '69', '58', '58', '58', '36'],
-    ['35', '80', '68', '02', '57', '79', '79', '57', '68', '79', '91', '80', '80', '68', '80', '46'],
-    ['23', '01', '01', '23', '56', '23', '89', '67', '56', '23', '12', '01', '34', '56', '34', '67']
-];
-
-function calculateFormula() {
-    const inputData = document.getElementById('inputData').value.trim();
-    
-    if (!inputData) {
-        showInfo('Masukkan data terlebih dahulu!', 'error');
-        return;
-    }
-    
-    try {
-        const parsedData = parseInputData(inputData);
-        
-        if (currentFormulas.length === 0) {
-            showInfo('Tidak ada rumus yang terdeteksi! Pastikan ada rumus setelah garis "======"', 'error');
-            return;
-        }
-        
-        displayAllFormulaResults(currentFormulas);
-        showInfo(`Perhitungan berhasil! ${currentFormulas.length} rumus diproses.`, 'success');
-        
-    } catch (error) {
-        showInfo(`Error: ${error.message}`, 'error');
-        console.error('Calculation error:', error);
-    }
-}
-
-function parseInputData(inputData) {
-    dataHistory = [];
-    currentFormulas = [];
-    originalInputData = [];
-    aiHistory = [];
-    
-    const lines = inputData.split('\n').filter(line => line.trim());
-    let foundSeparator = false;
-    const tempData = [];
-    const tempFormulas = [];
-    
-    for (let line of lines) {
-        line = line.trim();
-        
-        if (line === '======' || line.startsWith('======')) {
-            foundSeparator = true;
-            continue;
-        }
-        
-        if (foundSeparator && line) {
-            line = line.replace(/[–—]/g, '-');
-            tempFormulas.push(line);
-        }
-        
-        if (!foundSeparator) {
-            const numberMatch = line.match(/(\d{4})/);
-            if (numberMatch) {
-                const number = numberMatch[1];
-                
-                const as = number[0];
-                const cop = number[1];
-                const kepala = number[2];
-                const ekor = number[3];
-                const jumlah = reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
-                
-                tempData.push({
-                    number: number,
-                    as: as,
-                    cop: cop,
-                    kepala: kepala,
-                    ekor: ekor,
-                    jumlah: jumlah
+    <script>
+        // ========== TAB SYSTEM ==========
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
                 });
                 
-                // EXTRACT SEMUA KOLOM AI (2-6 digit per kolom)
-                const aiMatch = line.match(/(\d{4})\s*=\s*(.+?)\s*ai$/i);
-                if (aiMatch) {
-                    const aiParts = aiMatch[2].split('.').map(part => part.trim());
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Activate clicked tab
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                
+                // Save active tab to localStorage
+                localStorage.setItem('activeTab', tabId);
+                
+                // Optional: Pause Program 2 if running when switching tabs
+                if (tabId === 'program1' && Program2 && Program2.isSearching) {
+                    Program2.stopSearch();
+                    showNotification('⏸️ Auto Prediksi di-pause karena pindah tab');
+                }
+            });
+        });
+        
+        // Restore active tab on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTab = localStorage.getItem('activeTab') || 'program1';
+            const tabButton = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+            if (tabButton) {
+                tabButton.click();
+            }
+        });
+        
+        // ========== DARK MODE TOGGLE ==========
+        const themeButton = document.getElementById('themeButton');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        
+        function getPreferredTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) return savedTheme;
+            
+            // Check system preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            
+            return 'light';
+        }
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Mode Terang';
+            } else {
+                document.body.classList.remove('dark-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Mode Gelap';
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark-theme');
+            setTheme(isDark ? 'light' : 'dark');
+        }
+        
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', () => {
+            const preferredTheme = getPreferredTheme();
+            setTheme(preferredTheme);
+            
+            themeButton.addEventListener('click', toggleTheme);
+            
+            // Watch for system theme changes
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    if (!localStorage.getItem('theme')) {
+                        setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            }
+        });
+        
+        // ========== SHARED FUNCTIONS ==========
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ========== PROGRAM 1: KEY KALKULATOR (FIXED) ==========
+        const Program1 = {
+            // Tabel konversi mistik
+            mistikTables: {
+                'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
+                'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
+                'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
+                'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
+                'M0': {'0':'6', '1':'5', '2':'8', '3':'7', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
+                'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
+                'M2': {'0':'2', '1':'8', '2':'0', '3':'9', '4':'7', '5':'6', '6':'5', '7':'4', '8':'1', '9':'3'},
+                'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
+                'M4': {'0':'6', '1':'5', '2':'3', '3':'2', '4':'7', '5':'1', '6':'0', '7':'4', '8':'9', '9':'8'},
+                'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
+                'M6': {'0':'6', '1':'8', '2':'4', '3':'5', '4':'2', '5':'3', '6':'0', '7':'9', '8':'1', '9':'7'},
+                'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
+                'M8': {'0':'8', '1':'7', '2':'6', '3':'5', '4':'9', '5':'3', '6':'1', '7':'2', '8':'0', '9':'4'},
+                'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'},
+                'M10': {'0':'4', '1':'2', '2':'1', '3':'8', '4':'0', '5':'6', '6':'5', '7':'9', '8':'3', '9':'7'},
+            },
+
+            dataHistory: [],
+            currentFormulas: [],
+            originalInputData: [],
+            aiHistory: [],
+            processComponentDepth: 0,
+            maxComponentDepth: 10,
+
+            // Data highlight untuk setiap rumus
+            highlightPatterns: [
+                ['30', '74', '07', '63', '07', '07', '74', '07', '63', '30', '41', '96', '41', '18', '74', '85'],
+                ['35', '80', '68', '68', '02', '02', '79', '13', '68', '13', '80', '02', '46', '68', '68', '35'],
+                ['36', '70', '81', '92', '03', '25', '70', '81', '36', '70', '81', '69', '58', '58', '58', '36'],
+                ['35', '80', '68', '02', '57', '79', '79', '57', '68', '79', '91', '80', '80', '68', '80', '46'],
+                ['23', '01', '01', '23', '56', '23', '89', '67', '56', '23', '12', '01', '34', '56', '34', '67']
+            ],
+
+            calculateFormula: function() {
+                const inputData = document.getElementById('inputData1').value.trim();
+                
+                if (!inputData) {
+                    this.showInfo('Masukkan data terlebih dahulu!', 'error');
+                    return;
+                }
+                
+                try {
+                    // Reset depth counter
+                    this.processComponentDepth = 0;
                     
-                    // Simpan semua kolom AI (bisa 2-6 digit per kolom)
-                    const aiColumns = [];
-                    for (let i = 0; i < Math.min(aiParts.length, 6); i++) {
-                        aiColumns.push(aiParts[i] || '');
+                    const parsedData = this.parseInputData(inputData);
+                    
+                    if (this.currentFormulas.length === 0) {
+                        this.showInfo('Tidak ada rumus yang terdeteksi!', 'error');
+                        return;
                     }
                     
-                    originalInputData.push({
-                        number: aiMatch[1],
-                        ai_columns: aiColumns,
-                        type: 'ai'
-                    });
-                } else {
-                    originalInputData.push({
-                        number: number,
-                        ai_columns: [],
-                        type: ''
-                    });
+                    // Validasi semua rumus
+                    const invalidFormulas = [];
+                    for (let formula of this.currentFormulas) {
+                        try {
+                            this.validateFormula(formula);
+                        } catch (error) {
+                            invalidFormulas.push(`${formula}: ${error.message}`);
+                        }
+                    }
+                    
+                    if (invalidFormulas.length > 0) {
+                        throw new Error(`Rumus tidak valid:\n${invalidFormulas.join('\n')}`);
+                    }
+                    
+                    this.displayAllFormulaResults(this.currentFormulas);
+                    this.showInfo(`Perhitungan berhasil! ${this.currentFormulas.length} rumus diproses.`, 'success');
+                    
+                } catch (error) {
+                    this.showInfo(`Error: ${error.message}`, 'error');
+                    console.error('Calculation error:', error);
+                    
+                    // Tampilkan error di output
+                    document.getElementById('resultOutput1').innerHTML = 
+                        `// ERROR: ${error.message}\n` +
+                        `// Pastikan rumus valid dan data cukup\n` +
+                        `// Contoh valid: A3mb-A5m9.(ty)\n` +
+                        `// Contoh tidak valid: A1-A1.(ty)`;
                 }
-            }
-        }
-    }
-    
-    dataHistory = tempData;
-    currentFormulas = tempFormulas;
-    
-    updateFormulaDisplay();
-    
-    if (currentFormulas.length > 0) {
-        const maxDaysNeeded = currentFormulas.map(formula => findMaxDayInFormula(formula));
-        const maxDay = Math.max(...maxDaysNeeded);
-        document.getElementById('historyInfo').textContent = 
-            `Butuh ${maxDay} hari history. ${currentFormulas.length} rumus terdeteksi.`;
-    }
-    
-    return {
-        data: dataHistory,
-        formulas: currentFormulas
-    };
-}
+            },
 
-function updateFormulaDisplay() {
-    const formulaDisplay = document.getElementById('detectedFormula');
-    
-    if (currentFormulas.length === 0) {
-        formulaDisplay.textContent = 'Tidak ada rumus';
-    } else {
-        formulaDisplay.innerHTML = currentFormulas.map((formula, index) => 
-            `<div class="formula-item"><span class="formula-index">R${index + 1}:</span> ${formula}</div>`
-        ).join('');
-    }
-}
-
-function displayAllFormulaResults(formulas) {
-    const output = document.getElementById('resultOutput');
-    let outputHTML = '';
-    
-    // Untuk setiap rumus
-    for (let i = 0; i < formulas.length; i++) {
-        try {
-            // Hitung hasil AI untuk rumus ini
-            const results = calculateAIForSingleFormula(formulas[i]);
-            
-            // Tentukan highlight data dari KOLOM INPUT yang sesuai
-            let highlightData = [];
-            if (originalInputData.length > 0 && originalInputData[0].ai_columns) {
-                const aiColumnIndex = Math.min(i, originalInputData[0].ai_columns.length - 1);
-                highlightData = originalInputData.map(item => {
-                    const aiValue = item.ai_columns[aiColumnIndex] || '';
-                    return (aiValue === 'Xx' || aiValue === 'xx' || aiValue === 'XX') ? '' : aiValue;
-                });
-            }
-            
-            // Generate output dengan highlight
-            const formulaOutput = generateRotatedOutput(results, formulas[i], highlightData);
-            outputHTML += formulaOutput;
-            
-            if (i < formulas.length - 1) {
-                outputHTML += '\n\n';
-            }
-            
-        } catch (error) {
-            outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
-            outputHTML += `// ${error.message}\n`;
-            outputHTML += '======\n';
-            outputHTML += formulas[i] + '\n\n';
-        }
-    }
-    
-    output.innerHTML = outputHTML;
-}
-
-function calculateAIForSingleFormula(formula) {
-    const results = [];
-    const maxDayNeeded = findMaxDayInFormula(formula);
-    
-    aiHistory = [];
-    
-    for (let i = 0; i < dataHistory.length; i++) {
-        if (i >= maxDayNeeded - 1) {
-            const aiResult = calculateSingleAI(formula, i);
-            results.push({
-                number: dataHistory[i].number,
-                ai: aiResult,
-                canCalculate: true
-            });
-            aiHistory[i] = aiResult;
-        } else {
-            results.push({
-                number: dataHistory[i].number,
-                ai: '',
-                canCalculate: false
-            });
-            aiHistory[i] = null;
-        }
-    }
-    
-    return results;
-}
-
-function generateRotatedOutput(results, formula, highlightData) {
-    let output = '';
-    let inheritedPositions = null;
-    
-    for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        
-        if (result.canCalculate) {
-            const highlightAI = highlightData[i] || '';
-            const rotatedResult = formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
-            
-            // Tentukan suffix berdasarkan jumlah digit yang di-highlight
-            let suffix = '';
-            const highlightedCount = rotatedResult.highlightPositions.length;
-            
-            if (highlightedCount === 2) {
-                suffix = ' ai';
-            } else if (highlightedCount > 2 && highlightedCount <= 6) {
-                suffix = ` (${highlightedCount} digit)`;
-            }
-            
-            output += `${result.number} = ${rotatedResult.rotatedDigits}${suffix}\n`;
-            
-            inheritedPositions = rotatedResult.highlightPositions;
-        } else {
-            output += `${result.number} = \n`;
-            inheritedPositions = null;
-        }
-    }
-    
-    output += '======\n';
-    output += formula;
-    
-    return output;
-}
-
-function formatAIWithColorAndInheritance(calculatedAI, highlightAI, inheritedPositions) {
-    // Buat urutan digit dimulai dari calculatedAI
-    let rotatedDigits = '';
-    const allDigits = '0123456789';
-    const startIndex = allDigits.indexOf(calculatedAI.toString());
-    
-    for (let i = 0; i < allDigits.length; i++) {
-        const actualIndex = (startIndex + i) % allDigits.length;
-        rotatedDigits += allDigits[actualIndex];
-    }
-    
-    let highlightPositions = [];
-    
-    if (highlightAI && highlightAI.trim() !== '') {
-        const highlightDigits = highlightAI.toString().split('');
-        
-        // Untuk setiap digit dalam highlightAI (support 2-6 digit)
-        highlightDigits.forEach((digit, index) => {
-            if (digit >= '0' && digit <= '9') {
-                const position = rotatedDigits.indexOf(digit);
-                if (position !== -1 && !highlightPositions.some(p => p.position === position)) {
-                    highlightPositions.push({
-                        position: position,
-                        digit: digit,
-                        index: index
-                    });
-                }
-            }
-        });
-        
-        // Urutkan berdasarkan posisi
-        highlightPositions.sort((a, b) => a.position - b.position);
-    }
-    
-    // Jika tidak ada highlight dari input, gunakan inherited positions
-    if (highlightPositions.length === 0 && inheritedPositions) {
-        inheritedPositions.forEach((pos, index) => {
-            if (pos >= 0 && pos < rotatedDigits.length) {
-                highlightPositions.push({
-                    position: pos,
-                    digit: rotatedDigits[pos],
-                    index: index
-                });
-            }
-        });
-    }
-    
-    // Beri warna berdasarkan posisi highlight
-    let result = '';
-    const highlightColors = [
-        '#FF6B6B', // Merah - digit 1
-        '#4ECDC4', // Cyan - digit 2
-        '#45B7D1', // Biru muda - digit 3
-        '#96CEB4', // Hijau muda - digit 4
-        '#FFEAA7', // Kuning - digit 5
-        '#DDA0DD', // Ungu - digit 6
-        '#FFA07A', // Salmon - digit 7+
-        '#20B2AA', // Light sea green
-        '#778899', // Light slate gray
-        '#D8BFD8'  // Thistle
-    ];
-    
-    for (let i = 0; i < rotatedDigits.length; i++) {
-        const digit = rotatedDigits[i];
-        const highlight = highlightPositions.find(h => h.position === i);
-        
-        if (highlight) {
-            const colorIndex = highlight.index % highlightColors.length;
-            const color = highlightColors[colorIndex];
-            result += `<span style="color: ${color}; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">${digit}</span>`;
-        } else {
-            result += digit;
-        }
-    }
-    
-    return {
-        rotatedDigits: result,
-        highlightPositions: highlightPositions.map(h => h.position)
-    };
-}
-
-function copyOutput() {
-    const outputElement = document.getElementById('resultOutput');
-    let copyText = '';
-    
-    const lines = outputElement.innerHTML.split('\n');
-    let currentBlock = '';
-    let blocks = [];
-    let waitingForFormula = false;
-    let currentFormulaIndex = -1;
-    
-    for (let line of lines) {
-        line = line.trim();
-        
-        if (line === '======') {
-            waitingForFormula = true;
-            currentBlock += '======\n';
-            continue;
-        }
-        
-        if (line.includes('//')) {
-            continue;
-        }
-        
-        if (waitingForFormula && line && !line.includes('//')) {
-            currentBlock += line + '\n';
-            waitingForFormula = false;
-            blocks.push(currentBlock.trim());
-            currentBlock = '';
-            currentFormulaIndex++;
-            continue;
-        }
-        
-        const numberMatch = line.match(/(\d{4})\s*=/);
-        if (numberMatch) {
-            const number = numberMatch[1];
-            
-            // Extract semua digit yang di-highlight
-            const regex = /<span[^>]*>(\d)<\/span>/g;
-            let match;
-            let highlightedDigits = '';
-            
-            while ((match = regex.exec(line)) !== null) {
-                highlightedDigits += match[1];
-            }
-            
-            if (highlightedDigits) {
-                // Tentukan suffix
-                let suffix = '';
-                if (highlightedDigits.length === 2) {
-                    suffix = ' ai';
-                } else if (highlightedDigits.length > 2) {
-                    suffix = ` (${highlightedDigits.length} digit)`;
+            parseInputData: function(inputData) {
+                this.dataHistory = [];
+                this.currentFormulas = [];
+                this.originalInputData = [];
+                this.aiHistory = [];
+                
+                const lines = inputData.split('\n');
+                let foundSeparator = false;
+                let separatorIndex = -1;
+                let separatorType = 'none';
+                
+                // Deteksi separator dengan berbagai format
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    // 1. Deteksi "======" (6 tanda sama dengan)
+                    if (line === '======' || line.startsWith('======')) {
+                        separatorIndex = i;
+                        foundSeparator = true;
+                        separatorType = 'equals';
+                        break;
+                    }
+                    
+                    // 2. Deteksi double empty line (enter 2x)
+                    if (line === '' && i > 0) {
+                        const prevLine = lines[i-1].trim();
+                        if (prevLine === '') {
+                            separatorIndex = i - 1; // Mulai dari line kosong pertama
+                            foundSeparator = true;
+                            separatorType = 'double-empty';
+                            break;
+                        }
+                        
+                        // 3. Deteksi single empty line + rumus (fallback)
+                        const nextLine = i < lines.length - 1 ? lines[i+1].trim() : '';
+                        if (nextLine !== '' && !nextLine.match(/^\d{4}\s*=/) && 
+                            (nextLine.match(/[A-Za-z]/) || nextLine.includes('(') || nextLine.includes(')'))) {
+                            separatorIndex = i;
+                            foundSeparator = true;
+                            separatorType = 'single-empty';
+                            break;
+                        }
+                    }
                 }
                 
-                currentBlock += `${number} = ${highlightedDigits}${suffix}\n`;
-            } else {
-                currentBlock += `${number} = \n`;
-            }
-        }
-    }
-    
-    if (currentBlock.trim()) {
-        blocks.push(currentBlock.trim());
-    }
-    
-    copyText = blocks.join('\n\n');
-    
-    if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
-        showInfo('Tidak ada output yang bisa disalin!', 'error');
-        return;
-    }
-    
-    navigator.clipboard.writeText(copyText).then(() => {
-        showCopyNotification();
-    }).catch(err => {
-        const textArea = document.createElement('textarea');
-        textArea.value = copyText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showCopyNotification();
-    });
-}
+                console.log(`Separator type: ${separatorType}, found: ${foundSeparator}, index: ${separatorIndex}`);
+                
+                // Proses data sebelum separator
+                const dataLines = separatorIndex >= 0 ? lines.slice(0, separatorIndex) : lines;
+                const tempData = [];
+                
+                for (let line of dataLines) {
+                    line = line.trim();
+                    if (line === '') continue;
+                    
+                    const numberMatch = line.match(/(\d{4})/);
+                    if (numberMatch) {
+                        const number = numberMatch[1];
+                        
+                        const as = number[0];
+                        const cop = number[1];
+                        const kepala = number[2];
+                        const ekor = number[3];
+                        const jumlah = this.reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
+                        
+                        tempData.push({
+                            number: number,
+                            as: as,
+                            cop: cop,
+                            kepala: kepala,
+                            ekor: ekor,
+                            jumlah: jumlah
+                        });
+                        
+                        // Ekstrak data original dengan suffix
+                        const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)\s*(\w*)/);
+                        if (originalMatch) {
+                            this.originalInputData.push({
+                                number: originalMatch[1],
+                                ai: originalMatch[2] || '',
+                                suffix: originalMatch[3] || 'ai'
+                            });
+                        } else {
+                            this.originalInputData.push({
+                                number: number,
+                                ai: '',
+                                suffix: 'ai'
+                            });
+                        }
+                    }
+                }
+                
+                // Proses rumus setelah separator
+                const tempFormulas = [];
+                if (foundSeparator && separatorIndex < lines.length - 1) {
+                    const formulaStartIndex = separatorIndex + (separatorType === 'double-empty' ? 2 : 1);
+                    const formulaLines = lines.slice(formulaStartIndex);
+                    
+                    for (let line of formulaLines) {
+                        line = line.trim();
+                        if (line === '') continue;
+                        
+                        // Hanya tambah line yang mirip rumus
+                        if (line.match(/[A-Za-z]/) && !line.includes('//')) {
+                            tempFormulas.push(line);
+                        }
+                    }
+                }
+                
+                // Jika tidak ada separator, coba deteksi rumus di akhir
+                if (!foundSeparator && lines.length > 0) {
+                    // Cari dari akhir, line pertama yang seperti rumus
+                    for (let i = lines.length - 1; i >= 0; i--) {
+                        const line = lines[i].trim();
+                        if (line === '') continue;
+                        
+                        // Jika line mengandung karakter rumus dan tidak seperti data angka
+                        if (line.match(/[A-Za-z]/) && !line.match(/^\d{4}\s*=/)) {
+                            if (this.looksLikeFormula(line)) {
+                                // Semua line setelah ini adalah rumus
+                                const formulaStart = i;
+                                const formulaLines = lines.slice(formulaStart);
+                                
+                                for (let formulaLine of formulaLines) {
+                                    formulaLine = formulaLine.trim();
+                                    if (formulaLine && this.looksLikeFormula(formulaLine)) {
+                                        tempFormulas.push(formulaLine);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                this.dataHistory = tempData;
+                this.currentFormulas = tempFormulas;
+                
+                this.updateFormulaDisplay();
+                
+                if (this.currentFormulas.length > 0) {
+                    const maxDaysNeeded = this.currentFormulas.map(formula => this.findMaxDayInFormula(formula));
+                    const maxDay = Math.max(...maxDaysNeeded);
+                    document.getElementById('historyInfo1').textContent = 
+                        `Butuh ${maxDay} hari history. ${this.currentFormulas.length} rumus terdeteksi.`;
+                } else {
+                    document.getElementById('historyInfo1').textContent = 
+                        `Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
+                }
+                
+                console.log(`Format: ${separatorType}, Data: ${this.dataHistory.length}, Rumus: ${this.currentFormulas.length}`);
+                
+                return {
+                    data: this.dataHistory,
+                    formulas: this.currentFormulas
+                };
+            },
 
-function findMaxDayInFormula(formula) {
-    let maxDay = 1;
-    let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-    
-    // Regex untuk menemukan semua komponen
-    const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
-    let match;
-    
-    while ((match = componentRegex.exec(workingFormula)) !== null) {
-        const day = parseInt(match[2]);
-        if (day > maxDay) {
-            maxDay = day;
-        }
-    }
-    
-    return maxDay;
-}
+            looksLikeFormula: function(line) {
+                // Cek jika line terlihat seperti rumus
+                if (!line.match(/[A-Za-z]/)) return false;
+                if (line.includes('//')) return false;
+                if (line.match(/^\d{4}/)) return false;
+                
+                // Harus mengandung komponen A,C,K,E,J, dll
+                const components = ['A','C','K','E','J','Js','J3D','J4D'];
+                return components.some(comp => line.includes(comp));
+            },
 
-function calculateSingleAI(formula, currentDayIndex) {
-    let workingFormula = formula;
-    const finalConversion = workingFormula.match(/\.\((\w+)\)/);
-    if (finalConversion) {
-        workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
-    }
-    
-    const components = workingFormula.split(/([+\-])/);
-    let total = 0;
-    let currentOperator = '+';
-    
-    for (let i = 0; i < components.length; i++) {
-        const component = components[i].trim();
-        
-        if (component === '+' || component === '-') {
-            currentOperator = component;
-            continue;
-        }
-        
-        if (component) {
-            const value = processComponent(component, currentDayIndex);
-            
-            if (currentOperator === '+') {
-                total += value;
-            } else if (currentOperator === '-') {
-                total -= value;
-            }
-        }
-    }
-    
-    if (total < 0) {
-        total = Math.abs(total);
-    }
-    
-    if (finalConversion) {
-        const table = finalConversion[1].toUpperCase();
-        const converted = convertMistik(total.toString(), table);
-        total = parseInt(converted);
-    }
-    
-    const finalResult = reduceToSingleDigit(total);
-    
-    aiHistory[currentDayIndex] = finalResult;
-    
-    return finalResult;
-}
+            validateFormula: function(formula) {
+                // Cek format dasar
+                if (!formula.match(/[A-Za-z]/)) {
+                    throw new Error(`Rumus tidak valid: ${formula}`);
+                }
+                
+                // Cek untuk komponen dengan offset 0
+                if (formula.match(/[A-Za-z]0/)) {
+                    throw new Error(`Rumus ${formula} tidak valid: offset 0 tidak diperbolehkan`);
+                }
+                
+                // Cek mistik table valid
+                const mistikMatch = formula.match(/\.\((\w+)\)/);
+                if (mistikMatch && !this.mistikTables[mistikMatch[1].toUpperCase()]) {
+                    throw new Error(`Tabel mistik tidak dikenal: ${mistikMatch[1]}`);
+                }
+                
+                // VALIDASI KOMPONEN SAMA BERDASARKAN OPERATOR (FIXED)
+                const baseFormula = formula.replace(/\.\((\w+)\)/, '');
+                const components = baseFormula.split(/([+\-])/).filter(c => c.trim());
+                
+                // Cek jika hanya 3 bagian (A op B)
+                if (components.length === 3) {
+                    const [comp1, operator, comp2] = components;
+                    
+                    // Cek jika komponen sama
+                    if (comp1 === comp2) {
+                        if (operator === '-') {
+                            throw new Error(`Rumus ${formula} tidak valid: pengurangan dengan komponen sama (${comp1}-${comp2})`);
+                        }
+                        // Jika operator '+', BOLEH (A1+A1 valid)
+                    }
+                }
+                
+                return true;
+            },
 
-function processComponent(component, currentDayIndex) {
-    // Normalisasi karakter
-    component = component.replace(/[–—]/g, '-');
-    
-    const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
-    if (!match) {
-        throw new Error(`Format komponen tidak valid: ${component}`);
-    }
-    
-    const type = match[1];
-    const dayOffset = parseInt(match[2]);
-    const conversion = match[3];
-    
-    const targetDayIndex = currentDayIndex - (dayOffset - 1);
-    
-    if (targetDayIndex < 0 || targetDayIndex >= dataHistory.length) {
-        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
-    }
-    
-    const data = dataHistory[targetDayIndex];
-    let value;
-    
-    switch(type) {
-        case 'A': value = parseInt(data.as); break;
-        case 'C': value = parseInt(data.cop); break;
-        case 'K': value = parseInt(data.kepala); break;
-        case 'E': value = parseInt(data.ekor); break;
-        case 'J': value = data.jumlah; break;
-        case 'Js': 
-            value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
-            value = reduceToSingleDigit(value);
-            break;
-        case 'J3D':
-            value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
-            value = reduceToSingleDigit(value);
-            break;
-        case 'J4D':
-            value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
-            value = reduceToSingleDigit(value);
-            break;
-        default: 
-            throw new Error(`Tipe komponen tidak dikenali: ${type}`);
-    }
-    
-    if (conversion) {
-        const table = conversion.toUpperCase();
-        value = parseInt(convertMistik(value.toString(), table));
-    }
-    
-    return value;
-}
+            updateFormulaDisplay: function() {
+                const formulaDisplay = document.getElementById('detectedFormula1');
+                
+                if (this.currentFormulas.length === 0) {
+                    formulaDisplay.textContent = 'Tidak ada rumus';
+                } else {
+                    formulaDisplay.innerHTML = this.currentFormulas.map((formula, index) => 
+                        `<div style="margin-bottom: 5px; padding: 3px 0;">
+                            <span style="color: #FFD700; font-weight: bold;">R${index + 1}:</span> ${formula}
+                        </div>`
+                    ).join('');
+                }
+            },
 
-function convertMistik(number, table) {
-    if (!mistikTables[table]) {
-        throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
-    }
-    
-    const digit = reduceToSingleDigit(parseInt(number)).toString();
-    
-    if (mistikTables[table][digit] === undefined) {
-        throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
-    }
-    
-    return mistikTables[table][digit];
-}
+            displayAllFormulaResults: function(formulas) {
+                const output = document.getElementById('resultOutput1');
+                let outputHTML = '';
+                let hasError = false;
+                
+                for (let i = 0; i < formulas.length; i++) {
+                    try {
+                        const results = this.calculateAIForSingleFormula(formulas[i]);
+                        
+                        let highlightData = [];
+                        if (i === 0) {
+                            highlightData = this.originalInputData.map(item => item.ai);
+                        } else {
+                            highlightData = this.getHighlightDataForFormula(i);
+                        }
+                        
+                        const formulaOutput = this.generateRotatedOutput(results, formulas[i], highlightData);
+                        outputHTML += formulaOutput;
+                        
+                        if (i < formulas.length - 1) {
+                            outputHTML += '\n\n';
+                        }
+                    } catch (error) {
+                        outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
+                        outputHTML += `// ${error.message}\n`;
+                        outputHTML += '======\n';
+                        outputHTML += formulas[i] + '\n\n';
+                        hasError = true;
+                    }
+                }
+                
+                output.innerHTML = outputHTML;
+                
+                if (hasError) {
+                    this.showInfo('Ada error dalam perhitungan, lihat output untuk detail', 'error');
+                }
+            },
 
-function reduceToSingleDigit(num) {
-    let result = num;
-    while (result > 9) {
-        result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-    }
-    return result;
-}
+            getHighlightDataForFormula: function(formulaIndex) {
+                if (formulaIndex < this.highlightPatterns.length) {
+                    return this.highlightPatterns[formulaIndex];
+                }
+                
+                return this.originalInputData.map(() => '');
+            },
 
-function clearAll() {
-    document.getElementById('inputData').value = '';
-    document.getElementById('resultOutput').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Support multi kolom + highlight 2-6 digit:
+            calculateAIForSingleFormula: function(formula) {
+                const results = [];
+                const maxDayNeeded = this.findMaxDayInFormula(formula);
+                
+                this.aiHistory = [];
+                
+                for (let i = 0; i < this.dataHistory.length; i++) {
+                    if (i >= maxDayNeeded - 1) {
+                        const aiResult = this.calculateSingleAI(formula, i);
+                        results.push({
+                            number: this.dataHistory[i].number,
+                            ai: aiResult,
+                            canCalculate: true
+                        });
+                    } else {
+                        results.push({
+                            number: this.dataHistory[i].number,
+                            ai: '',
+                            canCalculate: false
+                        });
+                        this.aiHistory[i] = null;
+                    }
+                }
+                
+                return results;
+            },
 
-// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">2</span>3456789 ai
-// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>9012345 ai
+            generateRotatedOutput: function(results, formula, highlightData) {
+                let output = '';
+                let inheritedPositions = null;
+                
+                for (let i = 0; i < results.length; i++) {
+                    const result = results[i];
+                    
+                    if (result.canCalculate) {
+                        const highlightAI = highlightData[i] || '';
+                        const rotatedResult = this.formatAIWithColorAndInheritance(result.ai, highlightAI, inheritedPositions);
+                        output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
+                        
+                        inheritedPositions = rotatedResult.highlightPositions;
+                    } else {
+                        output += `${result.number} = \n`;
+                        inheritedPositions = null;
+                    }
+                }
+                
+                output += '======\n';
+                output += formula;
+                
+                return output;
+            },
+
+            formatAIWithColorAndInheritance: function(calculatedAI, highlightAI, inheritedPositions) {
+                let rotatedDigits = '';
+                const allDigits = '0123456789';
+                const startIndex = allDigits.indexOf(calculatedAI.toString());
+                
+                for (let i = 0; i < allDigits.length; i++) {
+                    const actualIndex = (startIndex + i) % allDigits.length;
+                    rotatedDigits += allDigits[actualIndex];
+                }
+                
+                let highlightPositions = inheritedPositions;
+                
+                if (highlightAI && highlightAI.trim() !== '' && !inheritedPositions) {
+                    highlightPositions = [];
+                    const highlightDigits = highlightAI.toString().split('');
+                    
+                    for (let digit of highlightDigits) {
+                        if (digit >= '0' && digit <= '9') {
+                            const position = rotatedDigits.indexOf(digit);
+                            if (position !== -1 && !highlightPositions.includes(position)) {
+                                highlightPositions.push(position);
+                            }
+                        }
+                    }
+                    
+                    if (highlightPositions.length > 0) {
+                        highlightPositions.sort((a, b) => a - b);
+                    } else {
+                        highlightPositions = null;
+                    }
+                }
+                
+                let result = '';
+                let colorIndex = 0;
+                const highlightColors = [
+                    '#FF6B6B',
+                    '#4ECDC4',
+                    '#45B7D1',
+                    '#96CEB4',
+                    '#FFEAA7',
+                    '#DDA0DD'
+                ];
+                
+                for (let i = 0; i < rotatedDigits.length; i++) {
+                    const digit = rotatedDigits[i];
+                    
+                    if (highlightPositions && highlightPositions.includes(i)) {
+                        const color = highlightColors[colorIndex % highlightColors.length];
+                        result += `<span style="color: ${color}; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">${digit}</span>`;
+                        colorIndex++;
+                    } else {
+                        result += digit;
+                    }
+                }
+                
+                return {
+                    rotatedDigits: result,
+                    highlightPositions: highlightPositions
+                };
+            },
+
+            copyOutput: function() {
+                const outputElement = document.getElementById('resultOutput1');
+                let copyText = '';
+                
+                const lines = outputElement.innerHTML.split('\n');
+                let dataLines = [];
+                let currentFormula = '';
+                let waitingForFormula = false;
+                let highlightPositions = [];
+                let firstHighlightFound = false;
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    
+                    const numberMatch = line.match(/(\d{4})\s*=/);
+                    if (numberMatch) {
+                        const number = numberMatch[1];
+                        
+                        const regex = /<span[^>]*>(\d)<\/span>/g;
+                        let match;
+                        let highlightedDigits = '';
+                        let positions = [];
+                        
+                        while ((match = regex.exec(line)) !== null) {
+                            highlightedDigits += match[1];
+                            positions.push(match.index % 10);
+                        }
+                        
+                        if (highlightedDigits) {
+                            if (!firstHighlightFound && positions.length > 0) {
+                                highlightPositions = positions.map(pos => `N${pos}`);
+                                firstHighlightFound = true;
+                            }
+                            
+                            const suffix = this.determineMajoritySuffix();
+                            dataLines.push(`${number} = ${highlightedDigits} ${suffix}`);
+                        } else {
+                            dataLines.push(`${number} = `);
+                        }
+                    }
+                    
+                    if (line === '======') {
+                        waitingForFormula = true;
+                        continue;
+                    }
+                    
+                    if (waitingForFormula && line && !line.includes('//') && !line.includes('<')) {
+                        currentFormula = line;
+                        waitingForFormula = false;
+                    }
+                }
+                
+                const polaN = highlightPositions.length > 0 ? highlightPositions.join('') : 'N0N1';
+                
+                copyText = dataLines.join('\n');
+                if (currentFormula) {
+                    copyText += '\n======\n';
+                    copyText += `${currentFormula} ${polaN}`;
+                }
+                
+                if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
+                    this.showInfo('Tidak ada output yang bisa disalin!', 'error');
+                    return;
+                }
+                
+                navigator.clipboard.writeText(copyText).then(() => {
+                    showNotification('✅ Output berhasil disalin!');
+                }).catch(err => {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = copyText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification('✅ Output berhasil disalin!');
+                });
+            },
+
+            determineMajoritySuffix: function() {
+                const suffixCount = {};
+                
+                for (const item of this.originalInputData) {
+                    if (item.suffix && item.suffix !== 'ai') {
+                        suffixCount[item.suffix] = (suffixCount[item.suffix] || 0) + 1;
+                    }
+                }
+                
+                let majoritySuffix = 'ai';
+                let maxCount = 0;
+                
+                for (const [suffix, count] of Object.entries(suffixCount)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        majoritySuffix = suffix;
+                    }
+                }
+                
+                return majoritySuffix;
+            },
+
+            findMaxDayInFormula: function(formula) {
+                let maxDay = 1;
+                let workingFormula = formula.replace(/\.\((\w+)\)/, '');
+                
+                const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
+                let match;
+                
+                while ((match = componentRegex.exec(workingFormula)) !== null) {
+                    const day = parseInt(match[2]);
+                    if (day > maxDay) {
+                        maxDay = day;
+                    }
+                }
+                
+                return maxDay;
+            },
+
+            calculateSingleAI: function(formula, currentDayIndex) {
+                let workingFormula = formula;
+                const finalConversion = workingFormula.match(/\.\((\w+)\)/);
+                if (finalConversion) {
+                    workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+                }
+                
+                const components = workingFormula.split(/([+\-])/);
+                let total = 0;
+                let currentOperator = '+';
+                
+                for (let i = 0; i < components.length; i++) {
+                    const component = components[i].trim();
+                    
+                    if (component === '+' || component === '-') {
+                        currentOperator = component;
+                        continue;
+                    }
+                    
+                    if (component) {
+                        const value = this.processComponent(component, currentDayIndex);
+                        
+                        if (currentOperator === '+') {
+                            total += value;
+                        } else if (currentOperator === '-') {
+                            total -= value;
+                        }
+                    }
+                }
+                
+                if (total < 0) {
+                    total = Math.abs(total);
+                }
+                
+                if (finalConversion) {
+                    const table = finalConversion[1].toUpperCase();
+                    const converted = this.convertMistik(total.toString(), table);
+                    total = parseInt(converted);
+                }
+                
+                const finalResult = this.reduceToSingleDigit(total);
+                
+                this.aiHistory[currentDayIndex] = finalResult;
+                
+                return finalResult;
+            },
+
+            processComponent: function(component, currentDayIndex) {
+                // Recursion depth check (FIXED)
+                if (this.processComponentDepth > this.maxComponentDepth) {
+                    throw new Error(`Max recursion depth exceeded in processComponent: ${component}`);
+                }
+                
+                this.processComponentDepth++;
+                
+                try {
+                    const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
+                    if (!match) {
+                        throw new Error(`Format komponen tidak valid: ${component}`);
+                    }
+                    
+                    const type = match[1];
+                    const dayOffset = parseInt(match[2]);
+                    const conversion = match[3];
+                    
+                    if (dayOffset === 0) {
+                        throw new Error(`Komponen ${component} tidak valid: offset 0 tidak diperbolehkan`);
+                    }
+                    
+                    const targetDayIndex = currentDayIndex - (dayOffset - 1);
+                    
+                    if (targetDayIndex < 0) {
+                        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
+                    }
+                    
+                    const data = this.dataHistory[targetDayIndex];
+                    let value;
+                    
+                    switch(type) {
+                        case 'A': value = parseInt(data.as); break;
+                        case 'C': value = parseInt(data.cop); break;
+                        case 'K': value = parseInt(data.kepala); break;
+                        case 'E': value = parseInt(data.ekor); break;
+                        case 'J': value = data.jumlah; break;
+                        case 'Js': 
+                            value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
+                            value = this.reduceToSingleDigit(value);
+                            break;
+                        case 'J3D':
+                            value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
+                            value = this.reduceToSingleDigit(value);
+                            break;
+                        case 'J4D':
+                            value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
+                            value = this.reduceToSingleDigit(value);
+                            break;
+                        default: 
+                            throw new Error(`Tipe komponen tidak dikenali: ${type}`);
+                    }
+                    
+                    if (conversion) {
+                        const table = conversion.toUpperCase();
+                        value = parseInt(this.convertMistik(value.toString(), table));
+                    }
+                    
+                    return value;
+                } finally {
+                    this.processComponentDepth--;
+                }
+            },
+
+            convertMistik: function(number, table) {
+                if (!this.mistikTables[table]) {
+                    throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
+                }
+                
+                const digit = this.reduceToSingleDigit(parseInt(number)).toString();
+                
+                if (this.mistikTables[table][digit] === undefined) {
+                    throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
+                }
+                
+                return this.mistikTables[table][digit];
+            },
+
+            reduceToSingleDigit: function(num) {
+                let result = num;
+                let safetyCounter = 0;
+                const MAX_ITERATIONS = 100;
+                
+                while (result > 9 && safetyCounter < MAX_ITERATIONS) {
+                    result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+                    safetyCounter++;
+                }
+                
+                if (safetyCounter >= MAX_ITERATIONS) {
+                    console.warn(`reduceToSingleDigit mungkin infinite loop untuk input: ${num}`);
+                    return 0;
+                }
+                
+                return result;
+            },
+
+            clearAll: function() {
+                document.getElementById('inputData1').value = '';
+                document.getElementById('resultOutput1').innerHTML = `// Hasil perhitungan akan muncul di sini
+// Support 8 komponen + highlight 2-6 digit:
+
+// 8603 = 3456789012 ai
+// 2436 = 4567890123 ai  
+// 5678 = 5678901234 ai
+// 9012 = 6789012345 ai
 // ======
-// A7mb+E7ty.(mb)
+// A3mb-A5m9.(ty)
 
-// 6987 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>8901234 ai
-// 7070 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">7</span>0123456 ai
+// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234 (Js6ml)
+// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567 (J3D4mb)
+// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789 (J4D2ml)
 // ======
-// C3ml-E3ty.(m9)
+// Js6ml+E2ty.(mb)
 
 // ... dan seterusnya untuk setiap rumus`;
-    document.getElementById('info').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
-    <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
-        <strong>Format Input Multi Kolom:</strong><br>
-        • <code>6987 = 02 . 75 . 27 . 37 ai</code><br>
-        • Kolom 1 → Rumus 1, Kolom 2 → Rumus 2, Kolom 3 → Rumus 3, Kolom 4 → Rumus 4<br>
-        • Support highlight 2-6 digit<br>
-        <strong>Komponen yang didukung:</strong><br>
-        • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
-        • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-    </div>`;
-    document.getElementById('inputInfo').textContent = '0 angka + 0 rumus terdeteksi';
-    document.getElementById('detectedFormula').textContent = 'Tidak ada rumus';
-    document.getElementById('historyInfo').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
-    dataHistory = [];
-    currentFormulas = [];
-    originalInputData = [];
-    aiHistory = [];
-}
+                document.getElementById('info1').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
+                <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
+                    <strong>Komponen yang didukung:</strong><br>
+                    • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
+                    • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
+                    <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
+                </div>`;
+                document.getElementById('inputInfo1').textContent = '0 angka + 0 rumus terdeteksi';
+                document.getElementById('detectedFormula1').textContent = 'Tidak ada rumus';
+                document.getElementById('historyInfo1').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
+                this.dataHistory = [];
+                this.currentFormulas = [];
+                this.originalInputData = [];
+                this.aiHistory = [];
+                this.processComponentDepth = 0;
+            },
 
-function showInfo(message, type) {
-    const infoDiv = document.getElementById('info');
-    infoDiv.innerHTML = message;
-    infoDiv.className = 'info';
-    if (type === 'error') {
-        infoDiv.classList.add('error');
-    } else if (type === 'success') {
-        infoDiv.classList.add('success');
-    }
-}
+            showInfo: function(message, type) {
+                const infoDiv = document.getElementById('info1');
+                infoDiv.innerHTML = message;
+                infoDiv.className = 'info-1';
+                if (type === 'error') {
+                    infoDiv.classList.add('error');
+                } else if (type === 'success') {
+                    infoDiv.classList.add('success');
+                }
+            },
 
-function updateInputInfo() {
-    const input = document.getElementById('inputData').value.trim();
-    const parsed = parseInputData(input);
-    const numberCount = dataHistory.length;
-    const formulaCount = currentFormulas.length;
-    
-    document.getElementById('inputInfo').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
-}
+            updateInputInfo: function() {
+                const input = document.getElementById('inputData1').value.trim();
+                const parsed = this.parseInputData(input);
+                const numberCount = this.dataHistory.length;
+                const formulaCount = this.currentFormulas.length;
+                
+                document.getElementById('inputInfo1').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
+            },
 
-function showCopyNotification() {
-    const notification = document.getElementById('copyNotification');
-    notification.classList.add('show');
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
-}
+            init: function() {
+                document.getElementById('inputData1').addEventListener('input', () => {
+                    this.updateInputInfo();
+                });
+                this.updateInputInfo();
+                
+                document.getElementById('inputData1').addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        this.calculateFormula();
+                    }
+                });
+                
+                // Load saved data
+                const savedData = localStorage.getItem('program1_data');
+                if (savedData) {
+                    try {
+                        const data = JSON.parse(savedData);
+                        document.getElementById('inputData1').value = data.inputData || '';
+                        this.updateInputInfo();
+                    } catch (e) {
+                        console.error('Error loading Program 1 data:', e);
+                    }
+                }
+                
+                // Auto-save input data
+                setInterval(() => {
+                    const inputData = document.getElementById('inputData1').value;
+                    if (inputData.trim()) {
+                        localStorage.setItem('program1_data', JSON.stringify({
+                            inputData: inputData,
+                            timestamp: Date.now()
+                        }));
+                    }
+                }, 10000);
+            }
+        };
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('inputData').addEventListener('input', updateInputInfo);
-    updateInputInfo();
-});
+        // ========== PROGRAM 2: AUTO PREDIKSI MOD+ (FULLY FIXED AUTO-CONTINUE) ==========
+        const Program2 = {
+            // Tabel mistik
+            mistikTables: {
+                'IX': {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'},
+                'ML': {'0':'1','1':'0','2':'5','3':'8','4':'7','5':'2','6':'9','7':'4','8':'3','9':'6'},
+                'MB': {'0':'8','1':'7','2':'6','3':'9','4':'5','5':'4','6':'2','7':'1','8':'0','9':'3'},
+                'TY': {'0':'7','1':'4','2':'9','3':'6','4':'1','5':'8','6':'3','7':'0','8':'5','9':'2'},
+                'M9': {'0':'9','1':'8','2':'7','3':'6','4':'5','5':'4','6':'3','7':'2','8':'1','9':'0'}
+            },
 
-document.getElementById('inputData').addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.key === 'Enter') {
-        calculateFormula();
-    }
-});
-</script>
+            // KONSTANTA
+            COMBINATIONS_PER_SESSION: 10000000,
+            BATCH_SIZE: 50000,
 
+            // VARIABEL GLOBAL
+            dataHistory: [],
+            aiFormulas: [],
+            allPatterns: [],
+            foundResults: [],
+            uniqueAIFormulas: new Set(),
+            isSearching: false,
+            stopRequested: false,
+            startTime: null,
+            currentPatahLimit: 0,
+            totalCombinations: 0,
+            currentSession: 0,
+            totalSessions: 0,
+            processedInSession: 0,
+            totalProcessed: 0,
+            currentFormulaIndex: 0,
+            currentPatternIndex: 0,
+            testPriorityOrder: ['A', 'C', 'K', 'E', 'J', 'AC', 'CK', 'KE', 'CB'],
+
+            // ==================== FUNGSI UTAMA ====================
+            updateDataCount: function() {
+                const input = document.getElementById('numbers2').value.trim();
+                const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+                const count = lines.length;
+                
+                document.getElementById('dataCount2').textContent = count;
+                this.updateStatusInfo();
+                return count;
+            },
+
+            validateNumberInput: function(input, min, max) {
+                let value = input.value.replace(/[^\d]/g, '');
+                
+                if (value === '') {
+                    input.value = '';
+                    return false;
+                }
+                
+                let numValue = parseInt(value);
+                if (numValue < min) numValue = min;
+                if (numValue > max) numValue = max;
+                
+                input.value = numValue;
+                this.updateStatusInfo();
+                return true;
+            },
+
+            validateTextareaInput: function(textarea) {
+                const original = textarea.value;
+                let cleaned = '';
+                
+                const lines = original.split('\n');
+                for (let line of lines) {
+                    let cleanLine = line.replace(/[^\d]/g, '');
+                    if (cleanLine.length > 4) cleanLine = cleanLine.substring(0, 4);
+                    if (cleanLine.length === 4) {
+                        cleaned += cleanLine + '\n';
+                    }
+                }
+                
+                cleaned = cleaned.trim();
+                if (cleaned !== original) {
+                    textarea.value = cleaned;
+                }
+                
+                this.updateDataCount();
+            },
+
+            reduceToSingleDigit: function(num) {
+                let n = Math.abs(num);
+                while (n > 9) n = n.toString().split('').reduce((sum, d) => sum + parseInt(d), 0);
+                return n;
+            },
+
+            convertMistik: function(number, table) {
+                const digit = this.reduceToSingleDigit(parseInt(number)).toString();
+                return this.mistikTables[table]?.[digit] || digit;
+            },
+
+            // ==================== FUNGSI PERHITUNGAN ====================
+            processComponent: function(component, currentDayIndex, data) {
+                const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d{1,2})(\w*)$/);
+                if (!match) throw new Error(`Komponen tidak valid: ${component}`);
+                
+                const [_, type, dayStr, mistik] = match;
+                const dayOffset = parseInt(dayStr);
+                const targetDayIndex = currentDayIndex - (dayOffset - 1);
+                
+                if (targetDayIndex < 0) throw new Error(`Data tidak cukup untuk ${component}`);
+                
+                const d = data[targetDayIndex];
+                let val;
+                
+                switch(type) {
+                    case 'A': val = parseInt(d[0]); break;
+                    case 'C': val = parseInt(d[1]); break;
+                    case 'K': val = parseInt(d[2]); break;
+                    case 'E': val = parseInt(d[3]); break;
+                    case 'J':  
+                        val = parseInt(d[2]) + parseInt(d[3]);
+                        val = this.reduceToSingleDigit(val);
+                        break;
+                    case 'Js': 
+                        val = Math.abs(parseInt(d[2]) - parseInt(d[3]));
+                        val = this.reduceToSingleDigit(val);
+                        break;
+                    case 'J3D':
+                        val = parseInt(d[1]) + parseInt(d[2]) + parseInt(d[3]);
+                        val = this.reduceToSingleDigit(val);
+                        break;
+                    case 'J4D':
+                        val = parseInt(d[0]) + parseInt(d[1]) + parseInt(d[2]) + parseInt(d[3]);
+                        val = this.reduceToSingleDigit(val);
+                        break;
+                    default: throw new Error(`Komponen tidak dikenal: ${type}`);
+                }
+                
+                if (mistik) {
+                    const m = mistik.toUpperCase();
+                    if (['IX','ML','MB','TY','M9'].includes(m)) {
+                        val = parseInt(this.convertMistik(val, m));
+                    }
+                }
+                
+                return val;
+            },
+
+            calculateAI: function(formula, idx, data) {
+                let workingFormula = formula;
+                let finalMistik = null;
+                
+                const finalMatch = workingFormula.match(/\.\((\w+)\)$/);
+                if (finalMatch) {
+                    finalMistik = finalMatch[1].toUpperCase();
+                    workingFormula = workingFormula.replace(/\.\((\w+)\)$/, '');
+                }
+                
+                const parts = workingFormula.split(/([+\-])/).filter(p => p.trim());
+                let total = 0;
+                let currentOp = '+';
+                
+                for (let part of parts) {
+                    if (part === '+' || part === '-') {
+                        currentOp = part;
+                        continue;
+                    }
+                    
+                    const val = this.processComponent(part.trim(), idx, data);
+                    
+                    if (currentOp === '+') {
+                        total += val;
+                    } else {
+                        total -= val;
+                    }
+                }
+                
+                if (finalMistik && ['IX','ML','MB','TY','M9'].includes(finalMistik)) {
+                    total = parseInt(this.convertMistik(total, finalMistik));
+                }
+                
+                return this.reduceToSingleDigit(total);
+            },
+
+            generateRotation: function(ai) {
+                const rotation = [];
+                for (let i = 0; i < 10; i++) {
+                    rotation.push((ai + i) % 10);
+                }
+                return rotation;
+            },
+
+            applyPatternToRotation: function(rotation, pattern) {
+                const steps = pattern.match(/N(\d)/g);
+                if (!steps || steps.length === 0) return '';
+                
+                const startPos = parseInt(steps[0].substring(1));
+                let currentPosition = startPos;
+                let result = rotation[currentPosition].toString();
+                
+                for (let i = 1; i < steps.length; i++) {
+                    const jump = parseInt(steps[i].substring(1));
+                    currentPosition = (currentPosition + jump) % 10;
+                    result += rotation[currentPosition].toString();
+                }
+                
+                return result;
+            },
+
+            getTargetDigits: function(nextData, targetType) {
+                switch(targetType) {
+                    case 'A': return nextData[0];
+                    case 'C': return nextData[1];
+                    case 'K': return nextData[2];
+                    case 'E': return nextData[3];
+                    case 'J': 
+                        const k = parseInt(nextData[2]);
+                        const e = parseInt(nextData[3]);
+                        const sum = k + e;
+                        return this.reduceToSingleDigit(sum).toString();
+                    case 'AC': return nextData[0] + nextData[1];
+                    case 'CK': return nextData[1] + nextData[2];
+                    case 'KE': return nextData[2] + nextData[3];
+                    case 'CB': return nextData;
+                    default: return nextData;
+                }
+            },
+
+            checkPrediction: function(predictionDigits, targetDigits, targetType) {
+                if (['A', 'C', 'K', 'E', 'J'].includes(targetType)) {
+                    for (let digit of predictionDigits) {
+                        if (digit === targetDigits) {
+                            return { hit: true, matchedDigit: digit };
+                        }
+                    }
+                    return { hit: false, matchedDigit: '' };
+                }
+                
+                else if (['AC', 'CK', 'KE', 'CB'].includes(targetType)) {
+                    for (let digit of targetDigits) {
+                        if (predictionDigits.includes(digit)) {
+                            return { hit: true, matchedDigit: digit };
+                        }
+                    }
+                    return { hit: false, matchedDigit: '' };
+                }
+                
+                return { hit: false, matchedDigit: '' };
+            },
+
+            // ==================== FUNGSI TESTING (FIXED PATAH LIMIT) ====================
+            testSingleTargetType: function(aiFormula, pattern, data, daysToTest, patahLimit, targetType) {
+                if (data.length < daysToTest + 1) return null;
+                
+                let hits = 0;
+                let attempts = 0;
+                let patah = 0;
+                const predictions = [];
+                
+                const startTestIndex = data.length - daysToTest;
+                
+                for (let i = 0; i < daysToTest; i++) {
+                    const inputIndex = startTestIndex + i - 1;
+                    const targetIndex = startTestIndex + i;
+                    
+                    if (inputIndex < 0 || targetIndex >= data.length) break;
+                    
+                    try {
+                        const ai = this.calculateAI(aiFormula, inputIndex, data);
+                        const rotation = this.generateRotation(ai);
+                        const pred = this.applyPatternToRotation(rotation, pattern);
+                        
+                        const targetData = data[targetIndex];
+                        const targetDigits = this.getTargetDigits(targetData, targetType);
+                        
+                        const check = this.checkPrediction(pred, targetDigits, targetType);
+                        
+                        predictions.push({
+                            input: data[inputIndex],
+                            prediction: pred,
+                            target: targetDigits,
+                            hit: check.hit,
+                            matchedDigit: check.matchedDigit,
+                            ai: ai
+                        });
+                        
+                        attempts++;
+                        
+                        if (check.hit) {
+                            hits++;
+                        } else {
+                            patah++;
+                            // STRICT PATAH LIMIT ENFORCEMENT (FIXED)
+                            if (patah > patahLimit) {
+                                return null; // Immediately stop jika melebihi patah limit
+                            }
+                        }
+                        
+                    } catch (e) {
+                        return null;
+                    }
+                }
+                
+                if (attempts < daysToTest) return null;
+                
+                // Double check patah limit (FIXED)
+                if (patah > patahLimit) return null;
+                
+                return {
+                    fullFormula: `${aiFormula} ${pattern}`, // Include pattern in full formula (FIXED)
+                    aiFormula,
+                    pattern,
+                    targetType,
+                    hits,
+                    attempts,
+                    patah,
+                    accuracy: hits / attempts,
+                    predictions,
+                    passed: patah <= patahLimit
+                };
+            },
+
+            testCombination: function(aiFormula, pattern, data, daysToTest, patahLimit, targetType) {
+                if (targetType === 'all') {
+                    for (const type of this.testPriorityOrder) {
+                        const result = this.testSingleTargetType(aiFormula, pattern, data, daysToTest, patahLimit, type);
+                        if (result && result.passed) {
+                            result.targetType = type;
+                            return result;
+                        }
+                    }
+                    return null;
+                } else {
+                    return this.testSingleTargetType(aiFormula, pattern, data, daysToTest, patahLimit, targetType);
+                }
+            },
+
+            // ==================== GENERATE KOMBINASI ====================
+            generateAIFormulas: function(mode, dataLength, daysToTest) {
+                const comps = ['A','C','K','E','J','Js','J3D','J4D'];
+                const maxOffset = Math.max(1, Math.min(10, dataLength - daysToTest - 3));
+                const offsets = [];
+                
+                for (let i = 1; i <= maxOffset; i++) {
+                    offsets.push(i.toString());
+                }
+                
+                if (offsets.length === 0) offsets.push('1');
+                
+                const formulas = new Set();
+                
+                if (mode === 'full') {
+                    const mistiks = ['', 'ix','ml','mb','ty','m9'];
+                    const finals = ['', '.(ix)', '.(ml)', '.(mb)', '.(ty)', '.(m9)'];
+                    
+                    for (let c of comps) {
+                        for (let o of offsets) {
+                            for (let m of mistiks) {
+                                for (let f of finals) {
+                                    formulas.add(`${c}${o}${m}${f}`);
+                                }
+                            }
+                        }
+                    }
+                    
+                    for (let c1 of comps) {
+                        for (let o1 of offsets) {
+                            for (let m1 of mistiks) {
+                                for (let op of ['+', '-']) {
+                                    for (let c2 of comps) {
+                                        for (let o2 of offsets) {
+                                            for (let m2 of mistiks) {
+                                                for (let f of finals) {
+                                                    formulas.add(`${c1}${o1}${m1}${op}${c2}${o2}${m2}${f}`);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for (let c of comps) {
+                        for (let o of offsets) {
+                            formulas.add(`${c}${o}`);
+                        }
+                    }
+                    
+                    for (let c1 of ['A','C','K','E','J']) {
+                        for (let o1 of offsets.slice(0, 5)) {
+                            for (let op of ['+', '-']) {
+                                for (let c2 of ['A','C','K','E','J']) {
+                                    for (let o2 of offsets.slice(0, 5)) {
+                                        formulas.add(`${c1}${o1}${op}${c2}${o2}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                return Array.from(formulas);
+            },
+
+            generatePatterns: function(digitCount) {
+                const patterns = [];
+                
+                function generate(current, depth) {
+                    if (depth === digitCount) {
+                        patterns.push('N' + current.join('N'));
+                        return;
+                    }
+                    
+                    for (let n = 0; n <= 9; n++) {
+                        generate([...current, n], depth + 1);
+                    }
+                }
+                
+                generate([], 0);
+                return patterns;
+            },
+
+            // ==================== SISTEM PENCARIAN ====================
+            startSearch: function() {
+                if (this.isSearching) return;
+                
+                try {
+                    const input = document.getElementById('numbers2').value.trim();
+                    const digitCount = parseInt(document.getElementById('digitCount2').value) || 3;
+                    const daysToPredict = parseInt(document.getElementById('daysToPredict2').value) || 16;
+                    const searchMode = document.getElementById('searchMode2').value;
+                    const targetType = document.getElementById('targetType2').value;
+                    
+                    const patahInput = document.getElementById('patah2').value;
+                    if (patahInput === '') {
+                        this.currentPatahLimit = 0;
+                    } else {
+                        this.currentPatahLimit = parseInt(patahInput);
+                        if (isNaN(this.currentPatahLimit) || this.currentPatahLimit < 0 || this.currentPatahLimit > 5) {
+                            alert('Patah harus 0 sampai 5!');
+                            return;
+                        }
+                    }
+                    
+                    if (!input) {
+                        alert('Masukkan data terlebih dahulu!');
+                        return;
+                    }
+                    
+                    if (isNaN(digitCount) || digitCount < 1 || digitCount > 7) {
+                        alert('Digit Prediksi harus 1 sampai 7!');
+                        return;
+                    }
+                    
+                    if (isNaN(daysToPredict) || daysToPredict < 1 || daysToPredict > 50) {
+                        alert('Hari Prediksi harus 1 sampai 50!');
+                        return;
+                    }
+                    
+                    const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+                    this.dataHistory = lines;
+                    
+                    if (lines.length < daysToPredict + 1) {
+                        alert(`Data tidak cukup!\n\nData: ${lines.length} angka\nButuh minimal: ${daysToPredict + 1} angka`);
+                        return;
+                    }
+                    
+                    // GENERATE KOMBINASI
+                    this.aiFormulas = this.generateAIFormulas(searchMode, lines.length, daysToPredict);
+                    this.allPatterns = this.generatePatterns(digitCount);
+                    
+                    this.totalCombinations = this.aiFormulas.length * this.allPatterns.length;
+                    this.totalSessions = Math.ceil(this.totalCombinations / this.COMBINATIONS_PER_SESSION);
+                    
+                    // RESET STATE
+                    this.isSearching = true;
+                    this.stopRequested = false;
+                    this.foundResults = [];
+                    this.uniqueAIFormulas.clear();
+                    this.currentSession = 0;
+                    this.processedInSession = 0;
+                    this.totalProcessed = 0;
+                    this.currentFormulaIndex = 0;
+                    this.currentPatternIndex = 0;
+                    this.startTime = new Date();
+                    
+                    // UPDATE UI
+                    document.getElementById('runBtn2').disabled = true;
+                    document.getElementById('stopBtn2').disabled = false;
+                    document.getElementById('continueBtn2').disabled = true;
+                    document.getElementById('foundCount2').textContent = '0';
+                    document.getElementById('processedCount2').textContent = '0';
+                    document.getElementById('formulaCount2').textContent = this.totalCombinations.toLocaleString();
+                    document.getElementById('progressFill2').style.width = '0%';
+                    
+                    // TAMPILKAN INFO AWAL
+                    let output = `══════════════════════════════\n`;
+                    output += `Data: ${lines.length} angka | Prediksi: ${daysToPredict} hari\n`;
+                    output += `Mode: ${searchMode === 'full' ? 'LENGKAP' : 'CEPAT'}\n`;
+                    output += `Digit: ${digitCount} | Target: ${this.getTargetTypeName(targetType)}\n`;
+                    output += `Patah: ${this.currentPatahLimit}x\n`;
+                    output += `Kombinasi: ${this.totalCombinations.toLocaleString()}\n`;
+                    output += `Sesi: ${this.totalSessions} sesi (@${this.COMBINATIONS_PER_SESSION.toLocaleString()})\n`;
+                    output += `══════════════════════════════\n\n`;
+                    
+                    document.getElementById('resultOutput2').textContent = output;
+                    
+                    // Save progress sebelum mulai
+                    this.saveProgress();
+                    
+                    // MULAI SESI PERTAMA
+                    this.startNewSession();
+                    
+                } catch (error) {
+                    alert('Terjadi error: ' + error.message);
+                    this.resetSearchState();
+                }
+            },
+
+            startNewSession: function() {
+                if (!this.isSearching || this.stopRequested) {
+                    return;
+                }
+                
+                this.currentSession++;
+                this.processedInSession = 0;
+                
+                // Update UI
+                this.updateProgress();
+                this.updateProgressWithMessage(`🚀 Memulai sesi ${this.currentSession}...`);
+                
+                // Mulai proses batch
+                setTimeout(() => {
+                    this.processBatch();
+                }, 500);
+            },
+
+            processBatch: function() {
+                if (this.stopRequested || !this.isSearching) {
+                    this.finishSession();
+                    return;
+                }
+                
+                if (this.currentFormulaIndex >= this.aiFormulas.length) {
+                    this.finishSearch();
+                    return;
+                }
+                
+                const daysToPredict = parseInt(document.getElementById('daysToPredict2').value) || 16;
+                const targetType = document.getElementById('targetType2').value;
+                
+                let processedInBatch = 0;
+                
+                for (let i = 0; i < this.BATCH_SIZE; i++) {
+                    if (this.stopRequested) break;
+                    
+                    if (this.processedInSession >= this.COMBINATIONS_PER_SESSION) {
+                        this.finishSession();
+                        return;
+                    }
+                    
+                    if (this.currentFormulaIndex >= this.aiFormulas.length) {
+                        this.finishSearch();
+                        return;
+                    }
+                    
+                    const aiFormula = this.aiFormulas[this.currentFormulaIndex];
+                    const pattern = this.allPatterns[this.currentPatternIndex];
+                    
+                    try {
+                        const result = this.testCombination(aiFormula, pattern, this.dataHistory, daysToPredict, this.currentPatahLimit, targetType);
+                        
+                        if (result && result.passed) {
+                            const normalizedAIFormula = this.normalizeAIFormula(aiFormula);
+                            
+                            if (!this.uniqueAIFormulas.has(normalizedAIFormula)) {
+                                this.uniqueAIFormulas.add(normalizedAIFormula);
+                                this.foundResults.push(result);
+                                document.getElementById('foundCount2').textContent = this.foundResults.length;
+                                this.displayResult(result);
+                            }
+                        }
+                    } catch (e) {
+                        // Skip error
+                    }
+                    
+                    this.processedInSession++;
+                    this.totalProcessed++;
+                    processedInBatch++;
+                    
+                    this.currentPatternIndex++;
+                    if (this.currentPatternIndex >= this.allPatterns.length) {
+                        this.currentPatternIndex = 0;
+                        this.currentFormulaIndex++;
+                    }
+                    
+                    if (this.processedInSession % 1000 === 0) {
+                        this.updateProgress();
+                    }
+                }
+                
+                document.getElementById('processedCount2').textContent = this.totalProcessed.toLocaleString();
+                
+                if (this.isSearching && !this.stopRequested) {
+                    setTimeout(() => {
+                        this.processBatch();
+                    }, 1);
+                }
+            },
+
+            normalizeAIFormula: function(aiFormula) {
+                let baseFormula = aiFormula.replace(/\.\([^)]+\)$/, '');
+                
+                if (baseFormula.includes('+') || baseFormula.includes('-')) {
+                    const parts = baseFormula.split(/([+\-])/).filter(p => p.trim());
+                    
+                    if (parts.length === 3) {
+                        const [comp1, operator, comp2] = parts;
+                        const sorted = [comp1, comp2].sort();
+                        return sorted[0] + operator + sorted[1];
+                    }
+                }
+                
+                return baseFormula;
+            },
+
+            finishSession: function() {
+                if (!this.isSearching) return;
+                
+                if (this.currentFormulaIndex >= this.aiFormulas.length) {
+                    this.finishSearch();
+                    return;
+                }
+                
+                const autoContinue = document.getElementById('autoContinue2').checked;
+                
+                if (autoContinue) {
+                    // Save progress dulu
+                    this.saveProgress();
+                    
+                    // Cleanup memory tapi JANGAN reset kombinasi
+                    this.cleanupMemory();
+                    
+                    // Tampilkan status
+                    this.updateProgressWithMessage(`⏸️ Sesi ${this.currentSession} selesai. Auto-continue dalam 5 detik...`);
+                    
+                    // Reset flag dulu
+                    this.isSearching = false;
+                    this.stopRequested = false;
+                    
+                    // Update UI state
+                    document.getElementById('runBtn2').disabled = true;
+                    document.getElementById('stopBtn2').disabled = true;
+                    document.getElementById('continueBtn2').disabled = true;
+                    
+                    // Set timeout untuk next session
+                    setTimeout(() => {
+                        // Reset search state untuk sesi baru
+                        this.stopRequested = false;
+                        this.isSearching = true;
+                        
+                        // JANGAN regenerate combinations!
+                        // Tetap gunakan kombinasi yang sama
+                        
+                        // Reset hanya processedInSession untuk counter sesi baru
+                        this.processedInSession = 0;
+                        
+                        // Update UI
+                        document.getElementById('stopBtn2').disabled = false;
+                        
+                        // Mulai sesi baru
+                        this.startNewSession();
+                    }, 5000);
+                    
+                } else {
+                    this.isSearching = false;
+                    this.stopRequested = false;
+                    
+                    document.getElementById('runBtn2').disabled = false;
+                    document.getElementById('stopBtn2').disabled = true;
+                    document.getElementById('continueBtn2').disabled = false;
+                    
+                    this.saveProgress();
+                    
+                    this.updateProgressWithMessage(`⏸️ Sesi ${this.currentSession} selesai. Klik LANJUT untuk sesi ${this.currentSession + 1}`);
+                }
+                
+                this.updateProgress();
+            },
+
+            continueSearch: function() {
+                if (this.isSearching) {
+                    alert('Proses sedang berjalan!');
+                    return;
+                }
+                
+                if (this.currentFormulaIndex >= this.aiFormulas.length) {
+                    alert('Pencarian sudah selesai!');
+                    this.finishSearch();
+                    return;
+                }
+                
+                // Reset state
+                this.isSearching = true;
+                this.stopRequested = false;
+                
+                // Update UI
+                document.getElementById('runBtn2').disabled = true;
+                document.getElementById('stopBtn2').disabled = false;
+                document.getElementById('continueBtn2').disabled = true;
+                
+                this.updateProgressWithMessage(`▶️ Melanjutkan sesi ${this.currentSession}...`);
+                
+                // Mulai sesi dengan delay kecil
+                setTimeout(() => {
+                    this.startNewSession();
+                }, 100);
+            },
+
+            stopSearch: function() {
+                if (!this.isSearching) {
+                    return;
+                }
+                
+                this.stopRequested = true;
+                this.isSearching = false;
+                
+                // Save progress
+                this.saveProgress();
+                
+                // Update UI
+                document.getElementById('runBtn2').disabled = false;
+                document.getElementById('stopBtn2').disabled = true;
+                document.getElementById('continueBtn2').disabled = false;
+                
+                // Tampilkan status
+                const sessionProgress = (this.processedInSession / this.COMBINATIONS_PER_SESSION) * 100;
+                this.updateProgressWithMessage(`⏹️ Proses dihentikan (sesi ${this.currentSession}: ${Math.round(sessionProgress)}%). ${this.foundResults.length} rumus ditemukan.`);
+                
+                this.updateProgress();
+            },
+
+            finishSearch: function() {
+                this.isSearching = false;
+                this.stopRequested = false;
+                
+                document.getElementById('runBtn2').disabled = false;
+                document.getElementById('stopBtn2').disabled = true;
+                document.getElementById('continueBtn2').disabled = true;
+                
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                let output = document.getElementById('resultOutput2').textContent;
+                
+                output += `\n══════════════════════════════\n`;
+                output += `Waktu: ${elapsed} detik\n`;
+                output += `Total diproses: ${this.totalProcessed.toLocaleString()}\n`;
+                output += `Rumus ditemukan: ${this.foundResults.length}\n`;
+                output += `══════════════════════════════\n\n`;
+                
+                if (this.foundResults.length > 0) {
+                    output += `🏆 RUMUS TERBAIK:\n`;
+                    this.foundResults.sort((a, b) => {
+                        if (a.patah !== b.patah) return a.patah - b.patah;
+                        return b.accuracy - a.accuracy;
+                    });
+                    
+                    const best = this.foundResults[0];
+                    output += `Formula: ${best.fullFormula}\n`;
+                    output += `Target: ${this.getTargetTypeName(best.targetType)}\n`;
+                    output += `✅ ${best.hits}/${best.attempts} | ❌ ${best.patah}x\n`;
+                } else {
+                    output += `😞 TIDAK ADA RUMUS YANG MEMENUHI KRITERIA\n`;
+                    output += `Coba kurangi "Patah" atau tambah data input.\n`;
+                }
+                
+                document.getElementById('resultOutput2').textContent = output;
+                
+                localStorage.removeItem('program2_progress');
+            },
+
+            // ==================== DISPLAY RESULT (FIXED WITH POLA N) ====================
+            displayResult: function(result) {
+                const targetDisplayNames = {
+                    'A': 'AS', 'C': 'COP', 'K': 'KEPALA', 'E': 'EKOR',
+                    'J': 'JUMLAH', 'AC': 'AC', 'CK': 'CK', 'KE': 'KE', 'CB': 'CB'
+                };
+                
+                const targetSuffix = {
+                    'A': 'a', 'C': 'c', 'K': 'k', 'E': 'e',
+                    'J': 'j', 'AC': 'ac', 'CK': 'ck', 'KE': 'ai', 'CB': 'cb'
+                };
+                
+                let output = document.getElementById('resultOutput2').textContent;
+                
+                const resultNumber = this.foundResults.length;
+                
+                let resultText = `\n🎯 HASIL #${resultNumber}\n`;
+                resultText += `Target: ${targetDisplayNames[result.targetType] || result.targetType}\n`;
+                resultText += `Pattern: ${result.pattern}\n`;
+                
+                for (let i = 0; i < result.predictions.length; i++) {
+                    const p = result.predictions[i];
+                    const mark = p.hit ? '✅' : '❌';
+                    resultText += `${p.input} = ${p.prediction} → ${p.target} ${mark}\n`;
+                }
+                
+                const lastIndex = this.dataHistory.length - 1;
+                let latestPrediction = '?';
+                try {
+                    const ai = this.calculateAI(result.aiFormula, lastIndex, this.dataHistory);
+                    const rotation = this.generateRotation(ai);
+                    const pred = this.applyPatternToRotation(rotation, result.pattern);
+                    latestPrediction = pred;
+                    resultText += `${this.dataHistory[lastIndex]} = ${pred} → prediksi selanjutnya\n`;
+                } catch (e) {
+                    resultText += `${this.dataHistory[lastIndex]} = ? → prediksi selanjutnya\n`;
+                }
+                
+                resultText += `======\n`;
+                resultText += `${result.fullFormula}\n`; // Already includes pola N
+                resultText += `✅ ${result.hits}/${result.attempts} | ❌ ${result.patah}x\n`;
+                
+                output += resultText;
+                document.getElementById('resultOutput2').textContent = output;
+                
+                // SIMPAN DATA UNTUK COPY (FIXED - sudah include pola N di fullFormula)
+                result.copyData = [];
+                const suffix = targetSuffix[result.targetType] || 'ai';
+                
+                for (let i = 0; i < result.predictions.length; i++) {
+                    const p = result.predictions[i];
+                    const status = p.hit ? suffix : 'x';
+                    result.copyData.push(`${p.input} = ${p.prediction} ${status}`);
+                }
+                
+                if (latestPrediction !== '?') {
+                    const latestInput = this.dataHistory[lastIndex];
+                    result.copyData.push(`${latestInput} = ${latestPrediction} ${suffix}`);
+                }
+                
+                const resultBox = document.getElementById('resultOutput2');
+                resultBox.scrollTop = resultBox.scrollHeight;
+            },
+
+            // ==================== COPY OUTPUT (FIXED) ====================
+            copyOutput: function() {
+                let copyText = '';
+                
+                for (let i = 0; i < this.foundResults.length; i++) {
+                    const result = this.foundResults[i];
+                    
+                    if (result.copyData) {
+                        if (i > 0) copyText += '\n\n';
+                        copyText += result.copyData.join('\n') + '\n';
+                    }
+                    
+                    copyText += `======\n`;
+                    copyText += `${result.fullFormula}\n`; // Already includes pola N!
+                }
+                
+                if (!copyText) {
+                    copyText = document.getElementById('resultOutput2').textContent;
+                }
+                
+                navigator.clipboard.writeText(copyText).then(() => {
+                    showNotification('✅ Output berhasil disalin!');
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = copyText;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showNotification('✅ Output berhasil disalin!');
+                });
+            },
+
+            // ==================== MEMORY MANAGEMENT ====================
+            cleanupMemory: function() {
+                // Cleanup memory tapi JANGAN reset data penting
+                if (window.gc) {
+                    try { window.gc(); } catch(e) {}
+                }
+            },
+
+            saveProgress: function() {
+                if (this.foundResults.length === 0 && this.totalProcessed === 0) return;
+                
+                const progressData = {
+                    version: '1.0',
+                    timestamp: Date.now(),
+                    dataHistory: this.dataHistory,
+                    aiFormulas: this.aiFormulas, // SIMPAN kombinasi
+                    allPatterns: this.allPatterns, // SIMPAN pola
+                    foundResults: this.foundResults.map(r => ({
+                        fullFormula: r.fullFormula,
+                        aiFormula: r.aiFormula,
+                        pattern: r.pattern,
+                        targetType: r.targetType,
+                        hits: r.hits,
+                        attempts: r.attempts,
+                        patah: r.patah,
+                        accuracy: r.accuracy,
+                        copyData: r.copyData // Simpan juga copy data
+                    })),
+                    uniqueAIFormulas: Array.from(this.uniqueAIFormulas), // Convert Set to Array
+                    currentSession: this.currentSession,
+                    processedInSession: this.processedInSession,
+                    totalProcessed: this.totalProcessed,
+                    totalCombinations: this.totalCombinations,
+                    currentFormulaIndex: this.currentFormulaIndex,
+                    currentPatternIndex: this.currentPatternIndex,
+                    settings: {
+                        daysToPredict: document.getElementById('daysToPredict2').value,
+                        digitCount: document.getElementById('digitCount2').value,
+                        patah: document.getElementById('patah2').value,
+                        targetType: document.getElementById('targetType2').value,
+                        searchMode: document.getElementById('searchMode2').value,
+                        autoContinue: document.getElementById('autoContinue2').checked
+                    }
+                };
+                
+                try {
+                    const jsonString = JSON.stringify(progressData);
+                    localStorage.setItem('program2_progress', jsonString);
+                } catch (e) {
+                    console.warn('Gagal menyimpan progress:', e);
+                }
+            },
+
+            loadProgress: function() {
+                const saved = localStorage.getItem('program2_progress');
+                
+                if (!saved) return false;
+                
+                try {
+                    const progressData = JSON.parse(saved);
+                    
+                    // Cek versi
+                    if (progressData.version !== '1.0') {
+                        console.warn('Versi data tidak kompatibel');
+                        return false;
+                    }
+                    
+                    // Restore SEMUA data termasuk kombinasi
+                    this.dataHistory = progressData.dataHistory || [];
+                    this.aiFormulas = progressData.aiFormulas || []; // LOAD kombinasi
+                    this.allPatterns = progressData.allPatterns || []; // LOAD pola
+                    this.foundResults = progressData.foundResults || [];
+                    this.uniqueAIFormulas = new Set(progressData.uniqueAIFormulas || []); // Convert back to Set
+                    this.currentSession = progressData.currentSession || 0;
+                    this.processedInSession = progressData.processedInSession || 0;
+                    this.totalProcessed = progressData.totalProcessed || 0;
+                    this.totalCombinations = progressData.totalCombinations || 0;
+                    this.currentFormulaIndex = progressData.currentFormulaIndex || 0;
+                    this.currentPatternIndex = progressData.currentPatternIndex || 0;
+                    
+                    // Restore settings
+                    if (progressData.settings) {
+                        document.getElementById('daysToPredict2').value = progressData.settings.daysToPredict || '16';
+                        document.getElementById('digitCount2').value = progressData.settings.digitCount || '3';
+                        document.getElementById('patah2').value = progressData.settings.patah || '';
+                        document.getElementById('targetType2').value = progressData.settings.targetType || 'all';
+                        document.getElementById('searchMode2').value = progressData.settings.searchMode || 'full';
+                        document.getElementById('autoContinue2').checked = progressData.settings.autoContinue || false;
+                    }
+                    
+                    // Restore UI
+                    document.getElementById('dataCount2').textContent = this.dataHistory.length;
+                    document.getElementById('foundCount2').textContent = this.foundResults.length;
+                    document.getElementById('processedCount2').textContent = this.totalProcessed.toLocaleString();
+                    document.getElementById('formulaCount2').textContent = this.totalCombinations.toLocaleString();
+                    
+                    // Update progress bar
+                    const progress = (this.totalProcessed / this.totalCombinations) * 100;
+                    document.getElementById('progressFill2').style.width = `${Math.min(progress, 100)}%`;
+                    
+                    // Tampilkan hasil yang sudah ada
+                    this.displayLoadedResults();
+                    
+                    this.updateStatusInfo();
+                    
+                    // Tampilkan notifikasi
+                    const date = new Date(progressData.timestamp).toLocaleString();
+                    this.updateProgressWithMessage(`💾 Progress ditemukan (tersimpan: ${date})`);
+                    
+                    return true;
+                    
+                } catch (error) {
+                    console.error('Error loading progress:', error);
+                    localStorage.removeItem('program2_progress');
+                    return false;
+                }
+            },
+
+            displayLoadedResults: function() {
+                let output = `══════════════════════════════\n`;
+                output += `💾 PROGRESS DIMUAT\n`;
+                output += `Data: ${this.dataHistory.length} angka\n`;
+                output += `Sesi: ${this.currentSession}\n`;
+                output += `Diproses: ${this.totalProcessed.toLocaleString()}\n`;
+                output += `Ditemukan: ${this.foundResults.length} rumus\n`;
+                output += `Progress: ${Math.round((this.totalProcessed / this.totalCombinations) * 100)}%\n`;
+                output += `══════════════════════════════\n\n`;
+                
+                // Tampilkan 5 hasil terbaik
+                if (this.foundResults.length > 0) {
+                    output += `🏆 HASIL TERBAIK YANG TERSIMPAN:\n`;
+                    const bestResults = [...this.foundResults]
+                        .sort((a, b) => {
+                            if (a.patah !== b.patah) return a.patah - b.patah;
+                            return b.accuracy - a.accuracy;
+                        })
+                        .slice(0, 5);
+                    
+                    bestResults.forEach((result, index) => {
+                        output += `${index + 1}. ${result.fullFormula}\n`;
+                        output += `   Target: ${this.getTargetTypeName(result.targetType)}\n`;
+                        output += `   ✅ ${result.hits}/${result.attempts} | ❌ ${result.patah}x\n\n`;
+                    });
+                }
+                
+                document.getElementById('resultOutput2').textContent = output;
+            },
+
+            // ==================== FUNGSI BANTUAN ====================
+            updateProgress: function() {
+                const progress = (this.totalProcessed / this.totalCombinations) * 100;
+                document.getElementById('progressFill2').style.width = `${Math.min(progress, 100)}%`;
+                
+                const sessionProgress = (this.processedInSession / this.COMBINATIONS_PER_SESSION) * 100;
+                
+                const statusDiv = document.getElementById('infoStatus2');
+                let html = `
+                    <div class="info-line-2">
+                        <span class="label-2">Sesi:</span>
+                        <span class="value-2">${this.currentSession}/${this.totalSessions}</span>
+                    </div>
+                    <div class="info-line-2">
+                        <span class="label-2">Progress Sesi:</span>
+                        <span class="value-2">${Math.round(sessionProgress)}%</span>
+                    </div>
+                    <div class="info-line-2">
+                        <span class="label-2">Total Progress:</span>
+                        <span class="value-2">${Math.round(progress)}%</span>
+                    </div>
+                    <div class="info-line-2">
+                        <span class="label-2">Ditemukan:</span>
+                        <span class="value-2">${this.foundResults.length} rumus</span>
+                    </div>
+                    <div class="info-line-2">
+                        <span class="label-2">Diproses:</span>
+                        <span class="value-2">${this.totalProcessed.toLocaleString()}</span>
+                    </div>
+                `;
+                
+                // Tambah info memory jika available
+                if (performance && performance.memory) {
+                    const mem = performance.memory;
+                    const usedMB = Math.round(mem.usedJSHeapSize / (1024 * 1024));
+                    const totalMB = Math.round(mem.jsHeapSizeLimit / (1024 * 1024));
+                    
+                    html += `
+                        <div class="info-line-2">
+                            <span class="label-2">Memory:</span>
+                            <span class="value-2 ${usedMB > totalMB * 0.7 ? 'warning' : ''}">
+                                ${usedMB}MB / ${totalMB}MB
+                            </span>
+                        </div>
+                    `;
+                }
+                
+                // Tambah mode auto-continue jika aktif
+                if (document.getElementById('autoContinue2').checked && this.isSearching) {
+                    html += `
+                        <div class="info-line-2">
+                            <span class="label-2">Mode:</span>
+                            <span class="value-2" style="color:#2ecc71">AUTO-CONTINUE</span>
+                        </div>
+                    `;
+                }
+                
+                statusDiv.innerHTML = html;
+            },
+
+            updateProgressWithMessage: function(message) {
+                const statusDiv = document.getElementById('infoStatus2');
+                statusDiv.innerHTML = `
+                    <div style="color: #3498db; font-weight: bold; margin-bottom: 5px;">
+                        ${message}
+                    </div>
+                    ${statusDiv.innerHTML}
+                `;
+            },
+
+            getTargetTypeName: function(type) {
+                const names = {
+                    'A': 'AS', 'C': 'COP', 'K': 'KEPALA', 'E': 'EKOR',
+                    'J': 'JUMLAH', 'AC': 'AC', 'CK': 'CK', 'KE': 'KE', 
+                    'CB': 'CB', 'all': 'Semua'
+                };
+                return names[type] || type;
+            },
+
+            updateStatusInfo: function() {
+                const statusDiv = document.getElementById('infoStatus2');
+                
+                const input = document.getElementById('numbers2').value.trim();
+                const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
+                const dataCount = lines.length;
+                
+                const daysToPredict = parseInt(document.getElementById('daysToPredict2').value) || 16;
+                const digitCount = parseInt(document.getElementById('digitCount2').value) || 3;
+                const patah = document.getElementById('patah2').value;
+                const mode = document.getElementById('searchMode2').value;
+                const targetType = document.getElementById('targetType2').value;
+                
+                if (!this.isSearching) {
+                    let html = '<div class="info-line-2">';
+                    html += `<span class="label-2">Data:</span>`;
+                    html += `<span class="value-2">${dataCount} angka</span>`;
+                    html += '</div>';
+                    
+                    html += '<div class="info-line-2">';
+                    html += `<span class="label-2">Prediksi:</span>`;
+                    html += `<span class="value-2">${daysToPredict} hari</span>`;
+                    html += '</div>';
+                    
+                    html += '<div class="info-line-2">';
+                    html += `<span class="label-2">Target:</span>`;
+                    html += `<span class="value-2">${this.getTargetTypeName(targetType)}</span>`;
+                    html += '</div>';
+                    
+                    html += '<div class="info-line-2">';
+                    html += `<span class="label-2">Patah:</span>`;
+                    html += `<span class="value-2">${patah === '' ? '0' : patah}x</span>`;
+                    html += '</div>';
+                    
+                    // Tampilkan progress tersimpan jika ada
+                    const saved = localStorage.getItem('program2_progress');
+                    if (saved) {
+                        try {
+                            const data = JSON.parse(saved);
+                            const date = new Date(data.timestamp).toLocaleString();
+                            html += '<div class="info-line-2">';
+                            html += `<span class="label-2" style="color:#2ecc71">Progress Tersimpan:</span>`;
+                            html += `<span class="value-2" style="color:#2ecc71">${date}</span>`;
+                            html += '</div>';
+                        } catch (e) {}
+                    }
+                    
+                    statusDiv.innerHTML = html;
+                }
+            },
+
+            clearAll: function() {
+                if (this.isSearching) {
+                    alert('Hentikan proses terlebih dahulu!');
+                    return;
+                }
+                
+                if (!confirm('Hapus SEMUA data dan hasil?')) return;
+                
+                document.getElementById('numbers2').value = '';
+                document.getElementById('resultOutput2').textContent = '';
+                
+                document.getElementById('dataCount2').textContent = '0';
+                document.getElementById('formulaCount2').textContent = '0';
+                document.getElementById('processedCount2').textContent = '0';
+                document.getElementById('foundCount2').textContent = '0';
+                document.getElementById('progressFill2').style.width = '0%';
+                
+                document.getElementById('daysToPredict2').value = '16';
+                document.getElementById('digitCount2').value = '3';
+                document.getElementById('patah2').value = '';
+                document.getElementById('targetType2').value = 'all';
+                document.getElementById('searchMode2').value = 'full';
+                document.getElementById('autoContinue2').checked = false;
+                
+                this.resetSearchState();
+                this.updateStatusInfo();
+                
+                // Hapus saved progress
+                localStorage.removeItem('program2_progress');
+            },
+
+            clearOutput: function() {
+                if (this.isSearching) {
+                    alert('Hentikan proses terlebih dahulu!');
+                    return;
+                }
+                
+                if (!confirm('Hapus semua hasil output?')) return;
+                
+                document.getElementById('resultOutput2').textContent = '';
+            },
+
+            resetSearchState: function() {
+                this.dataHistory = [];
+                this.aiFormulas = [];
+                this.allPatterns = [];
+                this.foundResults = [];
+                this.uniqueAIFormulas.clear();
+                this.isSearching = false;
+                this.stopRequested = false;
+                this.currentPatahLimit = 0;
+                this.totalCombinations = 0;
+                this.currentSession = 0;
+                this.totalSessions = 0;
+                this.processedInSession = 0;
+                this.totalProcessed = 0;
+                this.currentFormulaIndex = 0;
+                this.currentPatternIndex = 0;
+            },
+
+            init: function() {
+                const daysInput = document.getElementById('daysToPredict2');
+                daysInput.addEventListener('input', () => {
+                    this.validateNumberInput(daysInput, 1, 50);
+                });
+                
+                const digitInput = document.getElementById('digitCount2');
+                digitInput.addEventListener('input', () => {
+                    this.validateNumberInput(digitInput, 1, 7);
+                });
+                
+                const patahInput = document.getElementById('patah2');
+                patahInput.addEventListener('input', () => {
+                    let value = patahInput.value.replace(/[^\d]/g, '');
+                    if (value === '') {
+                        patahInput.value = '';
+                    } else {
+                        let numValue = parseInt(value);
+                        if (numValue > 5) numValue = 5;
+                        patahInput.value = numValue;
+                    }
+                    this.updateStatusInfo();
+                });
+                
+                const numbersTextarea = document.getElementById('numbers2');
+                numbersTextarea.addEventListener('input', () => {
+                    this.validateTextareaInput(numbersTextarea);
+                });
+                
+                const inputsToWatch = ['daysToPredict2', 'digitCount2', 'patah2', 'targetType2', 'searchMode2', 'autoContinue2'];
+                inputsToWatch.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('change', () => this.updateStatusInfo());
+                    }
+                });
+                
+                this.updateDataCount();
+                
+                // Load saved progress jika ada
+                setTimeout(() => {
+                    if (this.loadProgress()) {
+                        // Tampilkan dialog untuk melanjutkan
+                        setTimeout(() => {
+                            if (confirm('Ada progress tersimpan. Ingin melanjutkan dari sebelumnya?\n\nKlik OK untuk melanjutkan, Cancel untuk mulai baru.')) {
+                                // User ingin melanjutkan
+                                this.updateProgressWithMessage('Klik "CARI RUMUS" untuk melanjutkan dari progress tersimpan');
+                            } else {
+                                // User ingin mulai baru
+                                localStorage.removeItem('program2_progress');
+                                this.resetSearchState();
+                                this.updateStatusInfo();
+                            }
+                        }, 1000);
+                    }
+                }, 500);
+                
+                // Auto-save input data
+                setInterval(() => {
+                    const inputData = document.getElementById('numbers2').value;
+                    if (inputData.trim()) {
+                        localStorage.setItem('program2_input', inputData);
+                    }
+                }, 10000);
+                
+                // Load saved input data
+                const savedInput = localStorage.getItem('program2_input');
+                if (savedInput) {
+                    document.getElementById('numbers2').value = savedInput;
+                    this.updateDataCount();
+                }
+                
+                // Page visibility change handler
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && this.isSearching) {
+                        // Auto-save dan pause jika pindah tab
+                        this.saveProgress();
+                        if (this.isSearching) {
+                            this.stopSearch();
+                            showNotification('💾 Progress otomatis disimpan (pindah tab)');
+                        }
+                    }
+                });
+                
+                // Before page unload
+                window.addEventListener('beforeunload', (event) => {
+                    if (this.isSearching) {
+                        this.saveProgress();
+                        // Optional: Tampilkan warning
+                        event.preventDefault();
+                        event.returnValue = 'Progress sedang berjalan. Tutup halaman?';
+                    }
+                });
+            }
+        };
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tab system
+            const savedTab = localStorage.getItem('activeTab') || 'program1';
+            const tabButton = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+            if (tabButton) {
+                tabButton.click();
+            }
+            
+            // Initialize both programs
+            Program1.init();
+            Program2.init();
+            
+            // Show welcome message
+            setTimeout(() => {
+                const firstVisit = !localStorage.getItem('prediksi_tools_visited');
+                if (firstVisit) {
+                    showNotification('Selamat datang di Prediksi Tools! Pilih tab untuk mulai.');
+                    localStorage.setItem('prediksi_tools_visited', 'true');
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
