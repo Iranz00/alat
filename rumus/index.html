@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediksi Tools - Kalkulator & Auto Prediksi</title>
+    <title>Rumus Otomatis & Semi-Auto - RAN</title>
     <style>
         /* ========== GLOBAL RESET & FONTS ========== */
         * { 
@@ -871,8 +871,8 @@
     <div class="main-container">
         <!-- HEADER -->
         <div class="header">
-            <h1>🔮 PREDIKSI TOOLS</h1>
-            <div class="subtitle">Kalkulator Rumus & Auto Prediksi dalam Satu Aplikasi</div>
+            <h1>💡 PREDIKSI TOOLS 💡</h1>
+            <div class="subtitle">Mencari Rumus Otomatis & Semi-Auto</div>
         </div>
         
         <!-- THEME TOGGLE -->
@@ -1168,7 +1168,7 @@ A3+Js2-C1m8.(ty)"></textarea>
             }, 3000);
         }
         
-        // ========== PROGRAM 1: KEY KALKULATOR (FIXED) ==========
+        // ========== PROGRAM 1: KEY KALKULATOR ==========
         const Program1 = {
             // Tabel konversi mistik
             mistikTables: {
@@ -1440,7 +1440,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                     throw new Error(`Tabel mistik tidak dikenal: ${mistikMatch[1]}`);
                 }
                 
-                // VALIDASI KOMPONEN SAMA BERDASARKAN OPERATOR (FIXED)
+                // VALIDASI KOMPONEN SAMA BERDASARKAN OPERATOR
                 const baseFormula = formula.replace(/\.\((\w+)\)/, '');
                 const components = baseFormula.split(/([+\-])/).filter(c => c.trim());
                 
@@ -1798,7 +1798,7 @@ A3+Js2-C1m8.(ty)"></textarea>
             },
 
             processComponent: function(component, currentDayIndex) {
-                // Recursion depth check (FIXED)
+                // Recursion depth check
                 if (this.processComponentDepth > this.maxComponentDepth) {
                     throw new Error(`Max recursion depth exceeded in processComponent: ${component}`);
                 }
@@ -2020,7 +2020,9 @@ A3+Js2-C1m8.(ty)"></textarea>
             currentPatternIndex: 0,
             testPriorityOrder: ['A', 'C', 'K', 'E', 'J', 'AC', 'CK', 'KE', 'CB'],
 
-            // ==================== FUNGSI UTAMA ====================
+// =============================================
+// FUNGSI UTAMA
+// =============================================
             updateDataCount: function() {
                 const input = document.getElementById('numbers2').value.trim();
                 const lines = input.split('\n').map(l => l.trim()).filter(l => /^\d{4}$/.test(l));
@@ -2080,7 +2082,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 return this.mistikTables[table]?.[digit] || digit;
             },
 
-            // ==================== FUNGSI PERHITUNGAN ====================
+// =============================================
+// FUNGSI PERHITUNGAN
+// =============================================
             processComponent: function(component, currentDayIndex, data) {
                 const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d{1,2})(\w*)$/);
                 if (!match) throw new Error(`Komponen tidak valid: ${component}`);
@@ -2230,7 +2234,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 return { hit: false, matchedDigit: '' };
             },
 
-            // ==================== FUNGSI TESTING (FIXED PATAH LIMIT) ====================
+// =============================================
+// FUNGSI TESTING (PATAH LIMIT)
+// =============================================
             testSingleTargetType: function(aiFormula, pattern, data, daysToTest, patahLimit, targetType) {
                 if (data.length < daysToTest + 1) return null;
                 
@@ -2272,7 +2278,7 @@ A3+Js2-C1m8.(ty)"></textarea>
                             hits++;
                         } else {
                             patah++;
-                            // STRICT PATAH LIMIT ENFORCEMENT (FIXED)
+                            // STRICT PATAH LIMIT ENFORCEMENT
                             if (patah > patahLimit) {
                                 return null; // Immediately stop jika melebihi patah limit
                             }
@@ -2285,11 +2291,11 @@ A3+Js2-C1m8.(ty)"></textarea>
                 
                 if (attempts < daysToTest) return null;
                 
-                // Double check patah limit (FIXED)
+                // Double check patah limit
                 if (patah > patahLimit) return null;
                 
                 return {
-                    fullFormula: `${aiFormula} ${pattern}`, // Include pattern in full formula (FIXED)
+                    fullFormula: `${aiFormula} ${pattern}`, // Include pattern in full formula
                     aiFormula,
                     pattern,
                     targetType,
@@ -2317,7 +2323,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 }
             },
 
-            // ==================== GENERATE KOMBINASI ====================
+// =============================================
+// GENERATE KOMBINASI
+// =============================================
             generateAIFormulas: function(mode, dataLength, daysToTest) {
                 const comps = ['A','C','K','E','J','Js','J3D','J4D'];
                 const maxOffset = Math.max(1, Math.min(10, dataLength - daysToTest - 3));
@@ -2403,7 +2411,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 return patterns;
             },
 
-            // ==================== SISTEM PENCARIAN ====================
+// =============================================
+// SISTEM PENCARIAN
+// =============================================
             startSearch: function() {
                 if (this.isSearching) return;
                 
@@ -2761,7 +2771,10 @@ A3+Js2-C1m8.(ty)"></textarea>
                 localStorage.removeItem('program2_progress');
             },
 
-            // ==================== DISPLAY RESULT (FIXED WITH POLA N) ====================
+
+// =============================================
+// TAMPILAN HASIL (DENGAN POLA N)
+// =============================================
             displayResult: function(result) {
                 const targetDisplayNames = {
                     'A': 'AS', 'C': 'COP', 'K': 'KEPALA', 'E': 'EKOR',
@@ -2825,7 +2838,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 resultBox.scrollTop = resultBox.scrollHeight;
             },
 
-            // ==================== COPY OUTPUT (FIXED) ====================
+// =============================================
+// COPY OUTPUT
+// =============================================
             copyOutput: function() {
                 let copyText = '';
                 
@@ -2858,7 +2873,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 });
             },
 
-            // ==================== MEMORY MANAGEMENT ====================
+// =============================================
+// MEMORY MANAGEMENT
+// =============================================
             cleanupMemory: function() {
                 // Cleanup memory tapi JANGAN reset data penting
                 if (window.gc) {
@@ -3006,7 +3023,9 @@ A3+Js2-C1m8.(ty)"></textarea>
                 document.getElementById('resultOutput2').textContent = output;
             },
 
-            // ==================== FUNGSI BANTUAN ====================
+// =============================================
+// FUNGSI BANTUAN
+// =============================================
             updateProgress: function() {
                 const progress = (this.totalProcessed / this.totalCombinations) * 100;
                 document.getElementById('progressFill2').style.width = `${Math.min(progress, 100)}%`;
