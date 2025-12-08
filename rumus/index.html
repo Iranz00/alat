@@ -1168,868 +1168,921 @@ A3+Js2-C1m8.(ty)"></textarea>
             }, 3000);
         }
         
-        // ========== PROGRAM 1: KEY KALKULATOR (UPDATED) ==========
-        const Program1 = {
-            // Tabel konversi mistik
-            mistikTables: {
-                'IX': {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'},
-                'TY': {'0':'7', '1':'4', '2':'9', '3':'6', '4':'1', '5':'8', '6':'3', '7':'0', '8':'5', '9':'2'},
-                'ML': {'0':'1', '1':'0', '2':'5', '3':'8', '4':'7', '5':'2', '6':'9', '7':'4', '8':'3', '9':'6'},
-                'MB': {'0':'8', '1':'7', '2':'6', '3':'9', '4':'5', '5':'4', '6':'2', '7':'1', '8':'0', '9':'3'},
-                'M0': {'0':'6', '1':'5', '2':'8', '3':'7', '4':'9', '5':'1', '6':'0', '7':'2', '8':'3', '9':'4'},
-                'M1': {'0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6', '6':'5', '7':'4', '8':'3', '9':'2'},
-                'M2': {'0':'2', '1':'8', '2':'0', '3':'9', '4':'7', '5':'6', '6':'5', '7':'4', '8':'1', '9':'3'},
-                'M3': {'0':'3', '1':'2', '2':'1', '3':'0', '4':'9', '5':'8', '6':'7', '7':'6', '8':'5', '9':'4'},
-                'M4': {'0':'6', '1':'5', '2':'3', '3':'2', '4':'7', '5':'1', '6':'0', '7':'4', '8':'9', '9':'8'},
-                'M5': {'0':'5', '1':'4', '2':'3', '3':'2', '4':'1', '5':'0', '6':'9', '7':'8', '8':'7', '9':'6'},
-                'M6': {'0':'6', '1':'8', '2':'4', '3':'5', '4':'2', '5':'3', '6':'0', '7':'9', '8':'1', '9':'7'},
-                'M7': {'0':'7', '1':'6', '2':'5', '3':'4', '4':'3', '5':'2', '6':'1', '7':'0', '8':'9', '9':'8'},
-                'M8': {'0':'8', '1':'7', '2':'6', '3':'5', '4':'9', '5':'3', '6':'1', '7':'2', '8':'0', '9':'4'},
-                'M9': {'0':'9', '1':'8', '2':'7', '3':'6', '4':'5', '5':'4', '6':'3', '7':'2', '8':'1', '9':'0'},
-                'M10': {'0':'4', '1':'2', '2':'1', '3':'8', '4':'0', '5':'6', '6':'5', '7':'9', '8':'3', '9':'7'},
-            },
+// ========== PROGRAM 1: KEY KALKULATOR (FIXED & UPDATED) ==========
+const Program1 = {
+    // ========== TABEL MISTIK YANG BENAR (DARI KOREKSI ANDA) ==========
+    mistikTables: {
+        'IX': {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'},
+        'TY': {'0':'7','1':'4','2':'9','3':'6','4':'1','5':'8','6':'3','7':'0','8':'5','9':'2'},
+        'ML': {'0':'1','1':'0','2':'5','3':'8','4':'7','5':'2','6':'9','7':'4','8':'3','9':'6'},
+        'MB': {'0':'8','1':'7','2':'6','3':'9','4':'5','5':'4','6':'2','7':'1','8':'0','9':'3'},
+        'M0': {'0':'6','1':'5','2':'8','3':'7','4':'9','5':'1','6':'1','7':'3','8':'2','9':'4'},
+        'M1': {'0':'1','1':'0','2':'9','3':'8','4':'7','5':'6','6':'5','7':'4','8':'3','9':'2'},
+        'M2': {'0':'2','1':'8','2':'0','3':'9','4':'7','5':'6','6':'5','7':'4','8':'1','9':'3'},
+        'M3': {'0':'3','1':'2','2':'1','3':'0','4':'9','5':'8','6':'7','7':'6','8':'5','9':'4'},
+        'M4': {'0':'6','1':'5','2':'3','3':'2','4':'7','5':'1','6':'0','7':'4','8':'9','9':'8'},
+        'M5': {'0':'5','1':'4','2':'3','3':'2','4':'1','5':'0','6':'9','7':'8','8':'7','9':'6'},
+        'M6': {'0':'6','1':'8','2':'4','3':'5','4':'2','5':'3','6':'1','7':'9','8':'1','9':'7'},
+        'M7': {'0':'7','1':'6','2':'5','3':'4','4':'3','5':'2','6':'1','7':'0','8':'9','9':'8'},
+        'M8': {'0':'8','1':'7','2':'6','3':'5','4':'9','5':'3','6':'2','7':'1','8':'0','9':'4'},
+        'M9': {'0':'9','1':'8','2':'7','3':'6','4':'5','5':'4','6':'3','7':'2','8':'1','9':'0'},
+        'M10': {'0':'4','1':'2','2':'1','3':'8','4':'0','5':'6','6':'5','7':'9','8':'3','9':'7'}
+    },
 
-            dataHistory: [],
-            currentFormulas: [],
-            formulaPatterns: [], // Simpan pola N untuk setiap rumus
-            originalInputData: [],
-            aiHistory: [],
-            processComponentDepth: 0,
-            maxComponentDepth: 10,
+    dataHistory: [],
+    currentFormulas: [],
+    formulaPatterns: [],
+    originalInputData: [],
+    aiHistory: [],
+    processComponentDepth: 0,
+    maxComponentDepth: 10,
 
-            // Data highlight untuk setiap rumus
-            highlightPatterns: [
-                ['30', '74', '07', '63', '07', '07', '74', '07', '63', '30', '41', '96', '41', '18', '74', '85'],
-                ['35', '80', '68', '68', '02', '02', '79', '13', '68', '13', '80', '02', '46', '68', '68', '35'],
-                ['36', '70', '81', '92', '03', '25', '70', '81', '36', '70', '81', '69', '58', '58', '58', '36'],
-                ['35', '80', '68', '02', '57', '79', '79', '57', '68', '79', '91', '80', '80', '68', '80', '46'],
-                ['23', '01', '01', '23', '56', '23', '89', '67', '56', '23', '12', '01', '34', '56', '34', '67']
-            ],
-
-            calculateFormula: function() {
-                const inputData = document.getElementById('inputData1').value.trim();
-                
-                if (!inputData) {
-                    this.showInfo('Masukkan data terlebih dahulu!', 'error');
-                    return;
-                }
-                
-                try {
-                    // Reset depth counter
-                    this.processComponentDepth = 0;
-                    
-                    const parsedData = this.parseInputData(inputData);
-                    
-                    if (this.currentFormulas.length === 0) {
-                        this.showInfo('Tidak ada rumus yang terdeteksi!', 'error');
-                        return;
-                    }
-                    
-                    // Validasi semua rumus
-                    const invalidFormulas = [];
-                    for (let formula of this.currentFormulas) {
-                        try {
-                            this.validateFormula(formula);
-                        } catch (error) {
-                            invalidFormulas.push(`${formula}: ${error.message}`);
-                        }
-                    }
-                    
-                    if (invalidFormulas.length > 0) {
-                        throw new Error(`Rumus tidak valid:\n${invalidFormulas.join('\n')}`);
-                    }
-                    
-                    this.displayAllFormulaResults(this.currentFormulas);
-                    this.showInfo(`Perhitungan berhasil! ${this.currentFormulas.length} rumus diproses.`, 'success');
-                    
-                } catch (error) {
-                    this.showInfo(`Error: ${error.message}`, 'error');
-                    console.error('Calculation error:', error);
-                    
-                    // Tampilkan error di output
-                    document.getElementById('resultOutput1').innerHTML = 
-                        `// ERROR: ${error.message}\n` +
-                        `// Pastikan rumus valid dan data cukup\n` +
-                        `// Contoh valid: A3mb-A5m9.(ty)\n` +
-                        `// Contoh tidak valid: A1-A1.(ty)`;
-                }
-            },
-
-            parseInputData: function(inputData) {
-                this.dataHistory = [];
-                this.currentFormulas = [];
-                this.formulaPatterns = [];
-                this.originalInputData = [];
-                this.aiHistory = [];
-                
-                const lines = inputData.split('\n');
-                let foundSeparator = false;
-                let separatorIndex = -1;
-                let separatorType = 'none';
-                
-                // Deteksi separator dengan berbagai format
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    
-                    // 1. Deteksi "======" (6 tanda sama dengan)
-                    if (line === '======' || line.startsWith('======')) {
-                        separatorIndex = i;
-                        foundSeparator = true;
-                        separatorType = 'equals';
-                        break;
-                    }
-                    
-                    // 2. Deteksi double empty line (enter 2x)
-                    if (line === '' && i > 0) {
-                        const prevLine = lines[i-1].trim();
-                        if (prevLine === '') {
-                            separatorIndex = i - 1;
-                            foundSeparator = true;
-                            separatorType = 'double-empty';
-                            break;
-                        }
-                        
-                        // 3. Deteksi single empty line + rumus (fallback)
-                        const nextLine = i < lines.length - 1 ? lines[i+1].trim() : '';
-                        if (nextLine !== '' && !nextLine.match(/^\d{4}\s*=/) && 
-                            (nextLine.match(/[A-Za-z]/) || nextLine.includes('(') || nextLine.includes(')'))) {
-                            separatorIndex = i;
-                            foundSeparator = true;
-                            separatorType = 'single-empty';
-                            break;
-                        }
-                    }
-                }
-                
-                // Proses data sebelum separator
-                const dataLines = separatorIndex >= 0 ? lines.slice(0, separatorIndex) : lines;
-                const tempData = [];
-                
-                for (let line of dataLines) {
-                    line = line.trim();
-                    if (line === '') continue;
-                    
-                    const numberMatch = line.match(/(\d{4})/);
-                    if (numberMatch) {
-                        const number = numberMatch[1];
-                        
-                        const as = number[0];
-                        const cop = number[1];
-                        const kepala = number[2];
-                        const ekor = number[3];
-                        const jumlah = this.reduceToSingleDigit(parseInt(kepala) + parseInt(ekor));
-                        
-                        tempData.push({
-                            number: number,
-                            as: as,
-                            cop: cop,
-                            kepala: kepala,
-                            ekor: ekor,
-                            jumlah: jumlah
-                        });
-                        
-                        // Ekstrak data original dengan suffix
-                        const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)\s*(\w*)/);
-                        if (originalMatch) {
-                            this.originalInputData.push({
-                                number: originalMatch[1],
-                                ai: originalMatch[2] || '',
-                                suffix: originalMatch[3] || 'ai'
-                            });
-                        } else {
-                            this.originalInputData.push({
-                                number: number,
-                                ai: '',
-                                suffix: 'ai'
-                            });
-                        }
-                    }
-                }
-                
-                // Proses rumus setelah separator - FIXED: Pisahkan rumus dari pola N/karakter lain
-                const tempFormulas = [];
-                const tempPatterns = [];
-                
-                if (foundSeparator && separatorIndex < lines.length - 1) {
-                    const formulaStartIndex = separatorIndex + (separatorType === 'double-empty' ? 2 : 1);
-                    const formulaLines = lines.slice(formulaStartIndex);
-                    
-                    for (let line of formulaLines) {
-                        line = line.trim();
-                        if (line === '') continue;
-                        
-                        // Hanya ambil line yang seperti rumus
-                        if (line.match(/[A-Za-z]/) && !line.includes('//')) {
-                            let formulaOnly = line;
-                            let pattern = null;
-                            
-                            // PISAHKAN: ambil hanya sampai spasi pertama
-                            const spaceIndex = line.indexOf(' ');
-                            if (spaceIndex !== -1) {
-                                formulaOnly = line.substring(0, spaceIndex).trim();
-                                const afterSpace = line.substring(spaceIndex + 1).trim();
-                                
-                                // Cek jika setelah spasi adalah pola N (N diikuti angka)
-                                if (afterSpace.match(/^N\d+(?:N\d+)*$/)) {
-                                    pattern = afterSpace;
-                                }
-                            }
-                            
-                            // Juga handle jika ada spasi sebelum tanda kurung
-                            formulaOnly = formulaOnly.replace(/\s+\.\(/, '.(');
-                            
-                            if (this.looksLikeFormula(formulaOnly)) {
-                                tempFormulas.push(formulaOnly);
-                                tempPatterns.push(pattern); // Simpan pola N (bisa null)
-                            }
-                        }
-                    }
-                }
-                
-                // Jika tidak ada separator, coba deteksi rumus di akhir
-                if (!foundSeparator && lines.length > 0) {
-                    for (let i = lines.length - 1; i >= 0; i--) {
-                        const line = lines[i].trim();
-                        if (line === '') continue;
-                        
-                        if (line.match(/[A-Za-z]/) && !line.match(/^\d{4}\s*=/)) {
-                            if (this.looksLikeFormula(line)) {
-                                let formulaOnly = line;
-                                let pattern = null;
-                                
-                                const spaceIndex = line.indexOf(' ');
-                                if (spaceIndex !== -1) {
-                                    formulaOnly = line.substring(0, spaceIndex).trim();
-                                    const afterSpace = line.substring(spaceIndex + 1).trim();
-                                    
-                                    if (afterSpace.match(/^N\d+(?:N\d+)*$/)) {
-                                        pattern = afterSpace;
-                                    }
-                                }
-                                formulaOnly = formulaOnly.replace(/\s+\.\(/, '.(');
-                                
-                                if (this.looksLikeFormula(formulaOnly)) {
-                                    tempFormulas.push(formulaOnly);
-                                    tempPatterns.push(pattern);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                this.dataHistory = tempData;
-                this.currentFormulas = tempFormulas;
-                this.formulaPatterns = tempPatterns;
-                
-                this.updateFormulaDisplay();
-                
-                if (this.currentFormulas.length > 0) {
-                    const maxDaysNeeded = this.currentFormulas.map(formula => this.findMaxDayInFormula(formula));
-                    const maxDay = Math.max(...maxDaysNeeded);
-                    document.getElementById('historyInfo1').textContent = 
-                        `Butuh ${maxDay} hari history. ${this.currentFormulas.length} rumus terdeteksi.`;
-                } else {
-                    document.getElementById('historyInfo1').textContent = 
-                        `Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.`;
-                }
-                
-                return {
-                    data: this.dataHistory,
-                    formulas: this.currentFormulas
-                };
-            },
-
-            looksLikeFormula: function(line) {
-                // Cek jika line terlihat seperti rumus
-                if (!line.match(/[A-Za-z]/)) return false;
-                if (line.includes('//')) return false;
-                if (line.match(/^\d{4}/)) return false;
-                
-                // Harus mengandung komponen A,C,K,E,J, dll
-                const components = ['A','C','K','E','J','Js','J3D','J4D'];
-                return components.some(comp => line.includes(comp));
-            },
-
-            validateFormula: function(formula) {
-                // Cek format dasar
-                if (!formula.match(/[A-Za-z]/)) {
-                    throw new Error(`Rumus tidak valid: ${formula}`);
-                }
-                
-                // Cek untuk komponen dengan offset 0
-                if (formula.match(/[A-Za-z]0/)) {
-                    throw new Error(`Rumus ${formula} tidak valid: offset 0 tidak diperbolehkan`);
-                }
-                
-                // Cek mistik table valid
-                const mistikMatch = formula.match(/\.\((\w+)\)/);
-                if (mistikMatch && !this.mistikTables[mistikMatch[1].toUpperCase()]) {
-                    throw new Error(`Tabel mistik tidak dikenal: ${mistikMatch[1]}`);
-                }
-                
-                // VALIDASI KOMPONEN SAMA BERDASARKAN OPERATOR
-                const baseFormula = formula.replace(/\.\((\w+)\)/, '');
-                const components = baseFormula.split(/([+\-])/).filter(c => c.trim());
-                
-                // Cek jika hanya 3 bagian (A op B)
-                if (components.length === 3) {
-                    const [comp1, operator, comp2] = components;
-                    
-                    // Cek jika komponen sama
-                    if (comp1 === comp2) {
-                        if (operator === '-') {
-                            throw new Error(`Rumus ${formula} tidak valid: pengurangan dengan komponen sama (${comp1}-${comp2})`);
-                        }
-                    }
-                }
-                
-                return true;
-            },
-
-            updateFormulaDisplay: function() {
-                const formulaDisplay = document.getElementById('detectedFormula1');
-                
-                if (this.currentFormulas.length === 0) {
-                    formulaDisplay.textContent = 'Tidak ada rumus';
-                } else {
-                    formulaDisplay.innerHTML = this.currentFormulas.map((formula, index) => 
-                        `<div style="margin-bottom: 5px; padding: 3px 0;">
-                            <span style="color: #FFD700; font-weight: bold;">R${index + 1}:</span> ${formula}
-                            ${this.formulaPatterns[index] ? `<br><small style="color: #4ECDC4;">Pola: ${this.formulaPatterns[index]}</small>` : ''}
-                        </div>`
-                    ).join('');
-                }
-            },
-
-            displayAllFormulaResults: function(formulas) {
-                const output = document.getElementById('resultOutput1');
-                let outputHTML = '';
-                let hasError = false;
-                
-                for (let i = 0; i < formulas.length; i++) {
-                    try {
-                        const results = this.calculateAIForSingleFormula(formulas[i]);
-                        
-                        let highlightData = [];
-                        if (i === 0) {
-                            highlightData = this.originalInputData.map(item => item.ai);
-                        } else {
-                            highlightData = this.getHighlightDataForFormula(i);
-                        }
-                        
-                        // GUNAKAN POLA N DARI INPUT JIKA ADA
-                        const customPattern = this.formulaPatterns[i];
-                        const formulaOutput = this.generateRotatedOutput(results, formulas[i], highlightData, customPattern);
-                        outputHTML += formulaOutput;
-                        
-                        if (i < formulas.length - 1) {
-                            outputHTML += '\n\n';
-                        }
-                    } catch (error) {
-                        outputHTML += `// ERROR pada rumus ${i+1}: ${formulas[i]}\n`;
-                        outputHTML += `// ${error.message}\n`;
-                        outputHTML += '======\n';
-                        outputHTML += formulas[i] + '\n\n';
-                        hasError = true;
-                    }
-                }
-                
-                output.innerHTML = outputHTML;
-                
-                if (hasError) {
-                    this.showInfo('Ada error dalam perhitungan, lihat output untuk detail', 'error');
-                }
-            },
-
-            getHighlightDataForFormula: function(formulaIndex) {
-                if (formulaIndex < this.highlightPatterns.length) {
-                    return this.highlightPatterns[formulaIndex];
-                }
-                
-                return this.originalInputData.map(() => '');
-            },
-
-            calculateAIForSingleFormula: function(formula) {
-                const results = [];
-                const maxDayNeeded = this.findMaxDayInFormula(formula);
-                
-                this.aiHistory = [];
-                
-                for (let i = 0; i < this.dataHistory.length; i++) {
-                    if (i >= maxDayNeeded - 1) {
-                        const aiResult = this.calculateSingleAI(formula, i);
-                        results.push({
-                            number: this.dataHistory[i].number,
-                            ai: aiResult,
-                            canCalculate: true
-                        });
-                    } else {
-                        results.push({
-                            number: this.dataHistory[i].number,
-                            ai: '',
-                            canCalculate: false
-                        });
-                        this.aiHistory[i] = null;
-                    }
-                }
-                
-                return results;
-            },
-
-            generateRotatedOutput: function(results, formula, highlightData, customPattern) {
-                let output = '';
-                let inheritedPositions = null;
-                
-                // Jika ada custom pattern dari input, parse posisinya
-                let customHighlightPositions = null;
-                if (customPattern) {
-                    customHighlightPositions = [];
-                    const steps = customPattern.match(/N(\d)/g);
-                    if (steps) {
-                        for (let step of steps) {
-                            const pos = parseInt(step.substring(1));
-                            if (pos >= 0 && pos <= 9 && !customHighlightPositions.includes(pos)) {
-                                customHighlightPositions.push(pos);
-                            }
-                        }
-                        customHighlightPositions.sort((a, b) => a - b);
-                    }
-                }
-                
-                for (let i = 0; i < results.length; i++) {
-                    const result = results[i];
-                    
-                    if (result.canCalculate) {
-                        const highlightAI = highlightData[i] || '';
-                        
-                        // Gunakan custom pattern jika ada, jika tidak gunakan warisan
-                        const rotatedResult = this.formatAIWithColorAndInheritance(
-                            result.ai, 
-                            highlightAI, 
-                            customPattern ? customHighlightPositions : inheritedPositions,
-                            customPattern ? true : false
-                        );
-                        output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
-                        
-                        inheritedPositions = rotatedResult.highlightPositions;
-                    } else {
-                        output += `${result.number} = \n`;
-                        inheritedPositions = null;
-                    }
-                }
-                
-                output += '======\n';
-                // Tampilkan rumus dengan pola N jika ada
-                output += customPattern ? `${formula} ${customPattern}` : formula;
-                
-                return output;
-            },
-
-            formatAIWithColorAndInheritance: function(calculatedAI, highlightAI, highlightPositions, useCustomPattern = false) {
-                let rotatedDigits = '';
-                const allDigits = '0123456789';
-                const startIndex = allDigits.indexOf(calculatedAI.toString());
-                
-                for (let i = 0; i < allDigits.length; i++) {
-                    const actualIndex = (startIndex + i) % allDigits.length;
-                    rotatedDigits += allDigits[actualIndex];
-                }
-                
-                // Jika pakai custom pattern, langsung pakai highlightPositions dari pattern
-                if (!useCustomPattern && highlightAI && highlightAI.trim() !== '' && !highlightPositions) {
-                    highlightPositions = [];
-                    const highlightDigits = highlightAI.toString().split('');
-                    
-                    for (let digit of highlightDigits) {
-                        if (digit >= '0' && digit <= '9') {
-                            const position = rotatedDigits.indexOf(digit);
-                            if (position !== -1 && !highlightPositions.includes(position)) {
-                                highlightPositions.push(position);
-                            }
-                        }
-                    }
-                    
-                    if (highlightPositions.length > 0) {
-                        highlightPositions.sort((a, b) => a - b);
-                    } else {
-                        highlightPositions = null;
-                    }
-                }
-                
-                let result = '';
-                let colorIndex = 0;
-                const highlightColors = [
-                    '#FF6B6B',
-                    '#4ECDC4',
-                    '#45B7D1',
-                    '#96CEB4',
-                    '#FFEAA7',
-                    '#DDA0DD'
-                ];
-                
-                for (let i = 0; i < rotatedDigits.length; i++) {
-                    const digit = rotatedDigits[i];
-                    
-                    if (highlightPositions && highlightPositions.includes(i)) {
-                        const color = highlightColors[colorIndex % highlightColors.length];
-                        result += `<span style="color: ${color}; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">${digit}</span>`;
-                        colorIndex++;
-                    } else {
-                        result += digit;
-                    }
-                }
-                
-                return {
-                    rotatedDigits: result,
-                    highlightPositions: highlightPositions
-                };
-            },
-
-            copyOutput: function() {
-                const outputElement = document.getElementById('resultOutput1');
-                let copyText = '';
-                
-                const lines = outputElement.innerHTML.split('\n');
-                let dataLines = [];
-                let currentFormula = '';
-                let currentPattern = 'N0N1'; // Default
-                let waitingForFormula = false;
-                
-                for (let line of lines) {
-                    line = line.trim();
-                    
-                    const numberMatch = line.match(/(\d{4})\s*=/);
-                    if (numberMatch) {
-                        const number = numberMatch[1];
-                        
-                        const regex = /<span[^>]*>(\d)<\/span>/g;
-                        let match;
-                        let highlightedDigits = '';
-                        
-                        while ((match = regex.exec(line)) !== null) {
-                            highlightedDigits += match[1];
-                        }
-                        
-                        if (highlightedDigits) {
-                            const suffix = this.determineMajoritySuffix();
-                            dataLines.push(`${number} = ${highlightedDigits} ${suffix}`);
-                        } else {
-                            dataLines.push(`${number} = `);
-                        }
-                    }
-                    
-                    if (line === '======') {
-                        waitingForFormula = true;
-                        continue;
-                    }
-                    
-                    if (waitingForFormula && line && !line.includes('//') && !line.includes('<')) {
-                        // Ambil rumus dan pola N dari output
-                        const formulaMatch = line.match(/^([A-Za-z0-9+\-\.\(\)]+)(?:\s+(N\d+(?:N\d+)*))?$/);
-                        if (formulaMatch) {
-                            currentFormula = formulaMatch[1];
-                            currentPattern = formulaMatch[2] || 'N0N1';
-                        } else {
-                            // Jika tidak match regex, ambil semua sebagai rumus
-                            currentFormula = line;
-                        }
-                        waitingForFormula = false;
-                    }
-                }
-                
-                copyText = dataLines.join('\n');
-                if (currentFormula) {
-                    copyText += '\n======\n';
-                    copyText += `${currentFormula} ${currentPattern}`;
-                }
-                
-                if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
-                    this.showInfo('Tidak ada output yang bisa disalin!', 'error');
-                    return;
-                }
-                
-                navigator.clipboard.writeText(copyText).then(() => {
-                    showNotification('✅ Output berhasil disalin!');
-                }).catch(err => {
-                    const textArea = document.createElement('textarea');
-                    textArea.value = copyText;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showNotification('✅ Output berhasil disalin!');
-                });
-            },
-
-            determineMajoritySuffix: function() {
-                const suffixCount = {};
-                
-                for (const item of this.originalInputData) {
-                    if (item.suffix && item.suffix !== 'ai') {
-                        suffixCount[item.suffix] = (suffixCount[item.suffix] || 0) + 1;
-                    }
-                }
-                
-                let majoritySuffix = 'ai';
-                let maxCount = 0;
-                
-                for (const [suffix, count] of Object.entries(suffixCount)) {
-                    if (count > maxCount) {
-                        maxCount = count;
-                        majoritySuffix = suffix;
-                    }
-                }
-                
-                return majoritySuffix;
-            },
-
-            findMaxDayInFormula: function(formula) {
-                let maxDay = 1;
-                let workingFormula = formula.replace(/\.\((\w+)\)/, '');
-                
-                const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)/g;
-                let match;
-                
-                while ((match = componentRegex.exec(workingFormula)) !== null) {
-                    const day = parseInt(match[2]);
-                    if (day > maxDay) {
-                        maxDay = day;
-                    }
-                }
-                
-                return maxDay;
-            },
-
-            calculateSingleAI: function(formula, currentDayIndex) {
-                let workingFormula = formula;
-                const finalConversion = workingFormula.match(/\.\((\w+)\)/);
-                if (finalConversion) {
-                    workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
-                }
-                
-                const components = workingFormula.split(/([+\-])/);
-                let total = 0;
-                let currentOperator = '+';
-                
-                for (let i = 0; i < components.length; i++) {
-                    const component = components[i].trim();
-                    
-                    if (component === '+' || component === '-') {
-                        currentOperator = component;
-                        continue;
-                    }
-                    
-                    if (component) {
-                        const value = this.processComponent(component, currentDayIndex);
-                        
-                        if (currentOperator === '+') {
-                            total += value;
-                        } else if (currentOperator === '-') {
-                            total -= value;
-                        }
-                    }
-                }
-                
-                if (total < 0) {
-                    total = Math.abs(total);
-                }
-                
-                if (finalConversion) {
-                    const table = finalConversion[1].toUpperCase();
-                    const converted = this.convertMistik(total.toString(), table);
-                    total = parseInt(converted);
-                }
-                
-                const finalResult = this.reduceToSingleDigit(total);
-                
-                this.aiHistory[currentDayIndex] = finalResult;
-                
-                return finalResult;
-            },
-
-            processComponent: function(component, currentDayIndex) {
-                // Recursion depth check
-                if (this.processComponentDepth > this.maxComponentDepth) {
-                    throw new Error(`Max recursion depth exceeded in processComponent: ${component}`);
-                }
-                
-                this.processComponentDepth++;
-                
-                try {
-                    const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)(\w*)$/);
-                    if (!match) {
-                        throw new Error(`Format komponen tidak valid: ${component}`);
-                    }
-                    
-                    const type = match[1];
-                    const dayOffset = parseInt(match[2]);
-                    const conversion = match[3];
-                    
-                    if (dayOffset === 0) {
-                        throw new Error(`Komponen ${component} tidak valid: offset 0 tidak diperbolehkan`);
-                    }
-                    
-                    const targetDayIndex = currentDayIndex - (dayOffset - 1);
-                    
-                    if (targetDayIndex < 0) {
-                        throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari history)`);
-                    }
-                    
-                    const data = this.dataHistory[targetDayIndex];
-                    let value;
-                    
-                    switch(type) {
-                        case 'A': value = parseInt(data.as); break;
-                        case 'C': value = parseInt(data.cop); break;
-                        case 'K': value = parseInt(data.kepala); break;
-                        case 'E': value = parseInt(data.ekor); break;
-                        case 'J': value = data.jumlah; break;
-                        case 'Js': 
-                            value = Math.abs(parseInt(data.kepala) - parseInt(data.ekor));
-                            value = this.reduceToSingleDigit(value);
-                            break;
-                        case 'J3D':
-                            value = parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
-                            value = this.reduceToSingleDigit(value);
-                            break;
-                        case 'J4D':
-                            value = parseInt(data.as) + parseInt(data.cop) + parseInt(data.kepala) + parseInt(data.ekor);
-                            value = this.reduceToSingleDigit(value);
-                            break;
-                        default: 
-                            throw new Error(`Tipe komponen tidak dikenali: ${type}`);
-                    }
-                    
-                    if (conversion) {
-                        const table = conversion.toUpperCase();
-                        value = parseInt(this.convertMistik(value.toString(), table));
-                    }
-                    
-                    return value;
-                } finally {
-                    this.processComponentDepth--;
-                }
-            },
-
-            convertMistik: function(number, table) {
-                if (!this.mistikTables[table]) {
-                    throw new Error(`Tabel mistik tidak ditemukan: ${table}`);
-                }
-                
-                const digit = this.reduceToSingleDigit(parseInt(number)).toString();
-                
-                if (this.mistikTables[table][digit] === undefined) {
-                    throw new Error(`Angka ${digit} tidak ada di tabel ${table}`);
-                }
-                
-                return this.mistikTables[table][digit];
-            },
-
-            reduceToSingleDigit: function(num) {
-                let result = num;
-                let safetyCounter = 0;
-                const MAX_ITERATIONS = 100;
-                
-                while (result > 9 && safetyCounter < MAX_ITERATIONS) {
-                    result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-                    safetyCounter++;
-                }
-                
-                if (safetyCounter >= MAX_ITERATIONS) {
-                    console.warn(`reduceToSingleDigit mungkin infinite loop untuk input: ${num}`);
-                    return 0;
-                }
-                
-                return result;
-            },
-
-            clearAll: function() {
-                document.getElementById('inputData1').value = '';
-                document.getElementById('resultOutput1').innerHTML = `// Hasil perhitungan akan muncul di sini
-// Mendukung menghitung 1-6 digit:
-
-// 8603 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">3</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">5</span>678901234
-// 2436 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">6</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">8</span>901234567
-// 5678 = <span style="color: #FF6B6B; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">9</span><span style="color: #4ECDC4; font-weight: bold; background: rgba(0,0,0,0.1); padding: 1px 3px; border-radius: 3px;">0</span>123456789
-// ======
-// Js6ml+E2ty.(mb)
-
-// ... dan seterusnya untuk setiap rumus`;
-                document.getElementById('info1').innerHTML = `Masukkan data dengan format angka dan multiple rumus, lalu klik HITUNG RUMUS
-                <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #e8f5e8; padding: 10px; border-radius: 8px;">
-                    <strong>Komponen yang didukung:</strong><br>
-                    • <code>A</code>=AS • <code>C</code>=COP • <code>K</code>=KEPALA • <code>E</code>=EKOR<br>
-                    • <code>J</code>=K+E • <code>Js</code>=K-E • <code>J3D</code>=C+K+E • <code>J4D</code>=A+C+K+E<br>
-                    <small>Contoh: A3mb, Js6ml, J3D4mb, J4D2ml.(ix)</small>
-                </div>`;
-                document.getElementById('inputInfo1').textContent = '0 angka + 0 rumus terdeteksi';
-                document.getElementById('detectedFormula1').textContent = 'Tidak ada rumus';
-                document.getElementById('historyInfo1').textContent = 'Butuh 0 hari history. Data terbaru (bawah) membutuhkan data sebelumnya (atas) untuk perhitungan.';
-                this.dataHistory = [];
-                this.currentFormulas = [];
-                this.formulaPatterns = [];
-                this.originalInputData = [];
-                this.aiHistory = [];
-                this.processComponentDepth = 0;
-            },
-
-            showInfo: function(message, type) {
-                const infoDiv = document.getElementById('info1');
-                infoDiv.innerHTML = message;
-                infoDiv.className = 'info-1';
-                if (type === 'error') {
-                    infoDiv.classList.add('error');
-                } else if (type === 'success') {
-                    infoDiv.classList.add('success');
-                }
-            },
-
-            updateInputInfo: function() {
-                const input = document.getElementById('inputData1').value.trim();
-                const parsed = this.parseInputData(input);
-                const numberCount = this.dataHistory.length;
-                const formulaCount = this.currentFormulas.length;
-                
-                document.getElementById('inputInfo1').textContent = `${numberCount} angka + ${formulaCount} rumus terdeteksi`;
-            },
-
-            init: function() {
-                document.getElementById('inputData1').addEventListener('input', () => {
-                    this.updateInputInfo();
-                });
-                this.updateInputInfo();
-                
-                document.getElementById('inputData1').addEventListener('keydown', (e) => {
-                    if (e.ctrlKey && e.key === 'Enter') {
-                        this.calculateFormula();
-                    }
-                });
-                
-                // Load saved data
-                const savedData = localStorage.getItem('program1_data');
-                if (savedData) {
-                    try {
-                        const data = JSON.parse(savedData);
-                        document.getElementById('inputData1').value = data.inputData || '';
-                        this.updateInputInfo();
-                    } catch (e) {
-                        console.error('Error loading Program 1 data:', e);
-                    }
-                }
-                
-                // Auto-save input data
-                setInterval(() => {
-                    const inputData = document.getElementById('inputData1').value;
-                    if (inputData.trim()) {
-                        localStorage.setItem('program1_data', JSON.stringify({
-                            inputData: inputData,
-                            timestamp: Date.now()
-                        }));
-                    }
-                }, 10000);
+    // ========== FUNGSI UTAMA YANG DIPERBAIKI ==========
+    calculateFormula: function() {
+        const inputData = document.getElementById('inputData1').value.trim();
+        
+        if (!inputData) {
+            this.showMessage('Masukkan data terlebih dahulu!', 'error');
+            return;
+        }
+        
+        try {
+            // Reset depth counter
+            this.processComponentDepth = 0;
+            
+            const parsedData = this.parseInputData(inputData);
+            
+            if (this.currentFormulas.length === 0) {
+                this.showMessage('Tidak ada rumus yang terdeteksi!', 'error');
+                return;
             }
+            
+            // Validasi semua rumus
+            const invalidFormulas = [];
+            for (let formula of this.currentFormulas) {
+                try {
+                    this.validateFormula(formula);
+                } catch (error) {
+                    invalidFormulas.push(`${formula}: ${error.message}`);
+                }
+            }
+            
+            if (invalidFormulas.length > 0) {
+                throw new Error(`Rumus tidak valid:\n${invalidFormulas.join('\n')}`);
+            }
+            
+            // Hitung dan tampilkan
+            this.displayAllFormulaResults();
+            this.showMessage(`✅ Perhitungan berhasil! ${this.currentFormulas.length} rumus diproses.`, 'success');
+            
+        } catch (error) {
+            this.showMessage(`❌ Error: ${error.message}`, 'error');
+            console.error('Calculation error:', error);
+            
+            document.getElementById('resultOutput1').innerHTML = 
+                `// ERROR: ${error.message}\n` +
+                `// Pastikan rumus valid dan data cukup\n` +
+                `// Contoh: C2ix+K1.(m0)`;
+        }
+    },
+
+    // ========== PARSING YANG DIPERBAIKI ==========
+    parseInputData: function(inputData) {
+        this.dataHistory = [];
+        this.currentFormulas = [];
+        this.formulaPatterns = [];
+        this.originalInputData = [];
+        this.aiHistory = [];
+        
+        const lines = inputData.split('\n');
+        let separatorIndex = -1;
+        let separatorType = 'none';
+        
+        // Deteksi separator
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (line === '======' || line.startsWith('======')) {
+                separatorIndex = i;
+                separatorType = 'equals';
+                break;
+            }
+            
+            if (line === '' && i > 0) {
+                const prevLine = lines[i-1].trim();
+                if (prevLine === '') {
+                    separatorIndex = i - 1;
+                    separatorType = 'double-empty';
+                    break;
+                }
+                
+                const nextLine = i < lines.length - 1 ? lines[i+1].trim() : '';
+                if (nextLine !== '' && !nextLine.match(/^\d{4}\s*=/) && 
+                    (nextLine.match(/[A-Za-z]/) || nextLine.includes('(') || nextLine.includes(')'))) {
+                    separatorIndex = i;
+                    separatorType = 'single-empty';
+                    break;
+                }
+            }
+        }
+        
+        // Parse data angka (sebelum separator)
+        const dataLines = separatorIndex >= 0 ? lines.slice(0, separatorIndex) : lines;
+        
+        for (let line of dataLines) {
+            line = line.trim();
+            if (line === '') continue;
+            
+            const numberMatch = line.match(/(\d{4})/);
+            if (numberMatch) {
+                const number = numberMatch[1];
+                
+                // Parse angka menjadi komponen
+                this.dataHistory.push({
+                    number: number,
+                    as: parseInt(number[0]),
+                    cop: parseInt(number[1]),
+                    kepala: parseInt(number[2]),
+                    ekor: parseInt(number[3]),
+                    jumlah: this.reduceToSingleDigit(parseInt(number[2]) + parseInt(number[3]))
+                });
+                
+                // Simpan data original dengan AI
+                const originalMatch = line.match(/(\d{4})\s*=\s*(\d+)\s*(\w*)/);
+                if (originalMatch) {
+                    this.originalInputData.push({
+                        number: originalMatch[1],
+                        ai: originalMatch[2] || '',
+                        suffix: originalMatch[3] || 'ai'
+                    });
+                } else {
+                    this.originalInputData.push({
+                        number: number,
+                        ai: '',
+                        suffix: 'ai'
+                    });
+                }
+            }
+        }
+        
+        // Parse rumus dan pola (setelah separator)
+        const tempFormulas = [];
+        const tempPatterns = [];
+        
+        if (separatorIndex >= 0 && separatorIndex < lines.length - 1) {
+            const formulaStartIndex = separatorIndex + (separatorType === 'double-empty' ? 2 : 1);
+            const formulaLines = lines.slice(formulaStartIndex);
+            
+            for (let line of formulaLines) {
+                line = line.trim();
+                if (line === '' || line.includes('//')) continue;
+                
+                // Cek jika baris adalah pola N
+                if (line.match(/^N\d+(?:N\d+)*$/)) {
+                    if (tempFormulas.length > 0) {
+                        const lastIndex = tempFormulas.length - 1;
+                        if (!tempPatterns[lastIndex]) {
+                            tempPatterns[lastIndex] = line;
+                        }
+                    }
+                    continue;
+                }
+                
+                // Cek jika baris adalah rumus
+                if (this.looksLikeFormula(line)) {
+                    let formulaOnly = line;
+                    let pattern = null;
+                    
+                    // Pisahkan rumus dan pola jika ada di baris yang sama
+                    const spaceIndex = line.indexOf(' ');
+                    if (spaceIndex !== -1) {
+                        formulaOnly = line.substring(0, spaceIndex).trim();
+                        const afterSpace = line.substring(spaceIndex + 1).trim();
+                        
+                        if (afterSpace.match(/^N\d+(?:N\d+)*$/)) {
+                            pattern = afterSpace;
+                        } else {
+                            // Jika bukan pola N, mungkin ada spasi sebelum .(
+                            formulaOnly = line.replace(/\s+\.\(/, '.(');
+                        }
+                    }
+                    
+                    formulaOnly = formulaOnly.replace(/\s+\.\(/, '.(');
+                    
+                    if (this.looksLikeFormula(formulaOnly)) {
+                        tempFormulas.push(formulaOnly);
+                        tempPatterns.push(pattern);
+                    }
+                }
+            }
+        }
+        
+        this.currentFormulas = tempFormulas;
+        this.formulaPatterns = tempPatterns;
+        
+        this.updateFormulaDisplay();
+        
+        // Update info history
+        if (this.currentFormulas.length > 0) {
+            const maxDaysNeeded = this.currentFormulas.map(formula => this.findMaxDayInFormula(formula));
+            const maxDay = Math.max(...maxDaysNeeded);
+            document.getElementById('historyInfo1').textContent = 
+                `Butuh ${maxDay} hari sebelumnya. ${this.currentFormulas.length} rumus terdeteksi.`;
+        } else {
+            document.getElementById('historyInfo1').textContent = 
+                'Masukkan rumus setelah "======"';
+        }
+        
+        return {
+            data: this.dataHistory,
+            formulas: this.currentFormulas
         };
+    },
+
+    looksLikeFormula: function(line) {
+        if (!line.match(/[A-Za-z]/)) return false;
+        if (line.includes('//')) return false;
+        if (line.match(/^\d{4}/)) return false;
+        
+        const components = ['A','C','K','E','J','Js','J3D','J4D'];
+        return components.some(comp => line.includes(comp));
+    },
+
+    // ========== VALIDASI FORMULA YANG DIPERBAIKI ==========
+    validateFormula: function(formula) {
+        if (!formula.match(/[A-Za-z]/)) {
+            throw new Error(`Rumus tidak valid: ${formula}`);
+        }
+        
+        // PERBAIKAN: Validasi offset 0 yang lebih spesifik
+        // Hanya cari offset 0 dalam komponen, bukan di mistik
+        const baseFormula = formula.replace(/\.\([^)]+\)$/, ''); // Hapus mistik final
+        const components = baseFormula.split(/([+\-])/).filter(c => c.trim());
+        
+        for (let comp of components) {
+            if (comp !== '+' && comp !== '-') {
+                // PERBAIKAN: Regex yang lebih spesifik untuk offset 0
+                const offsetMatch = comp.match(/^(A|C|K|E|J|Js|J3D|J4D)(0)(?![a-zA-Z])/);
+                if (offsetMatch) {
+                    throw new Error(`Offset 0 tidak diperbolehkan: ${comp} dalam ${formula}`);
+                }
+            }
+        }
+        
+        // Cek tabel mistik final
+        const finalMistikMatch = formula.match(/\.\((\w+)\)/);
+        if (finalMistikMatch && !this.mistikTables[finalMistikMatch[1].toUpperCase()]) {
+            throw new Error(`Tabel mistik final tidak dikenal: ${finalMistikMatch[1]}`);
+        }
+        
+        // Cek komponen sama dengan operator minus
+        if (components.length === 3) {
+            const [comp1, operator, comp2] = components;
+            const cleanComp1 = comp1.replace(/\d+[a-zA-Z]*$/, '');
+            const cleanComp2 = comp2.replace(/\d+[a-zA-Z]*$/, '');
+            
+            if (cleanComp1 === cleanComp2 && operator === '-') {
+                throw new Error(`Pengurangan komponen sama tidak valid: ${comp1}-${comp2}`);
+            }
+        }
+        
+        return true;
+    },
+
+    updateFormulaDisplay: function() {
+        const formulaDisplay = document.getElementById('detectedFormula1');
+        
+        if (this.currentFormulas.length === 0) {
+            formulaDisplay.textContent = 'Tidak ada rumus';
+        } else {
+            formulaDisplay.innerHTML = this.currentFormulas.map((formula, index) => 
+                `<div style="margin-bottom: 5px; padding: 3px 0;">
+                    <span style="color: #FFD700; font-weight: bold;">R${index + 1}:</span> ${formula}
+                    ${this.formulaPatterns[index] ? `<br><small style="color: #4ECDC4;">Pola: ${this.formulaPatterns[index]}</small>` : ''}
+                </div>`
+            ).join('');
+        }
+        
+        // Update input info
+        document.getElementById('inputInfo1').textContent = 
+            `${this.dataHistory.length} angka + ${this.currentFormulas.length} rumus`;
+    },
+
+    // ========== PERHITUNGAN AI YANG DIPERBAIKI ==========
+    displayAllFormulaResults: function() {
+        const output = document.getElementById('resultOutput1');
+        let outputHTML = '';
+        let hasError = false;
+        
+        for (let i = 0; i < this.currentFormulas.length; i++) {
+            try {
+                const formula = this.currentFormulas[i];
+                const results = this.calculateAIForSingleFormula(formula);
+                
+                // Gunakan AI dari input sebagai highlight untuk rumus pertama
+                let highlightData = [];
+                if (i === 0) {
+                    highlightData = this.originalInputData.map(item => item.ai);
+                }
+                
+                const customPattern = this.formulaPatterns[i];
+                const formulaOutput = this.generateRotatedOutput(results, formula, highlightData, customPattern);
+                outputHTML += formulaOutput;
+                
+                if (i < this.currentFormulas.length - 1) {
+                    outputHTML += '\n\n';
+                }
+            } catch (error) {
+                outputHTML += `// ERROR pada rumus ${i+1}: ${this.currentFormulas[i]}\n`;
+                outputHTML += `// ${error.message}\n`;
+                outputHTML += '======\n';
+                outputHTML += this.currentFormulas[i] + '\n\n';
+                hasError = true;
+            }
+        }
+        
+        output.innerHTML = outputHTML;
+        
+        if (hasError) {
+            this.showMessage('Ada error dalam perhitungan, lihat output untuk detail', 'warning');
+        }
+    },
+
+    calculateAIForSingleFormula: function(formula) {
+        const results = [];
+        const maxDayNeeded = this.findMaxDayInFormula(formula);
+        
+        this.aiHistory = [];
+        
+        for (let i = 0; i < this.dataHistory.length; i++) {
+            // Hanya hitung jika ada cukup data sebelumnya
+            if (i >= maxDayNeeded - 1) { // PERBAIKAN: -1 karena offset 1 = data terbaru
+                try {
+                    const aiResult = this.calculateSingleAI(formula, i);
+                    results.push({
+                        number: this.dataHistory[i].number,
+                        ai: aiResult,
+                        canCalculate: true
+                    });
+                    this.aiHistory[i] = aiResult;
+                } catch (error) {
+                    results.push({
+                        number: this.dataHistory[i].number,
+                        ai: '',
+                        canCalculate: false,
+                        error: error.message
+                    });
+                    this.aiHistory[i] = null;
+                }
+            } else {
+                results.push({
+                    number: this.dataHistory[i].number,
+                    ai: '',
+                    canCalculate: false
+                });
+                this.aiHistory[i] = null;
+            }
+        }
+        
+        return results;
+    },
+
+    // ========== PERBAIKAN PENTING: OFFSET YANG BENAR ==========
+    calculateSingleAI: function(formula, currentDayIndex) {
+        console.log(`\n=== Hitung ${formula} untuk ${this.dataHistory[currentDayIndex].number} ===`);
+        
+        let workingFormula = formula;
+        let finalConversion = null;
+        
+        // Ekstrak mistik final
+        const finalMatch = workingFormula.match(/\.\((\w+)\)/);
+        if (finalMatch) {
+            finalConversion = finalMatch[1].toUpperCase();
+            workingFormula = workingFormula.replace(/\.\((\w+)\)/, '');
+            console.log(`Mistik final: ${finalConversion}`);
+        }
+        
+        // Split komponen
+        const components = workingFormula.split(/([+\-])/).filter(c => c.trim());
+        let total = 0;
+        let currentOperator = '+';
+        
+        console.log(`Komponen:`, components);
+        
+        for (let i = 0; i < components.length; i++) {
+            const component = components[i].trim();
+            
+            if (component === '+' || component === '-') {
+                currentOperator = component;
+                continue;
+            }
+            
+            if (component) {
+                const value = this.processComponent(component, currentDayIndex);
+                console.log(`${currentOperator} ${component} = ${value}`);
+                
+                if (currentOperator === '+') {
+                    total += value;
+                } else if (currentOperator === '-') {
+                    total -= value;
+                }
+            }
+        }
+        
+        console.log(`Total awal: ${total}`);
+        
+        if (total < 0) {
+            total = Math.abs(total);
+            console.log(`Total abs: ${total}`);
+        }
+        
+        // Aplikasi mistik final jika ada
+        if (finalConversion) {
+            const before = total;
+            total = parseInt(this.convertMistik(total.toString(), finalConversion));
+            console.log(`Mistik ${finalConversion}: ${before} → ${total}`);
+        }
+        
+        const finalResult = this.reduceToSingleDigit(total);
+        console.log(`Hasil akhir: ${finalResult}`);
+        
+        return finalResult;
+    },
+
+    // ========== PERBAIKAN PENTING: LOGIKA OFFSET YANG BENAR ==========
+    processComponent: function(component, currentDayIndex) {
+        // Recursion depth check
+        if (this.processComponentDepth > this.maxComponentDepth) {
+            throw new Error(`Max recursion depth exceeded: ${component}`);
+        }
+        
+        this.processComponentDepth++;
+        
+        try {
+            // PERBAIKAN: Regex yang menerima mistik dengan angka lebih dari 1 digit
+            // Contoh: C10m10, A1ix, K5m9
+            const match = component.match(/^(A|C|K|E|J|Js|J3D|J4D)(\d+)([a-zA-Z]+\d*)?$/);
+            if (!match) {
+                throw new Error(`Format komponen tidak valid: ${component}`);
+            }
+            
+            const type = match[1];
+            const dayOffset = parseInt(match[2]);  // offset hari (1 = data terbaru)
+            const mistik = match[3] || '';        // mistik seperti m10, ix, m0, m9, dll
+            
+            if (dayOffset === 0) {
+                throw new Error(`Offset 0 tidak diperbolehkan: ${component}`);
+            }
+            
+            // PERBAIKAN: offset n = data ke-n dari TERBARU (1-based)
+            // currentDayIndex adalah index data saat ini (0-based)
+            // offset 1 = data terbaru (currentDayIndex)
+            // offset 2 = data kemarin (currentDayIndex - 1)
+            // offset 3 = data 2 hari lalu (currentDayIndex - 2)
+            const targetDayIndex = currentDayIndex - (dayOffset - 1);
+            
+            if (targetDayIndex < 0) {
+                throw new Error(`Data tidak tersedia untuk ${component} (butuh ${dayOffset} hari dari terbaru)`);
+            }
+            
+            const data = this.dataHistory[targetDayIndex];
+            console.log(`${component}: offset ${dayOffset} = ${data.number} (index ${targetDayIndex})`);
+            
+            let value;
+            
+            switch(type) {
+                case 'A': 
+                    value = data.as; 
+                    console.log(`AS dari ${data.number}: ${value}`);
+                    break;
+                case 'C': 
+                    value = data.cop; 
+                    console.log(`COP dari ${data.number}: ${value}`);
+                    break;
+                case 'K': 
+                    value = data.kepala; 
+                    console.log(`KEPALA dari ${data.number}: ${value}`);
+                    break;
+                case 'E': 
+                    value = data.ekor; 
+                    console.log(`EKOR dari ${data.number}: ${value}`);
+                    break;
+                case 'J': 
+                    value = data.jumlah; 
+                    console.log(`JUMLAH dari ${data.number}: ${value}`);
+                    break;
+                case 'Js': 
+                    value = Math.abs(data.kepala - data.ekor);
+                    value = this.reduceToSingleDigit(value);
+                    console.log(`Js (|K-E|) dari ${data.number}: ${value}`);
+                    break;
+                case 'J3D':
+                    value = data.cop + data.kepala + data.ekor;
+                    value = this.reduceToSingleDigit(value);
+                    console.log(`J3D (C+K+E) dari ${data.number}: ${value}`);
+                    break;
+                case 'J4D':
+                    value = data.as + data.cop + data.kepala + data.ekor;
+                    value = this.reduceToSingleDigit(value);
+                    console.log(`J4D (A+C+K+E) dari ${data.number}: ${value}`);
+                    break;
+                default: 
+                    throw new Error(`Tipe komponen tidak dikenali: ${type}`);
+            }
+            
+            // Aplikasi mistik komponen jika ada
+            if (mistik) {
+                const before = value;
+                value = parseInt(this.convertMistik(value.toString(), mistik.toUpperCase()));
+                console.log(`Mistik ${mistik}: ${before} → ${value}`);
+            }
+            
+            return value;
+        } finally {
+            this.processComponentDepth--;
+        }
+    },
+
+    convertMistik: function(number, table) {
+        const tableUpper = table.toUpperCase();
+        
+        if (!this.mistikTables[tableUpper]) {
+            console.warn(`Tabel mistik tidak ditemukan: ${table}, menggunakan angka asli`);
+            return this.reduceToSingleDigit(parseInt(number)).toString();
+        }
+        
+        const digit = this.reduceToSingleDigit(parseInt(number)).toString();
+        
+        if (this.mistikTables[tableUpper][digit] === undefined) {
+            console.warn(`Angka ${digit} tidak ada di tabel ${table}, menggunakan angka asli`);
+            return digit;
+        }
+        
+        return this.mistikTables[tableUpper][digit];
+    },
+
+    reduceToSingleDigit: function(num) {
+        let result = Math.abs(num);
+        let safetyCounter = 0;
+        const MAX_ITERATIONS = 100;
+        
+        while (result > 9 && safetyCounter < MAX_ITERATIONS) {
+            result = result.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            safetyCounter++;
+        }
+        
+        if (safetyCounter >= MAX_ITERATIONS) {
+            console.warn(`reduceToSingleDigit mungkin infinite loop: ${num}`);
+            return 0;
+        }
+        
+        return result;
+    },
+
+    findMaxDayInFormula: function(formula) {
+        let maxDay = 0;
+        let workingFormula = formula.replace(/\.\((\w+)\)/, '');
+        
+        // PERBAIKAN: Regex yang hanya menangkap offset, bukan mistik
+        const componentRegex = /(A|C|K|E|J|Js|J3D|J4D)(\d+)(?![a-zA-Z])/g;
+        let match;
+        
+        while ((match = componentRegex.exec(workingFormula)) !== null) {
+            const day = parseInt(match[2]);
+            if (day > maxDay) {
+                maxDay = day;
+            }
+        }
+        
+        return maxDay;
+    },
+
+    // ========== GENERATE OUTPUT ==========
+    generateRotatedOutput: function(results, formula, highlightData, customPattern) {
+        let output = '';
+        let inheritedPositions = null;
+        
+        // Parse custom pattern jika ada
+        let customHighlightPositions = null;
+        if (customPattern) {
+            customHighlightPositions = [];
+            const steps = customPattern.match(/N(\d)/g);
+            if (steps) {
+                for (let step of steps) {
+                    const pos = parseInt(step.substring(1));
+                    if (pos >= 0 && pos <= 9 && !customHighlightPositions.includes(pos)) {
+                        customHighlightPositions.push(pos);
+                    }
+                }
+                customHighlightPositions.sort((a, b) => a - b);
+            }
+        }
+        
+        for (let i = 0; i < results.length; i++) {
+            const result = results[i];
+            
+            if (result.canCalculate) {
+                const highlightAI = highlightData[i] || '';
+                
+                const rotatedResult = this.formatAIWithColorAndInheritance(
+                    result.ai, 
+                    highlightAI, 
+                    customPattern ? customHighlightPositions : inheritedPositions,
+                    customPattern ? true : false
+                );
+                
+                output += `${result.number} = ${rotatedResult.rotatedDigits} ai\n`;
+                
+                inheritedPositions = rotatedResult.highlightPositions;
+            } else {
+                output += `${result.number} = \n`;
+                inheritedPositions = null;
+            }
+        }
+        
+        output += '======\n';
+        
+        // Generate pola dari highlight jika tidak ada custom pattern
+        if (!customPattern && inheritedPositions) {
+            customPattern = this.convertPositionsToPattern(inheritedPositions);
+        }
+        
+        output += customPattern ? `${formula} ${customPattern}` : formula;
+        
+        return output;
+    },
+
+    formatAIWithColorAndInheritance: function(calculatedAI, highlightAI, highlightPositions, useCustomPattern = false) {
+        let rotatedDigits = '';
+        const allDigits = '0123456789';
+        const startIndex = allDigits.indexOf(calculatedAI.toString());
+        
+        for (let i = 0; i < allDigits.length; i++) {
+            const actualIndex = (startIndex + i) % allDigits.length;
+            rotatedDigits += allDigits[actualIndex];
+        }
+        
+        // Hitung positions dari highlight jika tidak pakai custom pattern
+        if (!useCustomPattern && highlightAI && highlightAI.trim() !== '' && !highlightPositions) {
+            highlightPositions = [];
+            const highlightDigits = highlightAI.toString().split('');
+            
+            for (let digit of highlightDigits) {
+                if (digit >= '0' && digit <= '9') {
+                    const position = rotatedDigits.indexOf(digit);
+                    if (position !== -1 && !highlightPositions.includes(position)) {
+                        highlightPositions.push(position);
+                    }
+                }
+            }
+            
+            if (highlightPositions.length > 0) {
+                highlightPositions.sort((a, b) => a - b);
+            } else {
+                highlightPositions = null;
+            }
+        }
+        
+        let result = '';
+        let colorIndex = 0;
+        const highlightColors = [
+            '#FF6B6B',
+            '#4ECDC4',
+            '#45B7D1',
+            '#96CEB4'
+        ];
+        
+        for (let i = 0; i < rotatedDigits.length; i++) {
+            const digit = rotatedDigits[i];
+            
+            if (highlightPositions && highlightPositions.includes(i)) {
+                const color = highlightColors[colorIndex % highlightColors.length];
+                result += `<span style="color: ${color}; font-weight: bold;">${digit}</span>`;
+                colorIndex++;
+            } else {
+                result += digit;
+            }
+        }
+        
+        return {
+            rotatedDigits: result,
+            highlightPositions: highlightPositions
+        };
+    },
+
+    convertPositionsToPattern: function(positions) {
+        if (!positions || positions.length === 0) return 'N0N1';
+        
+        let pattern = 'N' + positions[0];
+        for (let i = 1; i < positions.length; i++) {
+            const jump = positions[i] - positions[i-1];
+            pattern += 'N' + jump;
+        }
+        
+        return pattern;
+    },
+
+    // ========== FUNGSI BANTUAN ==========
+    copyOutput: function() {
+        const outputElement = document.getElementById('resultOutput1');
+        let copyText = '';
+        
+        const lines = outputElement.innerHTML.split('\n');
+        let dataLines = [];
+        let currentFormula = '';
+        let currentPattern = 'N0N1';
+        let waitingForFormula = false;
+        
+        for (let line of lines) {
+            line = line.trim();
+            
+            const numberMatch = line.match(/(\d{4})\s*=/);
+            if (numberMatch) {
+                const number = numberMatch[1];
+                
+                const regex = /<span[^>]*>(\d)<\/span>/g;
+                let match;
+                let highlightedDigits = '';
+                
+                while ((match = regex.exec(line)) !== null) {
+                    highlightedDigits += match[1];
+                }
+                
+                if (highlightedDigits) {
+                    const suffix = this.determineMajoritySuffix();
+                    dataLines.push(`${number} = ${highlightedDigits} ${suffix}`);
+                } else {
+                    dataLines.push(`${number} = `);
+                }
+            }
+            
+            if (line === '======') {
+                waitingForFormula = true;
+                continue;
+            }
+            
+            if (waitingForFormula && line && !line.includes('//') && !line.includes('<')) {
+                const formulaMatch = line.match(/^([A-Za-z0-9+\-\.\(\)]+)(?:\s+(N\d+(?:N\d+)*))?$/);
+                if (formulaMatch) {
+                    currentFormula = formulaMatch[1];
+                    currentPattern = formulaMatch[2] || 'N0N1';
+                } else {
+                    currentFormula = line;
+                }
+                waitingForFormula = false;
+            }
+        }
+        
+        copyText = dataLines.join('\n');
+        if (currentFormula) {
+            copyText += '\n======\n';
+            copyText += `${currentFormula} ${currentPattern}`;
+        }
+        
+        if (!copyText || copyText.includes('Hasil perhitungan akan muncul di sini')) {
+            this.showMessage('Tidak ada output yang bisa disalin!', 'error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(copyText).then(() => {
+            showNotification('✅ Output berhasil disalin!');
+        }).catch(err => {
+            const textArea = document.createElement('textarea');
+            textArea.value = copyText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('✅ Output berhasil disalin!');
+        });
+    },
+
+    determineMajoritySuffix: function() {
+        const suffixCount = {};
+        
+        for (const item of this.originalInputData) {
+            if (item.suffix && item.suffix !== 'ai') {
+                suffixCount[item.suffix] = (suffixCount[item.suffix] || 0) + 1;
+            }
+        }
+        
+        let majoritySuffix = 'ai';
+        let maxCount = 0;
+        
+        for (const [suffix, count] of Object.entries(suffixCount)) {
+            if (count > maxCount) {
+                maxCount = count;
+                majoritySuffix = suffix;
+            }
+        }
+        
+        return majoritySuffix;
+    },
+
+    clearAll: function() {
+        document.getElementById('inputData1').value = '';
+        document.getElementById('resultOutput1').innerHTML = 
+            `// Hasil perhitungan akan muncul di sini\n` +
+            `// Format input:\n` +
+            `// 8603 = 30 ai\n` +
+            `// 2436 = 74 ai\n` +
+            `// ...\n` +
+            `// ======\n` +
+            `// C2ix+K1.(m0)\n` +
+            `// atau\n` +
+            `// C2ix+K1.(m0) N0N1`;
+        
+        this.showMessage('Data dihapus', 'info');
+        
+        this.dataHistory = [];
+        this.currentFormulas = [];
+        this.formulaPatterns = [];
+        this.originalInputData = [];
+        this.aiHistory = [];
+        this.processComponentDepth = 0;
+        
+        this.updateFormulaDisplay();
+        document.getElementById('inputInfo1').textContent = '0 angka + 0 rumus terdeteksi';
+        document.getElementById('historyInfo1').textContent = 'Masukkan rumus setelah "======"';
+    },
+
+    showMessage: function(message, type) {
+        // Buat notifikasi
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        if (type === 'error') {
+            notification.style.background = '#f44336';
+        } else if (type === 'success') {
+            notification.style.background = '#4CAF50';
+        } else if (type === 'warning') {
+            notification.style.background = '#FF9800';
+        } else {
+            notification.style.background = '#2196F3';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    },
+
+    updateInputInfo: function() {
+        const input = document.getElementById('inputData1').value.trim();
+        const parsed = this.parseInputData(input);
+        document.getElementById('inputInfo1').textContent = 
+            `${this.dataHistory.length} angka + ${this.currentFormulas.length} rumus`;
+    },
+
+    init: function() {
+        document.getElementById('inputData1').addEventListener('input', () => {
+            this.updateInputInfo();
+        });
+        
+        document.getElementById('inputData1').addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                this.calculateFormula();
+            }
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('program1_data');
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                document.getElementById('inputData1').value = data.inputData || '';
+                this.updateInputInfo();
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+        
+        // Auto-save
+        setInterval(() => {
+            const inputData = document.getElementById('inputData1').value;
+            if (inputData.trim()) {
+                localStorage.setItem('program1_data', JSON.stringify({
+                    inputData: inputData,
+                    timestamp: Date.now()
+                }));
+            }
+        }, 10000);
+        
+        this.updateInputInfo();
+    }
+};
 
         // ========== PROGRAM 2: AUTO PREDIKSI MOD+ (FULLY FIXED AUTO-CONTINUE) ==========
         const Program2 = {
