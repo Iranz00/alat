@@ -1,496 +1,1209 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Angka Permutation Finder</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; }
-.container { max-width:1200px; margin:0 auto; background:white; border-radius:15px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
-h1 { text-align:center; color:#333; margin-bottom:10px; }
-.subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:30px; }
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Angka Permutation Finder
+  </title>
+  <style>
+       :root {
+      --bg1: #eaf2ff;
+      --bg2: #dfe8ff;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: rgba(17,24,39,0.10);
+      --shadow: 0 10px 30px rgba(17,24,39,0.10);
+      --shadow-soft: 0 6px 18px rgba(17,24,39,0.08);
+      --radius: 22px;
+    }
 
-.input-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; margin-bottom:25px; }
-.section-title { color:#333; margin-bottom:15px; font-size:16px; font-weight:bold; }
-.data-input { margin-bottom:20px; }
-.data-input textarea { width:100%; height:200px; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:14px; resize:vertical; font-family:monospace; }
-.search-input { margin-bottom:20px; }
-.search-input input { width:100%; padding:15px; border:2px solid #ddd; border-radius:8px; font-size:16px; text-align:center; }
-.search-input input:focus { border-color:#667eea; outline:none; }
-.button-group { display:flex; gap:15px; margin-bottom:20px; }
-button { flex:1; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.3s; }
-.btn-search { background:#4CAF50;color:white; }
-.btn-clear { background:#f44336;color:white; }
-button:hover { opacity:0.9; transform:translateY(-2px); }
-button:disabled { background:#cccccc; cursor:not-allowed; transform:none; }
-.info { background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.results-section { background:#f8f9fa; padding:25px; border-radius:10px; border:2px solid #e9ecef; }
-.result-category { margin-bottom:25px; }
-.category-title { color:#333; margin-bottom:15px; font-size:16px; font-weight:bold; padding:10px; background:#e9ecef; border-radius:5px; }
-.result-item { display:inline-block; margin:5px; padding:10px 15px; background:white; border-radius:5px; border:1px solid #e0e0e0; font-family:monospace; font-size:14px; }
-.result-exact { background:#FFEBEE; border-color:#F44336; border-width:2px; color:#C62828; font-weight:bold; }
-.result-permutation { background:#E3F2FD; border-color:#2196F3; border-width:2px; color:#1565C0; font-weight:bold; }
-.result-none { background:#FFF3E0; border-color:#FF9800; color:#EF6C00; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(99, 102, 241, .22), transparent 60%),
+                  radial-gradient(900px 520px at 90% 30%, rgba(59, 130, 246, .18), transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      padding: 18px 14px 28px;
+      color: var(--text);
+    }
 
-.stats { background:#e3f2fd; padding:15px; border-radius:8px; margin-top:20px; text-align:center; }
-.permutation-list { background:#f5f5f5; padding:10px; border-radius:5px; margin-top:10px; font-size:12px; font-family:monospace; max-height:150px; overflow-y:auto; }
+.container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
 
-.loading { display:none; text-align:center; padding:20px; }
-.spinner { border:5px solid #f3f3f3; border-top:5px solid #667eea; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 15px; }
-@keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+    /* Header */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 18px 10px;
+      justify-content: center;
+      text-align: left;
+    }
 
-.validation-error { border-color:#f44336 !important; background-color:#ffebee !important; }
+    .brand-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
 
-/* Styling untuk tampilan data dengan highlight - Warna Lebih Cerah */
-.data-display { background:white; padding:20px; border-radius:8px; border:2px solid #e9ecef; margin-bottom:20px; }
-.data-line { margin-bottom:10px; line-height:1.8; }
-.number-item { 
-    display:inline-block; 
-    padding:8px 12px; 
-    margin:3px; 
-    border-radius:6px; 
-    border:2px solid; 
-    font-family:monospace; 
-    font-size:14px; 
-    font-weight:bold;
-    box-shadow:0 2px 4px rgba(0,0,0,0.1);
-    transition:all 0.2s ease;
-}
-.number-normal { 
-    background:#FAFAFA; 
-    border-color:#E0E0E0; 
-    color:#757575;
-}
-.number-exact { 
-    background:#FF5252; 
-    border-color:#D32F2F; 
-    color:white;
-    text-shadow:0 1px 2px rgba(0,0,0,0.2);
-    box-shadow:0 3px 6px rgba(244,67,54,0.3);
-}
-.number-permutation { 
-    background:#448AFF; 
-    border-color:#1976D2; 
-    color:white;
-    text-shadow:0 1px 2px rgba(0,0,0,0.2);
-    box-shadow:0 3px 6px rgba(33,150,243,0.3);
-}
+    .brand-logo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 16px);
+      grid-template-rows: repeat(2, 16px);
+      gap: 3px;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 12px;
+      line-height: 16px;
+      text-align: center;
+      opacity: .95;
+    }
 
-.number-item:hover {
-    transform:translateY(-2px);
-    box-shadow:0 4px 8px rgba(0,0,0,0.15);
-}
+    .brand-logo-grid span {
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.16);
+      border-radius: 6px;
+    }
 
-.legend { 
-    display:flex; 
-    justify-content:center; 
-    gap:20px; 
-    margin-top:20px; 
-    flex-wrap:wrap;
-    background:#F5F5F5;
-    padding:15px;
-    border-radius:8px;
-}
-.legend-item { 
-    display:flex; 
-    align-items:center; 
-    gap:8px; 
-    font-size:13px;
-    font-weight:500;
-}
-.legend-color { 
-    width:20px; 
-    height:20px; 
-    border-radius:4px; 
-    border:2px solid;
-    box-shadow:0 2px 4px rgba(0,0,0,0.1);
-}
-.legend-exact { 
-    background:#FF5252; 
-    border-color:#D32F2F; 
-}
-.legend-permutation { 
-    background:#448AFF; 
-    border-color:#1976D2; 
-}
-.legend-normal { 
-    background:#FAFAFA; 
-    border-color:#E0E0E0; 
-}
+    .brand-text { max-width: 540px; }
+    .brand-title {
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: 0.6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .brand-subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.35;
+      text-align: left;
+    }
 
-/* Tambahan efek visual untuk hasil */
-.result-item {
-    box-shadow:0 2px 4px rgba(0,0,0,0.1);
-    transition:all 0.2s ease;
-}
+    /* Cards */
+    .input-section,
+    .results-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-top: 14px;
+    }
 
-.result-item:hover {
-    transform:translateY(-1px);
-    box-shadow:0 4px 8px rgba(0,0,0,0.15);
-}
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      font-size: 16px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.16);
+      margin-bottom: 12px;
+    }
 
-.result-exact:hover {
-    box-shadow:0 4px 8px rgba(244,67,54,0.3);
-}
+    .section-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(59, 130, 246, 0.14);
+      border: 1px solid rgba(59, 130, 246, 0.16);
+      font-size: 16px;
+    }
 
-.result-permutation:hover {
-    box-shadow:0 4px 8px rgba(33,150,243,0.3);
-}
-</style>
-</head>
-<body>
-<div class="container">
-    <h1>🔢 ANGKA PERMUTATION FINDER</h1>
-    <div class="subtitle">Cari angka dengan digit yang sama (urutan boleh berbeda)</div>
+    .data-input textarea {
+      width: 100%;
+      height: 210px;
+      padding: 20px;
+      border: 1px solid rgba(17,24,39,0.14);
+      border-radius: 20px;
+      font-size: 20px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: #ffffff;
+      outline: none;
+    }
+    .data-input textarea:focus {
+      border-color: rgba(59,130,246,0.55);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(17,24,39,0.14);
+      border-radius: 14px;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      background: #ffffff;
+    }
+    .search-input input:focus {
+      border-color: rgba(59,130,246,0.55);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    /* Tombol dalam 1 baris (Cari Angka + Hapus Cari) */
+    @media (max-width: 360px) {
+      .button-grid { grid-template-columns: 1fr; }
+    }
+button {
+      width: 100%;
+      padding: 14px 12px;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.14s ease, opacity 0.14s ease;
+      box-shadow: 0 8px 18px rgba(17,24,39,0.10);
+      letter-spacing: 0.2px;
+    }
+    button:hover { opacity: 0.95; transform: translateY(-1px); }
+    button:disabled { background: #cbd5e1 !important; cursor: not-allowed; transform: none; opacity: 1; box-shadow: none; }
+
+    .btn-search { background: #22c55e; color: #fff; }
+    .btn-clear-input { background: #fb923c; color: #fff; }
+    .btn-clear-search { background: #ef4444; color: #fff; }
+
+    .btn-process { background: #3b82f6; color: #fff; }
+
+    .info {
+      background: rgba(59, 130, 246, 0.10);
+      padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid rgba(59, 130, 246, 0.18);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 14px 0 0;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 4px solid rgba(17,24,39,0.12);
+      border-top: 4px solid rgba(59,130,246,0.9);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 8px;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Output grid */
+    #highlightedData {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0; /* tabel rapat */
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .number-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      border: 1px solid #000;
+      background: #ffffff;
+      padding: 0;
+      margin: 0;
+      user-select: none;
+    }
+
     
-    <div class="input-section">
-        <div class="section-title">📥 INPUT DATA ANGKA (4 digit)</div>
-        
-        <div class="data-input">
-            <textarea id="inputData" placeholder="Masukkan data angka 4 digit (pisahkan dengan spasi/enter):&#10;2740 9348 7109 8934 0076 1267 4060&#10;4386 0267 6400 3699 6507 3203 4666&#10;0841 2496 2837 0583 0845 9265 7032&#10;1145 1645 1141 1445 1165 3145 1185">2740 9348 7109 8934 0076 1267 4060
-4386 0267 6400 3699 6507 3203 4666
-0841 2496 2837 0583 0845 9265 7032
-1145 1645 1141 1445 1165 3145 1185
-1142 5145 1105 1541 5115 5140 1485
-4165 4155 1134 3115 8514 5841 1458</textarea>
-        </div>
-        
-        <div class="search-input">
-            <input type="text" id="searchNumber" placeholder="Masukkan angka 4 digit yang dicari (contoh: 1145)" maxlength="4" pattern="\d{4}" title="Masukkan 4 digit angka">
-        </div>
-        
-        <div class="button-group">
-            <button class="btn-search" id="searchButton" onclick="findNumberPermutations()">🔍 CARI PERMUTASI</button>
-            <button class="btn-clear" onclick="clearAll()">🗑️ CLEAR</button>
-        </div>
-        
-        <div class="loading" id="loadingIndicator">
-            <div class="spinner"></div>
-            <p>Mencari permutasi...</p>
-        </div>
-        
-        <div class="info" id="info">Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI</div>
+    /* === Zebra: hanya 1 baris tiap kelipatan 5 (dari bawah) === */
+    .number-item.row-5th {
+      background: rgba(17, 24, 39, 0.12); /* lebih terlihat */
+    }
+    /* agar highlight digit tetap jelas di atas zebra */
+    .number-item.row-5th .digit.hit {
+      filter: none;
+    }
+
+
+    /* Empty cells (padding) */
+    .number-item.number-empty .digits {
+      opacity: 0;
+    }
+/* optional: slightly stronger border for 5th row */
+    .row-5th {
+      box-shadow: inset 0 -1px 0 #000;
+    }
+.digits {
+      display: inline-flex;
+      gap: 0;                 /* rapat: 1234 (tanpa jeda) */
+      white-space: nowrap;
+      line-height: 1;
+      letter-spacing: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+    }
+    .digit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.10em;
+      height: 1.35em;
+      border-radius: 2px;
+      background: transparent;
+      color: inherit;
+    }
+    .digit.hit { font-weight: 900; }
+
+    /* === Target Colors (base) === */
+    .target-yellow { --c:#f9a825; --bg: rgba(249,168,37,0.90); }
+    .target-green  { --c:#2e7d32; --bg: rgba(46,125,50,0.88); }
+    .target-red    { --c:#d32f2f; --bg: rgba(211,47,47,0.88); }
+    .target-blue   { --c:#1976d2; --bg: rgba(25,118,210,0.88); }
+
+    /* === Highlight Rules (Exact & Permutasi warna sama) === */
+    /* Tidak ada "pill" output. Yang diwarnai hanya digit yang cocok. */
+
+    .digit.hit {
+      color: #ffffff; /* font highlight putih */
+      font-weight: 900;
+    }
+
+    /* 4 digit: semua digit kena background */
+    .number-match-4.match-exact .digit.hit,
+    .number-match-4.match-perm .digit.hit {
+      background: var(--bg);
+    }
+
+    /* 2/3 digit: hanya digit yang kena background */
+    .number-match-partial.match-exact .digit.hit,
+    .number-match-partial.match-perm .digit.hit {
+      background: var(--bg);
+    }
+
+
+    /* Hide verbose text outputs (keep only grid highlight) */
+    #legendTargets,
+    .legend,
+    #resultsContainer,
+    #statsInfo {
+      display: none !important;
+    }
+
+
+        /* === OnTheTop (Scroll Buttons) === */
+    .scroll-tools {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 9999;
+
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      background: none;     /* tidak dibungkus pill */
+      border: none;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .scroll-btn {
+      width: 42px;
+      height: 42px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 12px;
+      border: 1px solid rgba(17, 24, 39, 0.18);
+
+      background: rgba(255, 255, 255, 0.65); /* semi transparan putih */
+      color: #111827;
+
+      font-weight: 900;
+      font-size: 18px;
+
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .scroll-btn:hover {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .scroll-btn:active {
+      transform: translateY(1px);
+    }
+
+    @media (max-width: 520px) {
+      .scroll-tools { right: 10px; bottom: 10px; gap: 8px; }
+      .scroll-btn { width: 40px; height: 40px; }
+    }
+
+  </style>
+ </head>
+ <body>
+  <div class="container">
+   <div class="brand">
+    <div aria-hidden="true" class="brand-logo">
+     <div class="brand-logo-grid">
+      <span>
+       1
+      </span>
+      <span>
+       2
+      </span>
+      <span>
+       3
+      </span>
+      <span>
+       4
+      </span>
+     </div>
     </div>
-
-    <div class="results-section" id="resultsSection" style="display:none;">
-        <div class="section-title">📊 HASIL PENCARIAN PERMUTASI</div>
-        
-        <div class="data-display" id="dataDisplay">
-            <div class="section-title">📋 DATA INPUT DENGAN HIGHLIGHT</div>
-            <div id="highlightedData"></div>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color legend-exact"></div>
-                    <span>Exact Match - Angka Sama Persis</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color legend-permutation"></div>
-                    <span>Permutation Match - Digit Sama Urutan Beda</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color legend-normal"></div>
-                    <span>Tidak Match</span>
-                </div>
-            </div>
-        </div>
-        
-        <div id="resultsContainer"></div>
-        <div class="stats" id="statsInfo"></div>
+    <div class="brand-text">
+     <div class="brand-title">
+      ANGKA PERMUTATION
+      <br/>
+      FINDER
+     </div>
+     <div class="brand-subtitle">
+      Cari angka dengan digit yang sama (urutan boleh berbeda) + cari 3 digit/2 digit posisi
+     </div>
     </div>
-
-    <div class="input-section">
-        <div class="section-title">ℹ️ CARA KERJA PROGRAM</div>
-        <div class="info">
-            <strong>Algoritma Permutasi:</strong><br>
-            1. <strong>Exact Match</strong> - Angka sama persis (abcd) <span style="color:#D32F2F; font-weight:bold;">[MERAH CERAH]</span><br>
-            2. <strong>Same Digits</strong> - Digit sama, urutan berbeda (24 kemungkinan) <span style="color:#1976D2; font-weight:bold;">[BIRU CERAH]</span><br>
-            3. <strong>Semua kombinasi</strong> dari 4 digit: abcd, abdc, acbd, acdb, adbc, adcb, bacd, ...
-        </div>
+   </div>
+   <div class="input-section">
+    <div class="section-title">
+     <span class="section-icon">
+      📌
+     </span>
+     INPUT DATA ANGKA (4 digit)
     </div>
-</div>
+    <div class="data-input">
+     <textarea id="inputData" placeholder="Masukkan angka 4 digit... (boleh ada karakter lain, otomatis ambil 4 digit)"></textarea>
+    </div>
+    <div class="button-grid">
+     <button class="btn-clear-input" id="clearInputBtn" type="button">
+      🧹 HAPUS DATA
+     </button>
+     <button class="btn-process" id="processDataBtn" type="button">
+      ⚙️ PROSES DATA
+     </button>
+    </div>
+    <div class="loading" id="loadingIndicator">
+     <div class="spinner">
+     </div>
+     <p>
+      Mencari...
+     </p>
+    </div>
+    <div class="info" id="info">
+     Masukkan data angka, lalu klik PROSES DATA untuk membuat output.
+    </div>
+   </div>
+   <div class="results-section" id="resultsSection" style="display: none;">
+    <div class="section-title">
+     <span class="section-icon">
+      📊
+     </span>
+     HASIL PENCARIAN
+    </div>
+    <div class="data-display" id="dataDisplay">
+     <div class="section-title">
+      <span class="section-icon">
+       📋
+      </span>
+      DATA INPUT DENGAN HIGHLIGHT
+     </div>
+     <div id="highlightedData">
+     </div>
+     <div class="legend" id="legendTargets">
+     </div>
+    </div>
+    <div id="resultsContainer">
+    </div>
+    <div class="stats" id="statsInfo">
+    </div>
+   </div>
+   <div class="input-section" id="searchSection">
+    <div class="section-title">
+     <span class="section-icon">
+      🔎
+     </span>
+     CARI ANGKA
+    </div>
+    <div class="search-input">
+     <input id="searchNumber" placeholder="Cari: 1145, 2496 | 3 digit: d145/b145 | 2 digit: d12/t12/b12" type="text"/>
+    </div>
+    <div class="button-grid">
+     <button class="btn-clear-search" id="clearSearchBtn" type="button">
+      🗑️ HAPUS CARI
+     </button>
+     <button class="btn-search" id="searchButton" type="button">
+      🔍 CARI ANGKA
+     </button>
+    </div>
+    <div class="info" id="searchHint" style="margin-top: 10px;">
+     Klik
+     <strong>
+      PROSES DATA
+     </strong>
+     dulu untuk membuat output, lalu gunakan CARI ANGKA untuk highlight.
+    </div>
+   </div>
+   <div class="input-section">
+    <div class="section-title">
+     <span class="section-icon">
+      ℹ️
+     </span>
+     CARA INPUT PENCARIAN
+    </div>
+    <div class="info" style="text-align:left; line-height:1.65;">
+     <strong>
+      4 digit:
+     </strong>
+     1145 (exact / permutasi 4 digit)
+     <br/>
+     <strong>
+      3 digit:
+     </strong>
+     d145 (depan), b145 (belakang)
+     <br/>
+     <strong>
+      2 digit:
+     </strong>
+     d12 (depan), t12 (tengah), b12 (belakang)
+     <br/>
+     <em>
+      Catatan:
+     </em>
+     Output tanpa pill. Highlight berupa
+     <strong>
+      background pada digit
+     </strong>
+     yang cocok.
+    </div>
+   </div>
+  </div>
+  <div aria-label="Scroll tools" class="scroll-tools">
+   <button class="scroll-btn" id="toTopBtn" title="Ke atas">
+    &uArr;
+   </button>
+   <button class="scroll-btn" id="toBottomBtn" title="Ke bawah">
+    &dArr;
+   </button>
+  </div>
+  <script>
+   /* =========================================================
+ANGKA PERMUTATION FINDER
+- Multi target (maks 4) dengan warna:
+(4) Kuning, Hijau, Merah, Biru
+Jika 1 target: Biru
+Jika 2 target: Merah, Biru
+Jika 3 target: Hijau, Merah, Biru
+Jika 4 target: Kuning, Hijau, Merah, Biru
+- Exact & Permutasi: tidak ditampilkan (grid highlight saja)
+- 4 digit: highlight background
+- 2/3 digit: highlight digit + border (tanpa background)
+- Simpan input (localStorage) agar tidak hilang saat refresh/tutup
+========================================================= */
 
-<script>
-function findNumberPermutations() {
-    const inputData = document.getElementById('inputData').value.trim();
-    const searchNumber = document.getElementById('searchNumber').value.trim();
-    const searchButton = document.getElementById('searchButton');
-    
-    // Reset validasi
-    resetValidation();
-    
-    if (!inputData) {
-        showInfo('Masukkan data angka terlebih dahulu!', 'error');
-        document.getElementById('inputData').classList.add('validation-error');
-        return;
+const GRID_COLS = 7;
+
+
+let CURRENT_TOTAL_ROWS = 0;
+const STORAGE_KEYS = {
+  data: "apf_inputData_v1",
+  search: "apf_search_v1",
+};
+
+// App state: keep processed numbers so "Hapus Cari" can reset highlight without removing output
+const STATE = {
+  dataNumbers: [],
+  processed: false,
+};
+
+function normalizeDigits(str) {
+  return (str.match(/\d/g) || []).join("");
+}
+
+function sortedDigits(str) {
+  return str.split("").sort().join("");
+}
+
+function generatePermutationsUnique(numStr) {
+  const digits = numStr.split("").sort();
+  const used = new Array(digits.length).fill(false);
+  const cur = [];
+  const res = new Set();
+
+  function backtrack() {
+    if (cur.length === digits.length) {
+      res.add(cur.join(""));
+      return;
     }
-    
-    if (!searchNumber || searchNumber.length !== 4 || !/^\d+$/.test(searchNumber)) {
-        showInfo('Masukkan angka 4 digit yang valid!', 'error');
-        document.getElementById('searchNumber').classList.add('validation-error');
-        return;
+    for (let i = 0; i < digits.length; i++) {
+      if (used[i]) continue;
+      if (i > 0 && digits[i] === digits[i - 1] && !used[i - 1]) continue;
+
+      used[i] = true;
+      cur.push(digits[i]);
+      backtrack();
+      cur.pop();
+      used[i] = false;
     }
-    
-    try {
-        showLoading(true);
-        showInfo('Mencari permutasi...', 'info');
-        
-        // Parse data input
-        const numbers = parseInputData(inputData);
-        const searchDigits = searchNumber.split('');
-        
-        if (numbers.length === 0) {
-            showInfo('Tidak ada angka valid yang ditemukan dalam data!', 'error');
-            showLoading(false);
-            return;
-        }
-        
-        // Generate semua permutasi dari angka yang dicari
-        const allPermutations = generatePermutations(searchDigits);
-        console.log('Semua permutasi dari', searchNumber, ':', allPermutations);
-        
-        // Cari angka yang match
-        const results = findMatchingNumbers(numbers, allPermutations, searchNumber);
-        
-        // Tampilkan hasil dengan highlight
-        displayHighlightedData(inputData, results, searchNumber);
-        
-        // Tampilkan hasil ringkasan
-        displayPermutationResults(results, searchNumber, numbers.length, allPermutations);
-        showInfo(`Pencarian selesai!`, 'success');
-        showLoading(false);
-        
-    } catch (error) {
-        showInfo(`Error: ${error.message}`, 'error');
-        console.error('Search error:', error);
-        showLoading(false);
+  }
+
+  backtrack();
+  return res;
+}
+
+/**
+* Ambil angka 4 digit dari input data:
+* - Token dipisah spasi/enter/tab
+* - Setiap token ambil 4 digit pertama (tetap menjaga 0 di depan)
+*   contoh: "1234⁵" => "1234", "a9012" => "9012"
+*/
+function parseInputData(input) {
+  // Ambil hanya digit ASCII 0-9 dari pemisah apapun (spasi, tab, enter, koma, titik, dll).
+  // Untuk setiap segmen digit, ambil 4 digit pertama (menjaga 0 di depan).
+  const parts = String(input).split(/[^0-9]+/).filter(Boolean);
+  const out = [];
+
+  for (const part of parts) {
+    if (part.length >= 4) out.push(part.slice(0, 4));
+  }
+
+  return out;
+}
+
+
+/**
+* Rapikan isi textarea agar hanya berisi angka 4 digit.
+* Output dibentuk menjadi 7 kolom per baris (kecuali baris terakhir bila tidak penuh).
+*/
+function formatInputDataForTextarea(numbers, cols = GRID_COLS) {
+  if (!Array.isArray(numbers) || numbers.length === 0) return "";
+  const lines = [];
+  for (let i = 0; i < numbers.length; i += cols) {
+    lines.push(numbers.slice(i, i + cols).join(" "));
+  }
+  return lines.join("\n");
+}
+
+/**
+* Parse target:
+* - 4 digit: "1145"
+* - 3 digit: "d145" (depan), "b145" (belakang)
+* - 2 digit: "d12" (depan), "t12" (tengah), "b12" (belakang)
+* - Pisahkan token dengan koma/spasi/enter/tab
+* - Ambil maksimal 4 target unik (berdasarkan label asli)
+*/
+function parseSearchTargets(input) {
+  if (!input) return [];
+
+  const tokens = input.split(/[\s,]+/).filter(Boolean);
+
+  const COL_MAP = { ba: 0, bb: 1, bc: 2, bd: 3, be: 4, bf: 5, bg: 6 };
+  const POS_MAP = { a: 0, c: 1, k: 2, e: 3 };
+
+  const out = [];
+  const seen = new Set();
+
+  function pushTarget(t) {
+    if (!t) return;
+    if (seen.has(t.label)) return;
+    seen.add(t.label);
+    out.push(t);
+  }
+
+  function parseOne(part, colKey, colIndex) {
+    if (!part) return null;
+
+    const p = part.trim().toLowerCase();
+
+    // 1 digit positional: a4 / c7 / k0 / e9
+    if (p.length === 2 && POS_MAP[p[0]] !== undefined && /\d/.test(p[1])) {
+      const pos = p[0];
+      const d = p[1];
+      const label = (colKey ? colKey : "") + pos + d;
+      return { label, mode: "1pos", pos, digits: d, col: colIndex };
     }
-}
 
-function parseInputData(inputData) {
-    // Hilangkan semua karakter non-digit dan split
-    const cleanedData = inputData.replace(/[^\d\s]/g, '');
-    const numberStrings = cleanedData.split(/\s+/).filter(str => str.length === 4);
-    
-    return numberStrings.map(str => str);
-}
+    // Positional 3/2 digit: d145 / b145 / d12 / t12 / b12
+    const first = p[0];
+    const hasPos = ["d", "t", "b"].includes(first);
 
-function generatePermutations(digits) {
-    const results = [];
-    const used = new Array(digits.length).fill(false);
-    const current = [];
-    
-    function backtrack() {
-        if (current.length === digits.length) {
-            results.push(current.join(''));
-            return;
-        }
-        
-        for (let i = 0; i < digits.length; i++) {
-            if (!used[i]) {
-                // Skip duplicate permutations untuk digit yang sama
-                if (i > 0 && digits[i] === digits[i-1] && !used[i-1]) {
-                    continue;
-                }
-                
-                used[i] = true;
-                current.push(digits[i]);
-                backtrack();
-                current.pop();
-                used[i] = false;
-            }
-        }
+    if (hasPos) {
+      const digits = normalizeDigits(p.slice(1));
+      if (digits.length >= 3 && (first === "d" || first === "b")) {
+        const d3 = digits.slice(0, 3);
+        const label = (colKey ? colKey : "") + first + d3;
+        return { label, mode: "3", pos: first, digits: d3, col: colIndex };
+      }
+      if (digits.length >= 2) {
+        const d2 = digits.slice(0, 2);
+        const label = (colKey ? colKey : "") + first + d2;
+        return { label, mode: "2", pos: first, digits: d2, col: colIndex };
+      }
+      return null;
     }
-    
-    // Sort digits dulu untuk handle duplicates
-    digits.sort();
-    backtrack();
-    
-    return [...new Set(results)]; // Remove duplicates
-}
 
-function findMatchingNumbers(numbers, permutations, searchNumber) {
-    const exactMatches = [];
-    const permutationMatches = [];
-    
-    numbers.forEach(number => {
-        if (number === searchNumber) {
-            exactMatches.push(number);
-        } else if (permutations.includes(number)) {
-            permutationMatches.push(number);
-        }
-    });
-    
-    // Remove duplicates dan urutkan
-    return {
-        exactMatches: [...new Set(exactMatches)].sort(),
-        permutationMatches: [...new Set(permutationMatches)].sort()
-    };
-}
+    // Pure digits:
+    const digits = normalizeDigits(p);
 
-function displayHighlightedData(inputData, results, searchNumber) {
-    const container = document.getElementById('highlightedData');
-    
-    // Split data input menjadi baris-baris
-    const lines = inputData.split('\n');
-    let html = '';
-    
-    lines.forEach(line => {
-        if (line.trim() === '') return;
-        
-        html += '<div class="data-line">';
-        
-        // Split setiap baris menjadi angka-angka
-        const numbersInLine = line.trim().split(/\s+/);
-        
-        numbersInLine.forEach(number => {
-            // Hanya proses angka 4 digit
-            if (number.length === 4 && /^\d+$/.test(number)) {
-                let cssClass = 'number-normal';
-                
-                if (results.exactMatches.includes(number)) {
-                    cssClass = 'number-exact';
-                } else if (results.permutationMatches.includes(number)) {
-                    cssClass = 'number-permutation';
-                }
-                
-                html += `<span class="number-item ${cssClass}">${number}</span>`;
-            } else {
-                // Untuk teks yang bukan angka 4 digit, tampilkan tanpa styling
-                html += `<span>${number} </span>`;
-            }
-        });
-        
-        html += '</div>';
-    });
-    
-    container.innerHTML = html;
-    document.getElementById('dataDisplay').style.display = 'block';
-}
+    // 4 digit exact/permutasi
+    if (digits.length >= 4) {
+      const d4 = digits.slice(0, 4);
+      const label = (colKey ? colKey : "") + d4;
+      return { label, mode: "4", pos: "", digits: d4, col: colIndex };
+    }
 
-function displayPermutationResults(results, searchNumber, totalNumbers, allPermutations) {
-    const container = document.getElementById('resultsContainer');
-    const statsInfo = document.getElementById('statsInfo');
-    let html = '';
-    
-    // Tampilkan Exact Matches
-    html += `<div class="result-category">`;
-    html += `<div class="category-title">🎯 EXACT MATCH - Angka Sama Persis</div>`;
-    if (results.exactMatches.length > 0) {
-        results.exactMatches.forEach(number => {
-            html += `<div class="result-item result-exact">${number}</div>`;
-        });
+    // 3 digit "set" (order bebas di 4 digit): 367 -> num4 contains digits {3,6,7}
+    if (digits.length === 3) {
+      const label = (colKey ? colKey : "") + digits;
+      return { label, mode: "3set", pos: "", digits, col: colIndex };
+    }
+
+    // 2 digit "set": 81 -> num4 contains digits {8,1}
+    if (digits.length === 2) {
+      const label = (colKey ? colKey : "") + digits;
+      return { label, mode: "2set", pos: "", digits, col: colIndex };
+    }
+
+    return null;
+  }
+
+  for (const raw of tokens) {
+    const token = raw.trim();
+    if (!token) continue;
+
+    const low = token.toLowerCase();
+    const colKey = low.slice(0, 2);
+    const colIndex = COL_MAP[colKey];
+
+    if (colIndex !== undefined) {
+      let rest = low.slice(2);
+      if (rest.startsWith("+")) rest = rest.slice(1);
+      const parts = rest.split("+").filter(Boolean);
+
+      for (const part of parts) {
+        pushTarget(parseOne(part, colKey, colIndex));
+        if (out.length >= 4) break;
+      }
     } else {
-        html += `<div class="result-item result-none">Tidak ditemukan angka yang sama persis</div>`;
+      // token may still have + combinations (global)
+      const parts = low.split("+").filter(Boolean);
+      for (const part of parts) {
+        pushTarget(parseOne(part, "", null));
+        if (out.length >= 4) break;
+      }
     }
-    html += `</div>`;
-    
-    // Tampilkan Permutation Matches
-    html += `<div class="result-category">`;
-    html += `<div class="category-title">🔄 PERMUTASI MATCH - Digit Sama Urutan Beda</div>`;
-    if (results.permutationMatches.length > 0) {
-        results.permutationMatches.forEach(number => {
-            html += `<div class="result-item result-permutation">${number}</div>`;
-        });
+
+    if (out.length >= 4) break;
+  }
+
+  return out;
+}
+
+function assignTargetColors(targets) {
+  const palette = ["target-yellow", "target-green", "target-red", "target-blue"];
+  const start = palette.length - targets.length;
+  const selected = palette.slice(start);
+
+  return targets.map((t, i) => ({
+    ...t,
+    colorClass: selected[i],
+  }));
+}
+
+function getSegment(num4, mode, pos) {
+  if (mode === "4") return { seg: num4, hitIdx: [0, 1, 2, 3] };
+
+  if (mode === "3") {
+    if (pos === "d") return { seg: num4.slice(0, 3), hitIdx: [0, 1, 2] };
+    return { seg: num4.slice(1, 4), hitIdx: [1, 2, 3] }; // b
+  }
+
+  // mode === "2"
+  if (pos === "d") return { seg: num4.slice(0, 2), hitIdx: [0, 1] };
+  if (pos === "t") return { seg: num4.slice(1, 3), hitIdx: [1, 2] };
+  return { seg: num4.slice(2, 4), hitIdx: [2, 3] }; // b
+}
+
+function findMatchesMulti(dataNumbers, targets) {
+  const exactByTarget = targets.map(() => []);
+  const permByTarget = targets.map(() => []);
+
+  function countDigits(str) {
+    const c = new Array(10).fill(0);
+    for (let i = 0; i < str.length; i++) {
+      const d = str.charCodeAt(i) - 48;
+      if (d >= 0 && d <= 9) c[d]++;
+    }
+    return c;
+  }
+
+  function matchSetDigits(num4, needCounts) {
+    // First: verify num4 contains at least the required multiset of digits.
+    const remain = needCounts.slice();
+
+    for (let i = 0; i < 4; i++) {
+      const d = num4.charCodeAt(i) - 48;
+      if (d >= 0 && d <= 9 && remain[d] > 0) {
+        remain[d]--;
+      }
+    }
+
+    for (let i = 0; i < 10; i++) {
+      if (remain[i] > 0) return null;
+    }
+
+    // Second: highlight ALL occurrences of any digit that appears in the target,
+    // not just as many as the target count.
+    const hitIdx = [];
+    for (let i = 0; i < 4; i++) {
+      const d = num4.charCodeAt(i) - 48;
+      if (d >= 0 && d <= 9 && needCounts[d] > 0) hitIdx.push(i);
+    }
+    return hitIdx;
+  }
+
+  // Precompute
+  const sortedTarget = targets.map(t => (t.digits ? sortedDigits(t.digits) : ""));
+  const targetCounts = targets.map(t => ((t.mode === "3set" || t.mode === "2set") ? countDigits(t.digits) : null));
+  const posMap = { a: 0, c: 1, k: 2, e: 3 };
+
+  // matchMap: index -> info (first match wins)
+  // info: { kind: "exact"|"perm", colorClass, mode, hitIdx }
+  const matchMap = new Map();
+
+  dataNumbers.forEach((num4, idx) => {
+    if (!num4) return; // skip padding cells
+
+    for (let tIdx = 0; tIdx < targets.length; tIdx++) {
+      const t = targets[tIdx];
+
+      // Column filter (ba..bg)
+      if (t.col !== null && t.col !== undefined) {
+        if ((idx % GRID_COLS) !== t.col) continue;
+      }
+
+      // 1 digit positional (a/c/k/e)
+      if (t.mode === "1pos") {
+        const p = posMap[t.pos];
+        if (p !== undefined && num4[p] === t.digits) {
+          exactByTarget[tIdx].push(num4);
+          if (!matchMap.has(idx)) {
+            matchMap.set(idx, { kind: "exact", colorClass: t.colorClass, mode: "1pos", hitIdx: [p] });
+          }
+          break;
+        }
+        continue;
+      }
+
+      // 4 digit (exact / permutasi)
+      if (t.mode === "4") {
+        if (num4 === t.digits) {
+          exactByTarget[tIdx].push(num4);
+          if (!matchMap.has(idx)) {
+            matchMap.set(idx, { kind: "exact", colorClass: t.colorClass, mode: "4", hitIdx: [0, 1, 2, 3] });
+          }
+          break;
+        }
+        if (sortedDigits(num4) === sortedTarget[tIdx]) {
+          permByTarget[tIdx].push(num4);
+          if (!matchMap.has(idx)) {
+            matchMap.set(idx, { kind: "perm", colorClass: t.colorClass, mode: "4", hitIdx: [0, 1, 2, 3] });
+          }
+          break;
+        }
+        continue;
+      }
+
+      // 3 digit set (order bebas dalam 4 digit): "367" matches "3786" -> highlight 3,6,7
+      if (t.mode === "3set" || t.mode === "2set") {
+        const hitIdx = matchSetDigits(num4, targetCounts[tIdx]);
+        if (hitIdx) {
+          permByTarget[tIdx].push(num4);
+          if (!matchMap.has(idx)) {
+            matchMap.set(idx, { kind: "perm", colorClass: t.colorClass, mode: t.mode, hitIdx });
+          }
+          break;
+        }
+        continue;
+      }
+
+      // 2/3 digit positional (d/t/b)
+      const { seg, hitIdx } = getSegment(num4, t.mode, t.pos);
+
+      if (seg === t.digits) {
+        exactByTarget[tIdx].push(num4);
+        if (!matchMap.has(idx)) {
+          matchMap.set(idx, { kind: "exact", colorClass: t.colorClass, mode: t.mode, hitIdx });
+        }
+        break;
+      }
+
+      if (sortedDigits(seg) === sortedTarget[tIdx]) {
+        permByTarget[tIdx].push(num4);
+        if (!matchMap.has(idx)) {
+          matchMap.set(idx, { kind: "perm", colorClass: t.colorClass, mode: t.mode, hitIdx });
+        }
+        break;
+      }
+    }
+  });
+
+  for (let i = 0; i < targets.length; i++) {
+    exactByTarget[i] = [...new Set(exactByTarget[i])].sort();
+    permByTarget[i] = [...new Set(permByTarget[i])].sort();
+  }
+
+  return { exactByTarget, permByTarget, matchMap };
+}
+
+
+function renderLegend(targets) {
+  // Permintaan user: tidak tampilkan legend/target di bawah output.
+  const legend = document.getElementById("legendTargets");
+  if (legend) legend.innerHTML = "";
+}
+
+function renderNumberPill(num4, matchInfo, idx) {
+  // Zebra: setiap baris ke-5 diberi background (1 baris), dimulai dari baris PALING BAWAH
+  const rowIndex = Math.floor((idx || 0) / GRID_COLS);
+  const fromBottom = Math.max(0, (CURRENT_TOTAL_ROWS - 1) - rowIndex);
+  const zebraClass = (fromBottom % 5 === 0) ? "row-5th" : "";
+
+  // Empty padding cell (agar baris terakhir tetap full sampai kanan)
+  if (!num4) {
+    return `<div class="number-item number-empty ${zebraClass}"><span class="digits">&nbsp;</span></div>`;
+  }
+
+  // Build digits with hit classes
+  const hit = new Set(matchInfo?.hitIdx || []);
+  const digitsHtml = num4
+    .split("")
+    .map((ch, i) => `<span class="digit ${hit.has(i) ? "hit" : ""}">${ch}</span>`)
+    .join("");
+if (!matchInfo) {
+    return `<div class="number-item number-normal ${zebraClass}"><span class="digits">${digitsHtml}</span></div>`;
+  }
+
+  const base = matchInfo.mode === "4" ? "number-match-4" : "number-match-partial";
+  const kind = matchInfo.kind === "exact" ? "match-exact" : "match-perm";
+
+  return `
+  <div class="number-item ${base} ${kind} ${matchInfo.colorClass} ${zebraClass}">
+  <span class="digits">${digitsHtml}</span>
+  </div>
+  `;
+}
+
+function displayHighlightedData(dataNumbers, results, targets) {
+  const container = document.getElementById("highlightedData");
+  const dataDisplay = document.getElementById("dataDisplay");
+
+  const total = dataNumbers?.length || 0;
+  const pad = total ? ((GRID_COLS - (total % GRID_COLS)) % GRID_COLS) : 0;
+  const totalCells = total + pad;
+
+  CURRENT_TOTAL_ROWS = totalCells ? Math.ceil(totalCells / GRID_COLS) : 0;
+
+  const parts = new Array(totalCells);
+  for (let i = 0; i < totalCells; i++) {
+    if (i < total) {
+      parts[i] = renderNumberPill(dataNumbers[i], results.matchMap.get(i), i);
     } else {
-        html += `<div class="result-item result-none">Tidak ditemukan permutasi</div>`;
+      parts[i] = renderNumberPill("", null, i);
     }
-    html += `</div>`;
-    
-    // Tampilkan semua kemungkinan permutasi
-    html += `<div class="result-category">`;
-    html += `<div class="category-title">📋 SEMUA KEMUNGKINAN PERMUTASI</div>`;
-    html += `<div class="permutation-list">`;
-    html += `Dari angka <strong>${searchNumber}</strong> terdapat ${allPermutations.length} kemungkinan: `;
-    html += allPermutations.join(', ');
-    html += `</div>`;
-    html += `</div>`;
-    
-    // Stats info
-    const totalFound = results.exactMatches.length + results.permutationMatches.length;
-    const percentage = ((totalFound / totalNumbers) * 100).toFixed(2);
-    statsInfo.innerHTML = `
-        <strong>📊 STATISTIK:</strong><br>
-        Total data: ${totalNumbers} angka | Ditemukan: ${totalFound} match (${percentage}%)<br>
-        Exact: ${results.exactMatches.length} | Permutasi: ${results.permutationMatches.length}<br>
-        Total kemungkinan permutasi: ${allPermutations.length}
-    `;
-    
-    container.innerHTML = html;
-    document.getElementById('resultsSection').style.display = 'block';
+  }
+
+  container.innerHTML = parts.join("");
+
+  dataDisplay.style.display = "block";
+  renderLegend(targets);
+}
+
+function displayResults(results, targets, totalNumbers) {
+  // Permintaan user: hapus semua teks TARGET / daftar exact-permutasi / statistik.
+  const container = document.getElementById("resultsContainer");
+  const statsInfo = document.getElementById("statsInfo");
+  if (container) container.innerHTML = "";
+  if (statsInfo) statsInfo.innerHTML = "";
+
+  const resultsSection = document.getElementById("resultsSection");
+  if (resultsSection) resultsSection.style.display = "block";
 }
 
 function showInfo(message, type) {
-    const infoDiv = document.getElementById('info');
-    infoDiv.textContent = message;
-    infoDiv.style.background = type === 'error' ? '#FFEBEE' : 
-                             type === 'success' ? '#E8F5E9' : '#E3F2FD';
-    infoDiv.style.color = type === 'error' ? '#C62828' :
-                        type === 'success' ? '#2E7D32' : '#1565C0';
-    infoDiv.style.border = type === 'error' ? '2px solid #FFCDD2' : 
-                          type === 'success' ? '2px solid #C8E6C9' : '2px solid #BBDEFB';
+  const infoDiv = document.getElementById("info");
+  infoDiv.textContent = message;
+
+  const map = {
+    error: { bg: "#ffebee", fg: "#c62828", bd: "#ffcdd2" },
+    success: { bg: "#e8f5e9", fg: "#2e7d32", bd: "#c8e6c9" },
+    info: { bg: "#e3f2fd", fg: "#1565c0", bd: "#bbdefb" },
+  };
+
+  const s = map[type] || map.info;
+  infoDiv.style.background = s.bg;
+  infoDiv.style.color = s.fg;
+  infoDiv.style.border = `2px solid ${s.bd}`;
 }
 
-function showLoading(show) {
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const searchButton = document.getElementById('searchButton');
-    
-    if (show) {
-        loadingIndicator.style.display = 'block';
-        searchButton.disabled = true;
-        searchButton.textContent = '⏳ MENCARI...';
+function showLoading(show, mode = "search") {
+  const loadingIndicator = document.getElementById("loadingIndicator");
+  const searchButton = document.getElementById("searchButton");
+  const processBtn = document.getElementById("processDataBtn");
+
+  if (show) {
+    if (loadingIndicator) loadingIndicator.style.display = "block";
+    if (processBtn) processBtn.disabled = true;
+    if (searchButton) searchButton.disabled = true;
+
+    if (mode === "process") {
+      if (processBtn) processBtn.textContent = "⏳ MEMPROSES...";
     } else {
-        loadingIndicator.style.display = 'none';
-        searchButton.disabled = false;
-        searchButton.textContent = '🔍 CARI PERMUTASI';
+      if (searchButton) searchButton.textContent = "⏳ MENCARI...";
     }
+  } else {
+    if (loadingIndicator) loadingIndicator.style.display = "none";
+    if (processBtn) processBtn.disabled = false;
+    if (searchButton) searchButton.disabled = false;
+
+    if (processBtn) processBtn.textContent = "⚙️ PROSES DATA";
+    if (searchButton) searchButton.textContent = "🔍 CARI ANGKA";
+  }
 }
 
 function resetValidation() {
-    document.getElementById('inputData').classList.remove('validation-error');
-    document.getElementById('searchNumber').classList.remove('validation-error');
+  document.getElementById("inputData").classList.remove("validation-error");
+  document.getElementById("searchNumber").classList.remove("validation-error");
 }
 
-function clearAll() {
-    document.getElementById('inputData').value = '';
-    document.getElementById('searchNumber').value = '';
-    document.getElementById('resultsSection').style.display = 'none';
-    document.getElementById('dataDisplay').style.display = 'none';
-    resetValidation();
-    showInfo('Masukkan data angka dan angka yang dicari, lalu klik CARI PERMUTASI', 'info');
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEYS.data, document.getElementById("inputData").value);
+  localStorage.setItem(STORAGE_KEYS.search, document.getElementById("searchNumber").value);
 }
 
-// Event listeners untuk Enter key
-document.getElementById('searchNumber').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        findNumberPermutations();
-    }
-});
+function loadFromStorage() {
+  const data = localStorage.getItem(STORAGE_KEYS.data);
+  const search = localStorage.getItem(STORAGE_KEYS.search);
 
-// Auto-format input hanya angka
-document.getElementById('searchNumber').addEventListener('input', function(e) {
-    this.value = this.value.replace(/[^\d]/g, '').slice(0, 4);
+  if (data !== null) document.getElementById("inputData").value = data;
+  if (search !== null) document.getElementById("searchNumber").value = search;
+}
+
+function clearInput() {
+  document.getElementById("inputData").value = "";
+  STATE.dataNumbers = [];
+  STATE.processed = false;
+  saveToStorage();
+  resetValidation();
+  showInfo("Input data dihapus.", "info");
+}
+
+function clearSearch() {
+  document.getElementById("searchNumber").value = "";
+  saveToStorage();
+  resetValidation();
+
+  if (STATE.processed && Array.isArray(STATE.dataNumbers) && STATE.dataNumbers.length) {
+    const results = { matchMap: new Map() };
+    displayHighlightedData(STATE.dataNumbers, results, []);
+    displayResults(results, [], STATE.dataNumbers.length);
+    showInfo("Target pencarian dihapus. Highlight di-reset.", "info");
+  } else {
+    showInfo("Target pencarian dihapus.", "info");
+  }
+}
+
+function updateCountInfo() {
+  const raw = document.getElementById("inputData").value.trim();
+  const numbers = raw ? parseInputData(raw) : [];
+  showInfo(`${numbers.length} angka valid terdeteksi - Klik PROSES DATA untuk membuat output`, "info");
+}
+
+
+function processDataOnly() {
+  const rawData = document.getElementById("inputData").value.trim();
+
+  resetValidation();
+  saveToStorage();
+
+  if (!rawData) {
+    showInfo("Masukkan data angka terlebih dahulu!", "error");
+    document.getElementById("inputData").classList.add("validation-error");
+    return;
+  }
+
+  const dataNumbers = parseInputData(rawData);
+  // Bersihkan textarea: sisakan hanya angka 4 digit (hilangkan karakter tambahan seperti superscript)
+  const cleaned = formatInputDataForTextarea(dataNumbers, GRID_COLS);
+  if (cleaned) {
+    document.getElementById("inputData").value = cleaned;
+    saveToStorage();
+  }
+  STATE.dataNumbers = dataNumbers;
+  STATE.processed = true;
+  if (dataNumbers.length === 0) {
+    showInfo("Tidak ada angka valid (4 digit) yang ditemukan dalam data!", "error");
+    document.getElementById("inputData").classList.add("validation-error");
+    return;
+  }
+
+  showLoading(true, "process");
+  showInfo("Memproses data...", "info");
+
+  try {
+    const results = { matchMap: new Map() };
+    displayHighlightedData(dataNumbers, results, []);
+    displayResults(results, [], dataNumbers.length);
+
+    showInfo(`Selesai. Output dibuat dari ${dataNumbers.length} angka.`, "success");
+  } catch (err) {
+    console.error(err);
+    showInfo(`Error: ${err.message}`, "error");
+  } finally {
+    showLoading(false, "process");
+  }
+}
+
+function runSearch() {
+  const rawData = document.getElementById("inputData").value.trim();
+  const rawSearch = document.getElementById("searchNumber").value.trim();
+
+  resetValidation();
+  saveToStorage();
+
+  if (!rawData) {
+    showInfo("Masukkan data angka terlebih dahulu!", "error");
+    document.getElementById("inputData").classList.add("validation-error");
+    return;
+  }
+
+  const dataNumbers = parseInputData(rawData);
+  if (dataNumbers.length === 0) {
+    showInfo("Tidak ada angka valid (4 digit) yang ditemukan dalam data!", "error");
+    document.getElementById("inputData").classList.add("validation-error");
+    return;
+  }
+
+  const targets = parseSearchTargets(rawSearch);
+  if (targets.length === 0) {
+    showInfo("Masukkan target pencarian (maks 4). Contoh: 1145, d145, b145, t12", "error");
+    document.getElementById("searchNumber").classList.add("validation-error");
+    return;
+  }
+
+  showLoading(true, "search");
+  showInfo("Mencari...", "info");
+
+  try {
+    const coloredTargets = assignTargetColors(targets);
+    const results = findMatchesMulti(dataNumbers, coloredTargets);
+
+    displayHighlightedData(dataNumbers, results, coloredTargets);
+    displayResults(results, coloredTargets, dataNumbers.length);
+
+    showInfo("Pencarian selesai!", "success");
+  } catch (err) {
+  console.error(err);
+  showInfo(`Error: ${err.message}`, "error");
+} finally {
+showLoading(false, "search");
+}
+}
+
+/* =========================
+Event Listeners
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  loadFromStorage();
+
+  // Default demo data if empty storage
+  if (!document.getElementById("inputData").value.trim()) {
+    document.getElementById("inputData").value =
+    "2740 9348 7109 8934 0076 1267 4060 4386 0267 6400 3699 6507 3203 4666\n" +
+    "0841 2496 2837 0583 0845 9265 7032 1145 1645 1141 1445 1165 3145 1185\n" +
+    "1142 5145 1105 1541 5115 5140 1485 4165 4155 1134 3115 8514 5841 1458\n" +
+    "5411 4151 4511 1154 1514 1541 4115";
+  }
+
+  updateCountInfo();
+
+  document.getElementById("processDataBtn").addEventListener("click", processDataOnly);
+
+  document.getElementById("searchButton").addEventListener("click", runSearch);
+  document.getElementById("clearInputBtn").addEventListener("click", () => {
+    clearInput();
+    document.getElementById("resultsSection").style.display = "none";
+  });
+  document.getElementById("clearSearchBtn").addEventListener("click", () => {
+    clearSearch();
+  });
+document.getElementById("inputData").addEventListener("input", () => {
+    updateCountInfo();
+    saveToStorage();
     resetValidation();
-});
+  });
 
-// Update info saat data berubah
-document.getElementById('inputData').addEventListener('input', function() {
-    const inputData = this.value.trim();
-    const numbers = inputData ? parseInputData(inputData) : [];
-    document.getElementById('info').textContent = 
-        `${numbers.length} angka valid terdeteksi - Masukkan angka yang dicari`;
+  // Allow digits + comma + whitespace + d/t/b prefixes
+  document.getElementById("searchNumber").addEventListener("input", function () {
+    this.value = this.value.replace(/[^0-9,\s+\+aAbBcCdDeEfFgGkKtT]/g, "");
+    saveToStorage();
     resetValidation();
+  });
+
+  document.getElementById("searchNumber").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") runSearch();
+  });
+
+  document.getElementById("toTopBtn").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("toBottomBtn").addEventListener("click", () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  });
 });
 
-// Contoh data untuk testing
-document.getElementById('inputData').value = `2740 9348 7109 8934 0076 1267 4060
-4386 0267 6400 3699 6507 3203 4666
-0841 2496 2837 0583 0845 9265 7032
-1145 1645 1141 1445 1165 3145 1185
-1142 5145 1105 1541 5115 5140 1485
-4165 4155 1134 3115 8514 5841 1458
-5411 4151 4511 1154 1514 1541 4115`;
-</script>
-</body>
+  </script>
+ </body>
 </html>
