@@ -632,18 +632,6 @@ body.dark-theme .breakdown-value {
     color: #ffffff;
 }
 
-.theme-toggle {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin: 15px 0 !important;
-}
-
-.theme-toggle button {
-    display: inline-flex !important;
-    margin: 0 auto !important;
-}
-
 @media (max-width: 768px) {
     /* CTK TABLE MOBILE */
     .rekap-table thead th{font-size:13px; padding:9px 6px;}
@@ -753,7 +741,7 @@ body.dark-theme .breakdown-value {
     margin-top:6px;
     font-weight:900;
     font-size:12px;
-    color:#000;;
+    color:#000;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .rekap-values .nums{
@@ -800,19 +788,19 @@ body.dark-theme .rekap-count{ color:#e2e8f0; }
     
     <div class="tab-container">
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('tab1')">
+            <button class="tab-btn active" onclick="switchTab(this,'tab1')">
                 <span>📊</span>
                 <span>REKAP DATA</span>
             </button>
-            <button class="tab-btn" onclick="switchTab('tab2')">
+            <button class="tab-btn" onclick="switchTab(this,'tab2')">
                 <span>🎰</span>
                 <span>GENERATOR BBFS</span>
             </button>
-            <button class="tab-btn" onclick="switchTab('tab3')">
+            <button class="tab-btn" onclick="switchTab(this,'tab3')">
                 <span>🔢</span>
                 <span>POLTAR 4D/3D/2D</span>
             </button>
-            <button class="tab-btn" onclick="switchTab('tab4')">
+            <button class="tab-btn" onclick="switchTab(this,'tab4')">
                 <span>🎯</span>
                 <span>REKAP CT & KUMAT</span>
             </button>
@@ -1074,14 +1062,14 @@ function $(id){ return _dom[id] || (_dom[id] = document.getElementById(id)); }
 function toggleTheme() {
     const body = document.body;
     const themeButton = document.getElementById('themeButton');
-    
+
     body.classList.toggle('dark-theme');
-    
+
     if (body.classList.contains('dark-theme')) {
-        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        if (themeButton) themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
         localStorage.setItem('theme', 'dark');
     } else {
-        themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
+        if (themeButton) themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
         localStorage.setItem('theme', 'light');
     }
 }
@@ -1089,25 +1077,32 @@ function toggleTheme() {
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme');
     const themeButton = document.getElementById('themeButton');
-    
+
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
-        themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        if (themeButton) themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+    } else {
+        // default light
+        document.body.classList.remove('dark-theme');
+        if (themeButton) themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
     }
 }
 
 // =============================================
 // TAB MANAGEMENT
 // =============================================
-function switchTab(tabName) {
+function switchTab(btnEl, tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
+
+    const target = document.getElementById(tabName);
+    if (target) target.classList.add('active');
+
+    if (btnEl && btnEl.classList) btnEl.classList.add('active');
 }
 
 // =============================================
@@ -1506,7 +1501,7 @@ function updateDigitCheckboxes(digitCount) {
             checkbox.type = 'checkbox';
             checkbox.id = `digit${i}`;
             checkbox.value = i;
-            checkbox.checked = true;
+            checkbox.checked = (i <= 4);
             checkbox.addEventListener('change', handleDigitSelection);
             
             const label = document.createElement('label');
@@ -1516,7 +1511,7 @@ function updateDigitCheckboxes(digitCount) {
             checkboxItem.appendChild(checkbox);
             checkboxItem.appendChild(label);
             checkboxContainer.appendChild(checkboxItem);
-            selectedDigits.push(i);
+            if (i <= 4) selectedDigits.push(i);
         }
     }
 }
