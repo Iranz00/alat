@@ -343,7 +343,7 @@ body.dark-theme .toast.toast-done{
     background: linear-gradient(135deg, #FFD700, #FFC400);
     color: #333;
     padding: 3px 10px;
-    border-radius: 12px;
+    border-radius: 16px;
     font-size: 13px;
     font-weight: 600;
     box-shadow: 0 1.5px 6px rgba(0,0,0,0.1);
@@ -771,6 +771,49 @@ body.dark-theme .rekap-table td{
 }
 body.dark-theme .rekap-table td:last-child{ border-right:none; }
 body.dark-theme .rekap-count{ color:#e2e8f0; }
+
+/* Floating theme toggle (pojok kanan atas) */
+.floating-theme-toggle{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 10000;
+
+    /* pastikan tidak ikut style tombol global */
+    flex: none !important;
+    min-width: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+
+    font-size: 20px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+    background: rgba(255,255,255,0.92);
+    color: #1a202c;
+
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.floating-theme-toggle:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.22);
+}
+.floating-theme-toggle:active{
+    transform: translateY(-1px);
+}
+body.dark-theme .floating-theme-toggle{
+    background: rgba(45,55,72,0.92);
+    color: #e2e8f0;
+}
 </style>
 </head>
 <body>
@@ -778,15 +821,8 @@ body.dark-theme .rekap-count{ color:#e2e8f0; }
     <div class="header">
         <h1>🛠️ TOOLS DATA 🛠️</h1>
     </div>
-    
-    <div class="theme-toggle">
-        <button id="themeButton" onclick="toggleTheme()">
-            <span>🌙</span>
-            <span>Mode Gelap</span>
-        </button>
-    </div>
-    
-    <div class="tab-container">
+    <button id="themeButton" class="floating-theme-toggle" type="button" aria-label="Toggle theme">🌙</button>
+<div class="tab-container">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'tab1')">
                 <span>📊</span>
@@ -805,7 +841,14 @@ body.dark-theme .rekap-count{ color:#e2e8f0; }
                 <span>REKAP CT & KUMAT</span>
             </button>
         </div>
-        
+
+        <div id="shuffleWrap" style="margin:8px 0; text-align:center; font-size:13px;">
+            <label style="cursor:pointer; user-select:none;">
+                <input type="checkbox" id="shuffleMode" style="vertical-align:middle; margin-right:6px;">
+                Mode Acak (Shuffle Output)
+            </label>
+        </div>
+
         <!-- TAB 1: REKAP DATA -->
         <div id="tab1" class="tab-content active">
         
@@ -1066,10 +1109,10 @@ function toggleTheme() {
     body.classList.toggle('dark-theme');
 
     if (body.classList.contains('dark-theme')) {
-        if (themeButton) themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        if (themeButton) themeButton.textContent = '☀️';
         localStorage.setItem('theme', 'dark');
     } else {
-        if (themeButton) themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
+        if (themeButton) themeButton.textContent = '🌙';
         localStorage.setItem('theme', 'light');
     }
 }
@@ -1080,11 +1123,10 @@ function loadTheme() {
 
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
-        if (themeButton) themeButton.innerHTML = '<span>☀️</span><span>Mode Terang</span>';
+        if (themeButton) themeButton.textContent = '☀️';
     } else {
-        // default light
         document.body.classList.remove('dark-theme');
-        if (themeButton) themeButton.innerHTML = '<span>🌙</span><span>Mode Gelap</span>';
+        if (themeButton) themeButton.textContent = '🌙';
     }
 }
 
@@ -1103,6 +1145,32 @@ function switchTab(btnEl, tabName) {
     if (target) target.classList.add('active');
 
     if (btnEl && btnEl.classList) btnEl.classList.add('active');
+    // === Shuffle checkbox visibility (hide on CT & KUMAT) ===
+    (function(){
+        const wrap = document.getElementById('shuffleWrap');
+        const cb = document.getElementById('shuffleMode');
+        if (!wrap || !cb) return;
+        if (tabName === 'tab4') {
+            cb.checked = false;
+            wrap.style.display = 'none';
+        } else {
+            wrap.style.display = '';
+        }
+    })();
+}
+// =============================================
+// SHUFFLE (Fisher-Yates)
+// =============================================
+function shuffleArray(arr){
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+function isShuffleMode(){
+    const cb = document.getElementById('shuffleMode');
+    return cb && cb.checked;
 }
 
 // =============================================
@@ -1287,6 +1355,10 @@ function prosesData() {
     
     Object.keys(groups).forEach(group => {
         groups[group].sort((a, b) => b.value - a.value);
+    if (isShuffleMode()){
+        // Opsi B: tetap rank value, hanya acak urutan angka di dalam setiap baris
+        groups[group].forEach(g => shuffleArray(g.keys));
+    }
     });
     
     generateMarkdown(groups);
@@ -1405,6 +1477,7 @@ function generatePermutasi() {
         
         Object.keys(groupedResults).forEach(group => {
             groupedResults[group] = Array.from(groupedResults[group]).sort();
+            if (isShuffleMode()) shuffleArray(groupedResults[group]);
         });
         
         const output = formatGroupedOutput(groupedResults);
@@ -1569,6 +1642,7 @@ function generateKombinasi() {
     let output = '';
     let total = 0;
     
+    if (isShuffleMode()) { shuffleArray(results['4D']); shuffleArray(results['3D']); shuffleArray(results['2D']); }
     if (results['4D'].length > 0) {
         output += `4D (${results['4D'].length} line):\n`;
         output += results['4D'].join('*') + '*\n\n';
@@ -1631,6 +1705,74 @@ function clearKombinasi() {
     showToast('Data berhasil dihapus!', 'delete');
 }
 
+
+function zigZagPairs(arr){
+    // group ab <-> ba
+    const used = new Set();
+    const pairs = [];
+    for (let i=0;i<arr.length;i++){
+        const a = arr[i];
+        if (used.has(a)) continue;
+        const b = a[1] + a[0];
+        used.add(a);
+        used.add(b);
+        if (a !== b && arr.includes(b)){
+            pairs.push([a,b]);
+        } else {
+            pairs.push([a]);
+        }
+
+function shufflePairsKeepZigZag(arr){
+    // Acak urutan "pasangan" (ab & ba) tapi tetap tampil bolak-balik per pasangan: ab*ba*
+    // Jika ada angka tanpa pasangannya, akan tetap ikut (di akhir) dan bisa ikut diacak juga.
+    const set = new Set(arr);
+    const used = new Set();
+    const pairBlocks = [];
+    const singles = [];
+
+    // bentuk blok pasangan dulu
+    for (let i = 0; i < arr.length; i++){
+        const a = arr[i];
+        if (used.has(a)) continue;
+        const b = a[1] + a[0];
+
+        if (a !== b && set.has(b) && !used.has(b)){
+            used.add(a); used.add(b);
+            // urutan dalam pasangan: kecil dulu agar konsisten (contoh 04 lalu 40)
+            const na = Number(a);
+            const nb = Number(b);
+            const first = (na <= nb) ? a : b;
+            const second = (first === a) ? b : a;
+            pairBlocks.push([first, second]); // bolak-balik
+        } else {
+            used.add(a);
+            singles.push([a]);
+        }
+    }
+
+    // shuffle blok pasangan
+    shuffleArray(pairBlocks);
+    // optional: shuffle singles juga agar ikut acak, tapi tetap menjaga pasangan rapi
+    shuffleArray(singles);
+
+    const out = [];
+    for (const blk of pairBlocks) out.push(...blk);
+    for (const s of singles) out.push(...s);
+    return out;
+}
+    }
+    // zig-zag: take full pair, then split middle pairs
+    const out = [];
+    for (let i=0;i<pairs.length;i++){
+        if (pairs[i].length===2){
+            out.push(pairs[i][0], pairs[i][1]);
+        } else {
+            out.push(pairs[i][0]);
+        }
+    }
+    return out;
+}
+
 // =============================================
 // TAB 4: REKAP CT & KUMAT FUNCTIONS
 // =============================================
@@ -1671,6 +1813,24 @@ function extractNumbers(raw, minLen, maxLen) {
 }
 
 function renderCTKumatTable(result) {
+    // apply ordering for each ranking set
+    // - jika Mode Acak aktif: benar-benar shuffle (acak)
+    // - jika tidak: gunakan pola bolak-balik (zig-zag pasangan)
+    const _applyOrder = (arr) => {
+        if (!arr || !arr.length) return [];
+        const out = arr.slice();
+        // CT & KUMAT: selalu pola bolak-balik (zig-zag). Shuffle tidak digunakan di tab ini.
+        return zigZagPairs(out);
+    };
+
+    result.lolosKumat = _applyOrder(result.lolosKumat || []);
+    result.kena1x     = _applyOrder(result.kena1x || []);
+    result.kena2x     = _applyOrder(result.kena2x || []);
+    result.kena3x     = _applyOrder(result.kena3x || []);
+    result.kena4x     = _applyOrder(result.kena4x || []);
+    result.kena5x     = _applyOrder(result.kena5x || []);
+    result.kena6x     = _applyOrder(result.kena6x || []);
+
     const rows = [
         { rank: 1, label: 'Rangking 1', arr: result.lolosKumat || [] },
         { rank: 2, label: 'Rangking 2', arr: result.kena1x || [] },
@@ -1697,7 +1857,7 @@ function renderCTKumatTable(result) {
         html += `<td class="rekap-label rank-${r.rank}">${r.label}</td>`;
         html += '<td class="rekap-values">';
         if (numsText) {
-            html += `<span class="nums">${escapeHtml(numsText)}</span>`;
+            html += `<span class="nums" data-copy="${numsText.replace("'","\\'")}'); showToast('Output berhasil disalin!', 'copy');">${escapeHtml(numsText)}</span>`;
         } else {
             html += '';
         }
@@ -1731,22 +1891,16 @@ function prosesRekapCTKumat() {
     }
 
     const textarea = document.getElementById('inputCTKumat');
-    const raw = (textarea.value || '').trim();
-    if (!raw) {
-        setInfo('infoCTKumat', 'Masukkan data terlebih dahulu!', 'error');
-        return;
-    }
-
-    // Ambil angka saja (apapun pemisahnya)
+    const raw = (textarea.value || '');
+    // Jangan gagal hanya karena whitespace/IME; lanjutkan parsing angka
+// Ambil angka saja (apapun pemisahnya)
     const minLen = (currentMode === 'ct') ? 2 : 2;
     const maxLen = (currentMode === 'ct') ? 7 : 9;
 
     const lines = extractNumbers(raw, minLen, maxLen);
 
     if (lines.length === 0) {
-        setInfo('infoCTKumat', (currentMode === 'ct')
-            ? 'Tidak ditemukan angka 2-7 digit!'
-            : 'Tidak ditemukan angka 2-9 digit!', 'error');
+        setInfo('infoCTKumat', 'Tidak ada angka yang terbaca. Pastikan data berisi digit (contoh: 04, 46, 91) lalu klik GENERATE lagi.', 'error');
         return;
     }
 
@@ -2019,6 +2173,13 @@ function useFallbackCopy(text) {
 document.addEventListener('DOMContentLoaded', function() {
     // Load theme
     loadTheme();
+
+    // Theme toggle (floating button)
+    const themeBtn = document.getElementById('themeButton');
+    if (themeBtn){
+        themeBtn.addEventListener('click', toggleTheme);
+    }
+
     
     // Initialize BBFS digit checkboxes
     updateDigitCheckboxes(0);
@@ -2032,6 +2193,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const digitCount = this.value.length;
         updateDigitCheckboxes(digitCount);
     });
+
+    // Tap angka CT/KUMAT untuk auto-copy (tanpa style tambahan)
+    const ctkWrap = document.getElementById('ctKumatOutput');
+    if (ctkWrap){
+        ctkWrap.addEventListener('click', function(e){
+            const t = e.target;
+            if (t && t.classList && t.classList.contains('nums')){
+                const txt = (t.getAttribute('data-copy') || '').trim();
+                if (txt){
+                    copyToClipboard(txt);
+                    showToast('Output berhasil disalin!', 'copy');
+                }
+            }
+        });
+    }
+
 });
 </script>
 </body>
