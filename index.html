@@ -1857,7 +1857,7 @@ function renderCTKumatTable(result) {
         html += `<td class="rekap-label rank-${r.rank}">${r.label}</td>`;
         html += '<td class="rekap-values">';
         if (numsText) {
-            html += `<span class="nums" data-copy="${numsText.replace("'","\\'")}'); showToast('Output berhasil disalin!', 'copy');">${escapeHtml(numsText)}</span>`;
+            html += `<span class="nums" data-copy="${numsText.replace("'","\\'")}">${escapeHtml(numsText)}</span>`;
         } else {
             html += '';
         }
