@@ -165,6 +165,18 @@ h1 {
     transition: all 0.3s ease;
 }
 
+/* GENERATOR 4D/3D - Input Sempit */
+.generator-input {
+    width:100%;
+    padding:10px;
+    border:1.5px solid #e2e8f0;
+    border-radius:6px;
+    font-size:14px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
 textarea:focus, input:focus { 
     border-color:#667eea;
     outline:none;
@@ -535,14 +547,16 @@ body.dark-theme .input-box h3 {
 }
 body.dark-theme .rekap-textarea,
 body.dark-theme .bbfs-input,
-body.dark-theme .kombinasi-input {
+body.dark-theme .kombinasi-input,
+body.dark-theme .generator-input {
     background: #4a5568;
     border-color: #718096;
     color: #e2e8f0;
 }
 body.dark-theme .rekap-textarea:focus,
 body.dark-theme .bbfs-input:focus,
-body.dark-theme .kombinasi-input:focus {
+body.dark-theme .kombinasi-input:focus,
+body.dark-theme .generator-input:focus {
     border-color: #667eea;
     background: #4a5568;
     box-shadow: 0 0 0 2.5px rgba(102, 126, 234, 0.2);
@@ -814,6 +828,91 @@ body.dark-theme .floating-theme-toggle{
     background: rgba(45,55,72,0.92);
     color: #e2e8f0;
 }
+
+/* GENERATOR 4D/3D - Tambahan */
+.generator-inputs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+@media (min-width: 768px) {
+    .generator-inputs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+.input-group-compact {
+    display: flex;
+    flex-direction: column;
+}
+.input-group-compact label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.input-group-compact .optional-badge {
+    background: #718096;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.matching-results {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #4caf50;
+}
+.matching-results h4 {
+    color: #2e7d32;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.match-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.match-badge {
+    background: #4caf50;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.btn-warning {
+    background:linear-gradient(135deg, #ff9800, #f57c00);
+    color:white;
+    box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+}
+
+/* Dark theme untuk generator */
+body.dark-theme .generator-input {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+}
+body.dark-theme .generator-input:focus {
+    border-color: #667eea;
+    background: #4a5568;
+}
+body.dark-theme .matching-results {
+    background: #2d5c2d;
+    border-left-color: #4caf50;
+}
+body.dark-theme .matching-results h4 {
+    color: #a5d6a7;
+}
+body.dark-theme .match-badge {
+    background: #4caf50;
+}
 </style>
 </head>
 <body>
@@ -830,15 +929,15 @@ body.dark-theme .floating-theme-toggle{
             </button>
             <button class="tab-btn" onclick="switchTab(this,'tab2')">
                 <span>🎰</span>
-                <span>GENERATOR BBFS</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab(this,'tab3')">
-                <span>🔢</span>
-                <span>POLTAR 4D/3D/2D</span>
+                <span>BBFS & POLTAR</span>
             </button>
             <button class="tab-btn" onclick="switchTab(this,'tab4')">
                 <span>🎯</span>
                 <span>REKAP CT & KUMAT</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(this,'tab5')">
+                <span>🔄</span>
+                <span>GENERATOR 4D/3D</span>
             </button>
         </div>
 
@@ -934,112 +1033,127 @@ SURAT:
             </div>
         </div>
         
-        <!-- TAB 2: GENERATOR BBFS -->
+        <!-- TAB 2: BBFS & POLTAR (1 TAB) -->
         <div id="tab2" class="tab-content">
             <div class="input-section">
-                <div class="input-group">
-                    <div class="input-box">
-                        <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-6 digit" maxlength="6">
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px;"></div>
-                
-                <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
-                    <div class="checkbox-group" id="digitCheckboxes">
-                        <!-- Checkbox akan di-generate otomatis oleh JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="loading" id="loading">⏳ Sedang memproses... Harap tunggu!</div>
-                
-                <div class="button-group">
-                    <button class="btn-submit" onclick="generatePermutasi()" id="btnGenerate">
-                        <span>🎲</span>
-                        <span>GENERATE</span>
-                    </button>
-                    <button class="btn-copy" onclick="copyOutput()">
-                        <span>📋</span>
-                        <span>SALIN OUTPUT</span>
-                    </button>
-                    <button class="btn-clean" onclick="clearAllBBFS()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="infoBBFS">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
 
-            <div class="output-container">
-                <div class="output-header">
-                    <h3>🎲 Hasil Permutasi:</h3>
-                    <div class="output-count" id="countOutput">0 hasil</div>
+                <div class="digit-selection">
+                    <div class="checkbox-group" id="bbfsPoltarModeGroup">
+                        <div class="checkbox-item">
+                            <input type="radio" id="ModeBBFS2" value="BBFS" name="bbfsPoltarMode" checked>
+                            <label for="ModeBBFS2">MODE BBFS</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="ModePOLTAR2" value="POLTAR" name="bbfsPoltarMode">
+                            <label for="ModePOLTAR2">MODE POLTAR</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="markdown-output" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
+
+                <div id="bbfsSectionWrap">
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-7 digit" maxlength="7">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;"></div>
+
+                    <div class="digit-selection">
+                        <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
+                        <div class="checkbox-group" id="digitCheckboxes">
+                            <!-- Checkbox akan di-generate otomatis oleh JavaScript -->
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px;"></div>
+                    <div class="button-group">
+                        <button class="btn-submit" onclick="runBBFSPoltarGenerate()">
+                            <span>🎲</span>
+                            <span>GENERATE</span>
+                        </button>
+                        <button class="btn-copy" onclick="runBBFSPoltarCopy()">
+                            <span>📋</span>
+                            <span>SALIN OUTPUT</span>
+                        </button>
+                        <button class="btn-clean" onclick="runBBFSPoltarClear()">
+                            <span>🗑️</span>
+                            <span>CLEAR</span>
+                        </button>
+                    </div>
+
+                    <div class="loading" id="loading">⏳ Sedang memproses... Harap tunggu!</div>
+
+                    <div class="info" id="infoBBFS">Masukkan angka 2-6 digit, pilih digit yang diinginkan, lalu klik GENERATE</div>
+
+                    <div class="output-container">
+                        <div class="output-header">
+                            <h3>🎲 Hasil Permutasi:</h3>
+                            <div class="output-count" id="countOutput">0 hasil</div>
+                        </div>
+                        <div class="markdown-output" id="outputPermutasi">// Hasil akan muncul di sini dengan format kelompok digit</div>
+                    </div>
+                </div>
+
+                <div id="poltarSectionWrap" style="display:none;">
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;"></div>
+
+                    <div class="digit-selection">
+                        <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
+                        <div class="checkbox-group" id="kombinasiCheckboxes">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="kombinasi4D" value="4D" checked>
+                                <label for="kombinasi4D">4D</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="kombinasi3D" value="3D" checked>
+                                <label for="kombinasi3D">3D</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="kombinasi2D" value="2D" checked>
+                                <label for="kombinasi2D">2D</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px;"></div>
+                    <div class="button-group">
+                        <button class="btn-submit" onclick="runBBFSPoltarGenerate()">
+                            <span>🎲</span>
+                            <span>GENERATE</span>
+                        </button>
+                        <button class="btn-copy" onclick="runBBFSPoltarCopy()">
+                            <span>📋</span>
+                            <span>SALIN OUTPUT</span>
+                        </button>
+                        <button class="btn-clean" onclick="runBBFSPoltarClear()">
+                            <span>🗑️</span>
+                            <span>CLEAR</span>
+                        </button>
+                    </div>
+
+                    <div class="info" id="infoKombinasi">
+                        💡 Masukkan kelompok angka dipisahkan koma. Program akan generate kombinasi 4D, 3D, dan 2D otomatis.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-header">
+                            <h3>🔢 Hasil Kombinasi:</h3>
+                            <div class="total-value" id="totalKombinasi">0 kombinasi</div>
+                        </div>
+                        <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- TAB 3: POLTAR 4D/3D/2D -->
-        <div id="tab3" class="tab-content">
-            <div class="input-section">
-                <div class="input-group">
-                    <div class="input-box">
-                        <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px;"></div>
-                
-                <div class="digit-selection">
-                    <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
-                    <div class="checkbox-group" id="kombinasiCheckboxes">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi4D" value="4D" checked>
-                            <label for="kombinasi4D">4D</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi3D" value="3D" checked>
-                            <label for="kombinasi3D">3D</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kombinasi2D" value="2D" checked>
-                            <label for="kombinasi2D">2D</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn-submit" onclick="generateKombinasi()">
-                        <span>🎲</span>
-                        <span>GENERATE</span>
-                    </button>
-                    <button class="btn-copy" onclick="copyKombinasi()">
-                        <span>📋</span>
-                        <span>SALIN OUTPUT</span>
-                    </button>
-                    <button class="btn-clean" onclick="clearKombinasi()">
-                        <span>🗑️</span>
-                        <span>CLEAR</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="info" id="infoKombinasi">
-                💡 Masukkan kelompok angka dipisahkan koma. Program akan generate kombinasi 4D, 3D, dan 2D otomatis.
-            </div>
 
-            <div class="output-section">
-                <div class="output-header">
-                    <h3>🔢 Hasil Kombinasi:</h3>
-                    <div class="total-value" id="totalKombinasi">0 kombinasi</div>
-                </div>
-                <div class="markdown-output" id="outputKombinasi">// Hasil kombinasi akan muncul di sini...</div>
-            </div>
-        </div>
-        
-        <!-- TAB 4: REKAP CT & KUMAT -->
+<!-- TAB 4: REKAP CT & KUMAT -->
 <div id="tab4" class="tab-content">
     <div class="input-section">
         <div class="textarea-container">
@@ -1089,10 +1203,84 @@ SURAT:
     </div>
 </div>
 </div>
+
+<!-- TAB 5: GENERATOR 4D/3D -->
+<div id="tab5" class="tab-content">
+    <div class="input-section">
+        <div class="generator-inputs">
+            <div class="input-group-compact">
+                <label for="inputDepan">
+                    <span>🔢</span>
+                    <span>2D DEPAN</span>
+                </label>
+                <input type="text" id="inputDepan" class="generator-input" 
+                       placeholder="">
+            </div>
+            
+            <div class="input-group-compact">
+                <label for="inputTengah">
+                    <span>🔢</span>
+                    <span>2D TENGAH</span>
+                    <span class="optional-badge">OPSIONAL</span>
+                </label>
+                <input type="text" id="inputTengah" class="generator-input" 
+                       placeholder="">
+            </div>
+            
+            <div class="input-group-compact">
+                <label for="inputBelakang">
+                    <span>🔢</span>
+                    <span>2D BELAKANG</span>
+                </label>
+                <input type="text" id="inputBelakang" class="generator-input" 
+                       placeholder="">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="generate4D3D()">
+                <span>🔄</span>
+                <span>GENERATE</span>
+            </button>
+            <button class="btn-copy" onclick="copyGeneratorOutput()">
+                <span>📋</span>
+                <span>SALIN OUTPUT</span>
+            </button>
+            <button class="btn-clean" onclick="clearGenerator()">
+                <span>🗑️</span>
+                <span>CLEAR</span>
+            </button>
+        </div>
+        
+        <div id="matchingResults" class="matching-results" style="display: none;">
+            <h4>🎯 Matching Results:</h4>
+            <div class="match-badges" id="matchBadges"></div>
+        </div>
+    </div>
+    
+    <div class="info" id="infoGenerator">
+        💡 Masukkan 2D Depan, Tengah (opsional), dan Belakang dengan format angka*angka*...
+    </div>
+
+    <div class="output-section">
+        <div class="output-header">
+            <h3>🔄 Hasil Generator 4D/3D:</h3>
+            <div class="total-value" id="totalGenerator">0 kombinasi</div>
+        </div>
+
+        <div class="markdown-output" id="outputGenerator">
+// Hasil 4D dan 3D akan muncul di sini...
+
+4D (0 line):
+
+3D (0 line):
+        </div>
+    </div>
+</div>
+
 </div>
 
 <script>
-
 // =============================================
 // DOM CACHE (lebih ringan untuk mobile)
 // =============================================
@@ -1157,6 +1345,49 @@ function switchTab(btnEl, tabName) {
             wrap.style.display = '';
         }
     })();
+}
+
+// =============================================
+// TAB 2: BBFS & POLTAR (1 TAB) - MODE MANAGEMENT
+// =============================================
+let bbfsPoltarMode = 'BBFS';
+
+function updateBBFSPoltarMode(){
+    const bbfsRadio = document.getElementById('ModeBBFS2');
+    const isBBFS = bbfsRadio ? bbfsRadio.checked : true;
+    bbfsPoltarMode = isBBFS ? 'BBFS' : 'POLTAR';
+
+    const bbfsWrap = document.getElementById('bbfsSectionWrap');
+    const poltarWrap = document.getElementById('poltarSectionWrap');
+    if (bbfsWrap) bbfsWrap.style.display = isBBFS ? '' : 'none';
+    if (poltarWrap) poltarWrap.style.display = isBBFS ? 'none' : '';
+
+    // pastikan loading tidak nyangkut saat pindah mode
+    const loading = document.getElementById('loading');
+    if (loading) loading.style.display = 'none';
+
+    // pastikan tombol generate aktif saat pindah mode
+    const btn = document.getElementById('btnBBFSPoltarGenerate');
+    if (btn) btn.disabled = false;
+}
+
+function getBBFSPoltarMode(){
+    return bbfsPoltarMode || 'BBFS';
+}
+
+function runBBFSPoltarGenerate(){
+    if (getBBFSPoltarMode() === 'BBFS') generatePermutasi();
+    else generateKombinasi();
+}
+
+function runBBFSPoltarCopy(){
+    if (getBBFSPoltarMode() === 'BBFS') copyOutput();
+    else copyKombinasi();
+}
+
+function runBBFSPoltarClear(){
+    if (getBBFSPoltarMode() === 'BBFS') clearAllBBFS();
+    else clearKombinasi();
 }
 // =============================================
 // SHUFFLE (Fisher-Yates)
@@ -1457,7 +1688,8 @@ function generatePermutasi() {
         return;
     }
     
-    document.getElementById('btnGenerate').disabled = true;
+    const _genBtn = document.getElementById('btnBBFSPoltarGenerate') || document.getElementById('btnGenerate');
+    if (_genBtn) _genBtn.disabled = true;
     document.getElementById('loading').style.display = 'block';
     
     setTimeout(() => {
@@ -1486,7 +1718,7 @@ function generatePermutasi() {
         document.getElementById('outputPermutasi').textContent = output;
         document.getElementById('countOutput').textContent = `${totalResults} hasil`;
         
-        document.getElementById('btnGenerate').disabled = false;
+        if (_genBtn) _genBtn.disabled = false;
         document.getElementById('loading').style.display = 'none';
         setInfo('infoBBFS', `Berhasil generate ${totalResults} permutasi!`, 'success');
         showToast('Tugas selesai!', 'done');
@@ -2079,6 +2311,257 @@ function cleanAllCTKumat() {
 }
 
 // =============================================
+// TAB 5: GENERATOR 4D/3D FUNCTIONS (REVISED)
+// =============================================
+let hasil4D = [];
+let hasil3D = [];
+
+// Fungsi parse input untuk generator
+function parseGeneratorInput(input) {
+    if (!input || input.trim() === '') return [];
+    
+    const cleaned = input.trim()
+        .replace(/\s+/g, '') // Hapus semua spasi
+        .replace(/[^\d*]/g, '') // Hanya angka dan *
+        .replace(/\*+/g, '*') // Hapus * berulang
+        .replace(/^\*|\*$/g, ''); // Hapus * di awal/akhir
+    
+    if (!cleaned) return [];
+    
+    return cleaned.split('*')
+        .filter(num => num.length === 2 && /^\d{2}$/.test(num));
+}
+
+// Fungsi utama generator - DIPERBAIKI LOGIKA
+function generate4D3D() {
+    try {
+        // Parse input
+        const depanArray = parseGeneratorInput(document.getElementById('inputDepan').value);
+        const tengahArray = parseGeneratorInput(document.getElementById('inputTengah').value);
+        const belakangArray = parseGeneratorInput(document.getElementById('inputBelakang').value);
+        
+        console.log("DEBUG - Input:");
+        console.log("Depan:", depanArray);
+        console.log("Tengah:", tengahArray);
+        console.log("Belakang:", belakangArray);
+        
+        // Validasi input
+        if (depanArray.length === 0) {
+            setInfo('infoGenerator', 'Input 2D Depan tidak boleh kosong!', 'error');
+            return;
+        }
+        
+        if (belakangArray.length === 0) {
+            setInfo('infoGenerator', 'Input 2D Belakang tidak boleh kosong!', 'error');
+            return;
+        }
+        
+        // 1. Filter pertama: Depan cocok dengan Tengah (jika ada tengah)
+        let validDepanTengahPairs = [];
+        
+        if (tengahArray.length === 0) {
+            // Jika tengah kosong, semua depan valid (tanpa filter tengah)
+            validDepanTengahPairs = depanArray.map(depan => ({ 
+                depan, 
+                tengah: null 
+            }));
+            document.getElementById('matchingResults').style.display = 'none';
+        } else {
+            // LOGIKA FIXED: Depan cocok dengan Tengah jika digit akhir Depan = digit awal Tengah
+            for (const depan of depanArray) {
+                const lastDigitDepan = depan[1]; // digit terakhir depan
+                
+                for (const tengah of tengahArray) {
+                    const firstDigitTengah = tengah[0]; // digit pertama tengah
+                    
+                    if (lastDigitDepan === firstDigitTengah) {
+                        validDepanTengahPairs.push({ 
+                            depan, 
+                            tengah 
+                        });
+                    }
+                }
+            }
+            
+            console.log("DEBUG - Valid Depan-Tengah Pairs:", validDepanTengahPairs);
+            
+            // Show matching results
+            if (validDepanTengahPairs.length > 0) {
+                const matchBadges = document.getElementById('matchBadges');
+                matchBadges.innerHTML = '';
+                
+                const displayPairs = validDepanTengahPairs.slice(0, 8);
+                displayPairs.forEach(pair => {
+                    const badge = document.createElement('span');
+                    badge.className = 'match-badge';
+                    badge.textContent = `${pair.depan}→${pair.tengah}`;
+                    matchBadges.appendChild(badge);
+                });
+                
+                if (validDepanTengahPairs.length > 8) {
+                    const moreBadge = document.createElement('span');
+                    moreBadge.className = 'match-badge';
+                    moreBadge.textContent = `+${validDepanTengahPairs.length - 8} more`;
+                    matchBadges.appendChild(moreBadge);
+                }
+                
+                document.getElementById('matchingResults').style.display = 'block';
+            } else {
+                document.getElementById('matchingResults').style.display = 'none';
+            }
+        }
+        
+        if (validDepanTengahPairs.length === 0) {
+            setInfo('infoGenerator', 'Tidak ada match antara Depan dan Tengah!', 'error');
+            
+            // Kosongkan output
+            document.getElementById('outputGenerator').textContent = 'Tidak ada hasil yang dihasilkan (tidak ada match)';
+            document.getElementById('totalGenerator').textContent = '0 kombinasi';
+            
+            return;
+        }
+        
+        // 2. Generate 4D berdasarkan valid pairs
+        hasil4D = [];
+        
+        for (const pair of validDepanTengahPairs) {
+            const { depan, tengah } = pair;
+            
+            // Jika ada tengah, filter belakang berdasarkan tengah
+            if (tengah !== null) {
+                // LOGIKA TAMBAHAN: Belakang harus cocok dengan tengah (digit akhir tengah = digit awal belakang)
+                const lastDigitTengah = tengah[1]; // digit terakhir tengah
+                
+                for (const belakang of belakangArray) {
+                    const firstDigitBelakang = belakang[0]; // digit pertama belakang
+                    
+                    // CEK INI: Apakah aturan ini yang benar?
+                    // Pilihan A: Hanya jika lastDigitTengah === firstDigitBelakang (double matching)
+                    // Pilihan B: Tidak perlu filter belakang (single matching saja)
+                    
+                    // Untuk contoh Anda: tengah="15" (last=5), belakang "50" dan "57" (first=5) cocok
+                    if (lastDigitTengah === firstDigitBelakang) {
+                        hasil4D.push(depan + belakang);
+                    }
+                }
+            } else {
+                // Jika tidak ada tengah, semua belakang valid
+                for (const belakang of belakangArray) {
+                    hasil4D.push(depan + belakang);
+                }
+            }
+        }
+        
+        console.log("DEBUG - Hasil 4D:", hasil4D);
+        
+        // 3. Generate 3D: hapus digit pertama dari 4D, hanya unique values
+        const semua3D = hasil4D.map(angka4D => angka4D.substring(1));
+        const uniqueSet = new Set(semua3D);
+        hasil3D = Array.from(uniqueSet).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        console.log("DEBUG - Hasil 3D:", hasil3D);
+        
+        // Apply shuffle jika mode shuffle aktif
+        let output4DArray = [...hasil4D];
+        let output3DArray = [...hasil3D];
+        
+        if (isShuffleMode()) {
+            shuffleArray(output4DArray);
+            shuffleArray(output3DArray);
+        }
+        
+        // Format output - SATU OUTPUT SAJA seperti BBFS dan Poltar
+        let output = '';
+        let totalKombinasi = 0;
+        
+        if (hasil4D.length > 0) {
+            output += `4D (${hasil4D.length} line):\n`;
+            output += `${output4DArray.join('*')}*\n\n`;
+            totalKombinasi += hasil4D.length;
+        }
+        
+        if (hasil3D.length > 0) {
+            output += `3D (${hasil3D.length} line):\n`;
+            output += `${output3DArray.join('*')}*\n`;
+            totalKombinasi += hasil3D.length;
+        }
+        
+        if (output === '') {
+            output = 'Tidak ada hasil yang dihasilkan';
+        }
+        
+        // Update UI
+        document.getElementById('outputGenerator').textContent = output;
+        document.getElementById('totalGenerator').textContent = `${totalKombinasi} kombinasi`;
+        
+        // Simpan hasil untuk copy function
+        window.generatorResults = {
+            hasil4D: output4DArray,
+            hasil3D: output3DArray,
+            outputText: output
+        };
+        
+        setInfo('infoGenerator', `Berhasil generate ${hasil4D.length} 4D dan ${hasil3D.length} 3D!`, 'success');
+        showToast('Generator 4D/3D berhasil dijalankan', 'done');
+        
+    } catch (error) {
+        console.error('Error in generate4D3D:', error);
+        setInfo('infoGenerator', 'Terjadi error saat memproses data!', 'error');
+    }
+}
+
+// Fungsi khusus untuk contoh yang diberikan (untuk testing)
+function testSpecificExample() {
+    // Set input sesuai contoh
+    document.getElementById('inputDepan').value = "26*21*24*56*51*54*76*71*74*";
+    document.getElementById('inputTengah').value = "15*";
+    document.getElementById('inputBelakang').value = "57*75*50*05*74*47*01*10*70*07*";
+    
+    // Jalankan generator
+    generate4D3D();
+}
+
+// COPY FUNCTION - SALIN SEMUA OUTPUT
+function copyGeneratorOutput() {
+    const text = document.getElementById('outputGenerator').textContent;
+    if (!text || text.includes('Tidak ada hasil') || text.includes('Hasil 4D dan 3D akan muncul')) {
+        showToast('Tidak ada hasil untuk disalin', 'error');
+        return;
+    }
+    
+    copyToClipboard(text);
+}
+
+// CLEAR FUNCTION
+function clearGenerator() {
+    document.getElementById('inputDepan').value = '';
+    document.getElementById('inputTengah').value = '';
+    document.getElementById('inputBelakang').value = '';
+    
+    document.getElementById('outputGenerator').textContent = `// Hasil 4D dan 3D akan muncul di sini...
+
+4D (0 line):
+
+3D (0 line):`;
+    
+    document.getElementById('totalGenerator').textContent = '0 kombinasi';
+    
+    document.getElementById('matchingResults').style.display = 'none';
+    
+    setInfo('infoGenerator', '💡 Masukkan 2D Depan, Tengah (opsional), dan Belakang', 'default');
+    showToast('Generator berhasil direset', 'delete');
+}
+
+// LOAD EXAMPLE
+function loadExampleGenerator() {
+    document.getElementById('inputDepan').value = contohGenerator.depan;
+    document.getElementById('inputTengah').value = contohGenerator.tengah;
+    document.getElementById('inputBelakang').value = contohGenerator.belakang;
+    
+    setInfo('infoGenerator', 'Contoh data telah dimuat. Klik GENERATE untuk melihat hasil.', 'success');
+}
+
+// =============================================
 // NOTIFIKASI (standar)
 // =============================================
 function setInfo(targetId, message, type){
@@ -2183,6 +2666,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize BBFS digit checkboxes
     updateDigitCheckboxes(0);
+
+
+    // BBFS & POLTAR (1 TAB)
+    const rbBBFS2 = document.getElementById('ModeBBFS2');
+    const rbPOLTAR2 = document.getElementById('ModePOLTAR2');
+    if (rbBBFS2) rbBBFS2.addEventListener('change', updateBBFSPoltarMode);
+    if (rbPOLTAR2) rbPOLTAR2.addEventListener('change', updateBBFSPoltarMode);
+    updateBBFSPoltarMode();
     
     // Add event listeners for radio buttons
     document.getElementById('ModeCT').addEventListener('change', updateMode);
@@ -2208,6 +2699,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Load contoh untuk generator
+    loadExampleGenerator();
 
 });
 </script>
