@@ -988,11 +988,7 @@ SURAT:
                         <span>🚀</span>
                         <span>PROSES DATA</span>
                     </button>
-                    <button class="btn-copy" onclick="copyMarkdown()">
-                        <span>📋</span>
-                        <span>SALIN OUTPUT</span>
-                    </button>
-                    <button class="btn-clean" onclick="cleanAll()">
+<button class="btn-clean" onclick="cleanAll()">
                         <span>🗑️</span>
                         <span>CLEAR</span>
                     </button>
@@ -1072,11 +1068,7 @@ SURAT:
                             <span>🎲</span>
                             <span>GENERATE</span>
                         </button>
-                        <button class="btn-copy" onclick="runBBFSPoltarCopy()">
-                            <span>📋</span>
-                            <span>SALIN OUTPUT</span>
-                        </button>
-                        <button class="btn-clean" onclick="runBBFSPoltarClear()">
+<button class="btn-clean" onclick="runBBFSPoltarClear()">
                             <span>🗑️</span>
                             <span>CLEAR</span>
                         </button>
@@ -1128,11 +1120,7 @@ SURAT:
                             <span>🎲</span>
                             <span>GENERATE</span>
                         </button>
-                        <button class="btn-copy" onclick="runBBFSPoltarCopy()">
-                            <span>📋</span>
-                            <span>SALIN OUTPUT</span>
-                        </button>
-                        <button class="btn-clean" onclick="runBBFSPoltarClear()">
+<button class="btn-clean" onclick="runBBFSPoltarClear()">
                             <span>🗑️</span>
                             <span>CLEAR</span>
                         </button>
@@ -1181,11 +1169,7 @@ SURAT:
                 <span>🚀</span>
                 <span>GENERATE</span>
             </button>
-            <button class="btn-copy" onclick="copyOutputCTKumat()">
-                <span>📋</span>
-                <span>SALIN OUTPUT</span>
-            </button>
-            <button class="btn-clean" onclick="cleanAllCTKumat()">
+<button class="btn-clean" onclick="cleanAllCTKumat()">
                 <span>🗑️</span>
                 <span>CLEAR</span>
             </button>
@@ -1242,11 +1226,7 @@ SURAT:
                 <span>🔄</span>
                 <span>GENERATE</span>
             </button>
-            <button class="btn-copy" onclick="copyGeneratorOutput()">
-                <span>📋</span>
-                <span>SALIN OUTPUT</span>
-            </button>
-            <button class="btn-clean" onclick="clearGenerator()">
+<button class="btn-clean" onclick="clearGenerator()">
                 <span>🗑️</span>
                 <span>CLEAR</span>
             </button>
@@ -1593,13 +1573,15 @@ function prosesData() {
     });
     
     generateMarkdown(groups);
+    // Auto-salin output (tanpa tombol SALIN)
+    copyToClipboard(document.getElementById('markdownOutput').textContent);
     
     if (invalidLines.length > 0 && validLines.length > 0) {
         setInfo('info', `Data berhasil diproses! ${allValidPatterns.length} pattern valid, ${invalidLines.length} tidak valid.`, 'warning');
     } else {
         setInfo('info', `Data berhasil diproses! ${allValidPatterns.length} pattern valid.`, 'success');
     }
-    showToast('Tugas selesai!', 'done');
+    showToast('Selesai & tersalin!', 'copy');
 }
 
 function generateMarkdown(groups) {
@@ -1717,11 +1699,13 @@ function generatePermutasi() {
         
         document.getElementById('outputPermutasi').textContent = output;
         document.getElementById('countOutput').textContent = `${totalResults} hasil`;
+        // Auto-salin output (tanpa tombol SALIN)
+        copyToClipboard(document.getElementById('outputPermutasi').textContent);
         
         if (_genBtn) _genBtn.disabled = false;
         document.getElementById('loading').style.display = 'none';
         setInfo('infoBBFS', `Berhasil generate ${totalResults} permutasi!`, 'success');
-        showToast('Tugas selesai!', 'done');
+        showToast('Selesai & tersalin!', 'copy');
     }, 10);
 }
 
@@ -1894,9 +1878,11 @@ function generateKombinasi() {
     }
     
     document.getElementById('outputKombinasi').textContent = output || 'Tidak ada kombinasi yang dihasilkan';
+    // Auto-salin output (tanpa tombol SALIN)
+    copyToClipboard(document.getElementById('outputKombinasi').textContent);
     document.getElementById('totalKombinasi').textContent = `${total} kombinasi`;
     setInfo('infoKombinasi', `Berhasil generate ${total} kombinasi!`, 'success');
-    showToast('Tugas selesai!', 'done');
+    showToast('Selesai & tersalin!', 'copy');
 }
 
 function generateCartesian(arrays) {
@@ -2418,6 +2404,9 @@ function generate4D3D() {
             document.getElementById('outputGenerator').textContent = 'Tidak ada hasil yang dihasilkan (tidak ada match)';
             document.getElementById('totalGenerator').textContent = '0 kombinasi';
             
+            // Auto-salin output (tanpa tombol SALIN)
+            copyToClipboard(document.getElementById('outputGenerator').textContent);
+            
             return;
         }
         
@@ -2500,6 +2489,8 @@ function generate4D3D() {
             hasil3D: output3DArray,
             outputText: output
         };
+        // Auto-salin output (tanpa tombol SALIN)
+        copyToClipboard(document.getElementById('outputGenerator').textContent);
         
         setInfo('infoGenerator', `Berhasil generate ${hasil4D.length} 4D dan ${hasil3D.length} 3D!`, 'success');
         showToast('Generator 4D/3D berhasil dijalankan', 'done');
