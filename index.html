@@ -184,11 +184,16 @@ textarea:focus, input:focus {
     box-shadow: 0 0 0 2.5px rgba(102, 126, 234, 0.1);
 }
 
-.button-group { 
-    display:flex;
-    gap:10px;
-    margin-bottom:15px;
-    flex-wrap: nowrap;
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.button-group button{
+    width: 100%;
+    flex: none;
+    min-width: 0;
 }
 button { 
     flex: 1;
@@ -665,10 +670,11 @@ body.dark-theme .breakdown-value {
         font-size:1.6rem;
     }
     .button-group {
-        flex-wrap: wrap;
+        flex-direction: column;
+        flex-wrap: nowrap;
     }
     button {
-        min-width: calc(50% - 5px);
+        min-width: 100%;
     }
     .rekap-textarea {
         height:150px;
@@ -1029,7 +1035,7 @@ SURAT:
             </div>
         </div>
         
-        <!-- TAB 2: BBFS & POLTAR (1 TAB) -->
+        <!-- TAB 2: BBFS & POLTAR -->
         <div id="tab2" class="tab-content">
             <div class="input-section">
 
@@ -1141,7 +1147,7 @@ SURAT:
             </div>
         </div>
 
-<!-- TAB 4: REKAP CT & KUMAT -->
+<!-- TAB 3: REKAP CT & KUMAT -->
 <div id="tab4" class="tab-content">
     <div class="input-section">
         <div class="textarea-container">
@@ -1188,7 +1194,7 @@ SURAT:
 </div>
 </div>
 
-<!-- TAB 5: GENERATOR 4D/3D -->
+<!-- TAB 4: GENERATOR 4D/3D -->
 <div id="tab5" class="tab-content">
     <div class="input-section">
         <div class="generator-inputs">
@@ -1328,7 +1334,7 @@ function switchTab(btnEl, tabName) {
 }
 
 // =============================================
-// TAB 2: BBFS & POLTAR (1 TAB) - MODE MANAGEMENT
+// TAB 2: BBFS & POLTAR 
 // =============================================
 let bbfsPoltarMode = 'BBFS';
 
@@ -2659,7 +2665,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDigitCheckboxes(0);
 
 
-    // BBFS & POLTAR (1 TAB)
+    // BBFS & POLTAR
     const rbBBFS2 = document.getElementById('ModeBBFS2');
     const rbPOLTAR2 = document.getElementById('ModePOLTAR2');
     if (rbBBFS2) rbBBFS2.addEventListener('change', updateBBFSPoltarMode);
