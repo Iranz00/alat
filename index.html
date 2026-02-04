@@ -956,7 +956,6 @@ body.dark-theme .match-badge {
 
         <!-- TAB 1: REKAP DATA -->
         <div id="tab1" class="tab-content active">
-        
         <!-- Input Breakdown -->
         <div class="input-breakdown" id="inputBreakdown" style="display: none;">
             <div class="breakdown-cards">
@@ -974,9 +973,7 @@ body.dark-theme .match-badge {
                 </div>
             </div>
         </div>
-        
         <div style="margin-top: 20px;"></div>
-        
             <div class="input-section">
                 <div class="textarea-container">
                     <textarea id="inputData" class="rekap-textarea" placeholder="CONTOH:
@@ -988,8 +985,7 @@ SURAT:
 05#10000," oninput="updateInputCounter()"></textarea>
                     <div class="input-counter" id="inputCounter">Total: 0</div>
                 </div>
-                
-                <div class="button-group">
+                        <div class="button-group">
                     <button class="btn-submit" onclick="prosesData()">
                         <span>🚀</span>
                         <span>PROSES DATA</span>
@@ -1000,8 +996,7 @@ SURAT:
                     </button>
                 </div>
             </div>
-            
-            <div class="info" id="info">
+                <div class="info" id="info">
                 💡 Masukkan data Anda dan klik "PROSES DATA" - Program otomatis mengekstrak pattern angka#angka
             </div>
 
@@ -1012,8 +1007,7 @@ SURAT:
                     <h3>📊 Hasil Output:</h3>
                     <div class="total-value" id="outputTotal">Total: 0</div>
                 </div>
-                
-                <!-- Output Breakdown -->
+                        <!-- Output Breakdown -->
                 <div class="output-breakdown" id="outputBreakdown" style="display: none;">
                     <div class="breakdown-cards">
                         <div class="breakdown-card">
@@ -1030,11 +1024,9 @@ SURAT:
                         </div>
                     </div>
                 </div>
-                
-                <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
+                        <div class="markdown-output" id="markdownOutput">// Output akan muncul di sini setelah proses data...</div>
             </div>
         </div>
-        
         <!-- TAB 2: BBFS & POLTAR -->
         <div id="tab2" class="tab-content">
             <div class="input-section">
@@ -1153,9 +1145,7 @@ SURAT:
         <div class="textarea-container">
             <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Pilih mode terlebih dahulu, lalu masukkan data"></textarea>
         </div>
-        
         <div style="margin-top: 20px;"></div>
-        
         <div class="digit-selection">
             <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
             <div class="checkbox-group" id="modeCheckboxes">
@@ -1169,7 +1159,6 @@ SURAT:
                 </div>
             </div>
         </div>
-        
         <div class="button-group">
             <button class="btn-submit" onclick="prosesRekapCTKumat()">
                 <span>🚀</span>
@@ -1206,8 +1195,7 @@ SURAT:
                 <input type="text" id="inputDepan" class="generator-input" 
                        placeholder="">
             </div>
-            
-            <div class="input-group-compact">
+                <div class="input-group-compact">
                 <label for="inputTengah">
                     <span>🔢</span>
                     <span>2D TENGAH</span>
@@ -1216,8 +1204,7 @@ SURAT:
                 <input type="text" id="inputTengah" class="generator-input" 
                        placeholder="">
             </div>
-            
-            <div class="input-group-compact">
+                <div class="input-group-compact">
                 <label for="inputBelakang">
                     <span>🔢</span>
                     <span>2D BELAKANG</span>
@@ -1226,7 +1213,6 @@ SURAT:
                        placeholder="">
             </div>
         </div>
-        
         <div class="button-group">
             <button class="btn-submit" onclick="generate4D3D()">
                 <span>🔄</span>
@@ -1237,7 +1223,6 @@ SURAT:
                 <span>CLEAR</span>
             </button>
         </div>
-        
         <div id="matchingResults" class="matching-results" style="display: none;">
             <h4>🎯 Matching Results:</h4>
             <div class="match-badges" id="matchBadges"></div>
@@ -1279,9 +1264,7 @@ function $(id){ return _dom[id] || (_dom[id] = document.getElementById(id)); }
 function toggleTheme() {
     const body = document.body;
     const themeButton = document.getElementById('themeButton');
-
     body.classList.toggle('dark-theme');
-
     if (body.classList.contains('dark-theme')) {
         if (themeButton) themeButton.textContent = '☀️';
         localStorage.setItem('theme', 'dark');
@@ -1294,7 +1277,6 @@ function toggleTheme() {
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme');
     const themeButton = document.getElementById('themeButton');
-
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
         if (themeButton) themeButton.textContent = '☀️';
@@ -1314,12 +1296,9 @@ function switchTab(btnEl, tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-
     const target = document.getElementById(tabName);
     if (target) target.classList.add('active');
-
     if (btnEl && btnEl.classList) btnEl.classList.add('active');
-    // === Shuffle checkbox visibility (hide on CT & KUMAT) ===
     (function(){
         const wrap = document.getElementById('shuffleWrap');
         const cb = document.getElementById('shuffleMode');
@@ -1337,22 +1316,16 @@ function switchTab(btnEl, tabName) {
 // TAB 2: BBFS & POLTAR 
 // =============================================
 let bbfsPoltarMode = 'BBFS';
-
 function updateBBFSPoltarMode(){
     const bbfsRadio = document.getElementById('ModeBBFS2');
     const isBBFS = bbfsRadio ? bbfsRadio.checked : true;
     bbfsPoltarMode = isBBFS ? 'BBFS' : 'POLTAR';
-
     const bbfsWrap = document.getElementById('bbfsSectionWrap');
     const poltarWrap = document.getElementById('poltarSectionWrap');
     if (bbfsWrap) bbfsWrap.style.display = isBBFS ? '' : 'none';
     if (poltarWrap) poltarWrap.style.display = isBBFS ? 'none' : '';
-
-    // pastikan loading tidak nyangkut saat pindah mode
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'none';
-
-    // pastikan tombol generate aktif saat pindah mode
     const btn = document.getElementById('btnBBFSPoltarGenerate');
     if (btn) btn.disabled = false;
 }
@@ -1403,7 +1376,6 @@ function extractValidPatterns(line) {
         const keyPart = match[1];
         const valuePart = match[2];
         const value = parseInt(valuePart);
-        
         if (value >= 100 && /[0-9]/.test(keyPart)) {
             patterns.push({
                 fullPattern: fullPattern,
@@ -1423,26 +1395,20 @@ function updateInputCounter() {
     let lineCount4D = 0;
     let lineCount3D = 0;
     let lineCount2D = 0;
-    
     const breakdownContainer = document.getElementById('inputBreakdown');
-    
     if (input) {
         const lines = input.split(',').map(line => line.trim()).filter(line => line);
         const individualKeyMap = {};
-        
         lines.forEach(line => {
             const patterns = extractValidPatterns(line);
             patterns.forEach(pattern => {
                 const keys = pattern.keyPart.split('*')
                     .map(k => k.trim())
                     .filter(k => k && /^\d+$/.test(k));
-                
-                if (keys.length > 0 && !isNaN(pattern.value)) {
+                        if (keys.length > 0 && !isNaN(pattern.value)) {
                     keys.forEach(key => {
                         if (!individualKeyMap[key]) individualKeyMap[key] = 0;
                         individualKeyMap[key] += pattern.value;
-                        
-                        // Hitung line per digit
                         const digitLength = key.length;
                         if (digitLength === 4) lineCount4D++;
                         else if (digitLength === 3) lineCount3D++;
@@ -1451,12 +1417,9 @@ function updateInputCounter() {
                 }
             });
         });
-        
         Object.values(individualKeyMap).forEach(value => {
             total += value;
         });
-        
-        // Tampilkan breakdown jika ada data
         if (total > 0) {
             breakdownContainer.style.display = 'block';
             document.getElementById('input4D').textContent = lineCount4D + ' Line';
@@ -1526,13 +1489,11 @@ function prosesData() {
         return;
     }
     
-    // Process data
     const individualKeyMap = {};
     allValidPatterns.forEach(pattern => {
         const keys = pattern.keyPart.split('*')
             .map(k => k.trim())
             .filter(k => k && /^\d+$/.test(k));
-        
         if (keys.length > 0 && !isNaN(pattern.value)) {
             keys.forEach(key => {
                 if (!individualKeyMap[key]) individualKeyMap[key] = 0;
@@ -1572,13 +1533,11 @@ function prosesData() {
     
     Object.keys(groups).forEach(group => {
         groups[group].sort((a, b) => b.value - a.value);
-        // Urutan angka di dalam setiap baris: utamakan pasangan (reverse). Jika shuffle aktif, tetap random tapi pasangan selalu dulu.
         const sh = isShuffleMode();
         groups[group].forEach(g => { g.keys = pairFirstOrder(g.keys, sh); });
     });
 
 generateMarkdown(groups);
-    // Auto-salin output (tanpa tombol SALIN)
     copyToClipboard(document.getElementById('markdownOutput').textContent);
     
     if (invalidLines.length > 0 && validLines.length > 0) {
@@ -1594,24 +1553,19 @@ function generateMarkdown(groups) {
     const outputBreakdown = document.getElementById('outputBreakdown');
     let output = '';
     let totalOutputValue = 0;
-    
-    // Hitung line count per digit untuk OUTPUT
     let lineCount4D = 0;
     let lineCount3D = 0;
     let lineCount2D = 0;
     
     ['4DIGIT', '3DIGIT', '2DIGIT'].forEach(group => {
         if (groups[group] && groups[group].length > 0) {
-            // Hitung breakdown
             const count = groups[group].reduce((sum, entry) => sum + entry.keys.length, 0);
             if (group === '4DIGIT') lineCount4D = count;
             else if (group === '3DIGIT') lineCount3D = count;
             else if (group === '2DIGIT') lineCount2D = count;
-            
-            const label = group.replace('DIGIT', 'D');
+                const label = group.replace('DIGIT', 'D');
             output += `${label} (${count} line):\n`;
-            
-            groups[group].forEach(entry => {
+                groups[group].forEach(entry => {
                 output += `${entry.keys.join('*')}#${entry.value},\n`;
                 totalOutputValue += entry.value * entry.keys.length;
             });
@@ -1619,7 +1573,6 @@ function generateMarkdown(groups) {
         }
     });
     
-    // breakdown output
     if (lineCount4D > 0 || lineCount3D > 0 || lineCount2D > 0) {
         outputBreakdown.style.display = 'block';
         document.getElementById('output4D').textContent = lineCount4D + ' Line';
@@ -1682,30 +1635,23 @@ function generatePermutasi() {
     setTimeout(() => {
         const groupedResults = {};
         const inputDigits = input.split('');
-        
         selectedDigits.forEach(length => {
             const groupKey = length + 'D';
             groupedResults[groupKey] = new Set();
             const combinations = generateCombinations(inputDigits, length);
-            
-            combinations.forEach(combination => {
+                combinations.forEach(combination => {
                 const permutations = generateAllPermutations(combination.join(''));
                 permutations.forEach(perm => groupedResults[groupKey].add(perm));
             });
         });
-        
         Object.keys(groupedResults).forEach(group => {
             groupedResults[group] = pairFirstOrder(Array.from(groupedResults[group]), isShuffleMode());
         });
-        
         const output = formatGroupedOutput(groupedResults);
         const totalResults = calculateTotalResults(groupedResults);
-        
         document.getElementById('outputPermutasi').textContent = output;
         document.getElementById('countOutput').textContent = `${totalResults} hasil`;
-        // Auto-salin output (tanpa tombol SALIN)
         copyToClipboard(document.getElementById('outputPermutasi').textContent);
-        
         if (_genBtn) _genBtn.disabled = false;
         document.getElementById('loading').style.display = 'none';
         setInfo('infoBBFS', `Berhasil generate ${totalResults} permutasi!`, 'success');
@@ -1789,19 +1735,16 @@ function updateDigitCheckboxes(digitCount) {
         for (let i = 2; i <= digitCount; i++) {
             const checkboxItem = document.createElement('div');
             checkboxItem.className = 'checkbox-item';
-            
-            const checkbox = document.createElement('input');
+                const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `digit${i}`;
             checkbox.value = i;
             checkbox.checked = (i <= 4);
             checkbox.addEventListener('change', handleDigitSelection);
-            
-            const label = document.createElement('label');
+                const label = document.createElement('label');
             label.htmlFor = `digit${i}`;
             label.textContent = `${i}D`;
-            
-            checkboxItem.appendChild(checkbox);
+                checkboxItem.appendChild(checkbox);
             checkboxItem.appendChild(label);
             checkboxContainer.appendChild(checkboxItem);
             if (i <= 4) selectedDigits.push(i);
@@ -1829,7 +1772,6 @@ function generateKombinasi() {
         return;
     }
     
-    // Generate berdasarkan jumlah kelompok dan pilihan user
     const selectedTypes = [];
     if (document.getElementById('kombinasi4D').checked) selectedTypes.push('4D');
     if (document.getElementById('kombinasi3D').checked) selectedTypes.push('3D');
@@ -1847,7 +1789,6 @@ function generateKombinasi() {
         '2D': []
     };
     
-    // Generate berdasarkan jumlah kelompok dan pilihan user
     if (groups.length >= 4 && selectedTypes.includes('4D')) {
         results['4D'] = generateCartesian(groups.slice(0, 4));
     }
@@ -1861,7 +1802,6 @@ function generateKombinasi() {
     
     let output = '';
     let total = 0;
-    
     results['4D'] = pairFirstOrder(results['4D'], isShuffleMode());
     results['3D'] = pairFirstOrder(results['3D'], isShuffleMode());
     results['2D'] = pairFirstOrder(results['2D'], isShuffleMode());
@@ -1870,13 +1810,11 @@ function generateKombinasi() {
         output += results['4D'].join('*') + '*\n\n';
         total += results['4D'].length;
     }
-    
     if (results['3D'].length > 0) {
         output += `3D (${results['3D'].length} line):\n`;
         output += results['3D'].join('*') + '*\n\n';
         total += results['3D'].length;
     }
-    
     if (results['2D'].length > 0) {
         output += `2D (${results['2D'].length} line):\n`;
         output += results['2D'].join('*') + '*\n';
@@ -1884,7 +1822,6 @@ function generateKombinasi() {
     }
     
     document.getElementById('outputKombinasi').textContent = output || 'Tidak ada kombinasi yang dihasilkan';
-    // Auto-salin output (tanpa tombol SALIN)
     copyToClipboard(document.getElementById('outputKombinasi').textContent);
     document.getElementById('totalKombinasi').textContent = `${total} kombinasi`;
     setInfo('infoKombinasi', `Berhasil generate ${total} kombinasi!`, 'success');
@@ -1899,7 +1836,6 @@ function generateCartesian(arrays) {
     for (let i = 1; i < arrays.length; i++) {
         const temp = [];
         const currentArray = arrays[i].split('');
-        
         for (let j = 0; j < results.length; j++) {
             for (let k = 0; k < currentArray.length; k++) {
                 temp.push(results[j] + currentArray[k]);
@@ -1934,36 +1870,38 @@ function reverseStr(s){
     return String(s).split('').reverse().join('');
 }
 
-/**
- * Pair-first ordering (utama pasangan ab<->ba). Berlaku untuk semua panjang digit (2D/3D/4D/...).
- * - Jika shuffle OFF: pasangan dulu (diurutkan naik berdasarkan angka), lalu single diurutkan naik.
- * - Jika shuffle ON: urutan blok pasangan diacak, blok single diacak, tapi pasangan tetap berdampingan dan tetap di depan.
- */
 function pairFirstOrder(arr, doShuffle){
     if (!Array.isArray(arr) || arr.length === 0) return [];
+
     const src = arr.map(v => String(v));
     const set = new Set(src);
     const used = new Set();
-
-    // Untuk deterministik saat shuffle OFF, kita mulai dari urutan numeric-ascending.
-    // (tetap aman untuk string digit panjang)
     const base = src.slice().sort((a,b) => Number(a) - Number(b));
-
     const pairBlocks = [];
     const singleBlocks = [];
+    const getPartner = (s) => {
+        const n = s.length;
+        if (n < 2) return null;
+        if (n === 2) return reverseStr(s);
+
+        const suf = s.slice(-2);
+        if (suf.length !== 2) return null;
+        if (suf[0] === suf[1]) return null;
+        const swapped = suf[1] + suf[0];
+        return s.slice(0, n - 2) + swapped;
+    };
 
     for (let i = 0; i < base.length; i++){
         const a = base[i];
         if (used.has(a)) continue;
 
-        const b = reverseStr(a);
-        if (a !== b && set.has(b) && !used.has(b)){
+        const b = getPartner(a);
+        if (b && b !== a && set.has(b) && !used.has(b)){
             used.add(a); used.add(b);
-            const na = Number(a);
-            const nb = Number(b);
+            const na = Number(a), nb = Number(b);
             const first = (na <= nb) ? a : b;
             const second = (first === a) ? b : a;
-            pairBlocks.push([first, second]); // pastikan berdampingan
+            pairBlocks.push([first, second]);
         } else {
             used.add(a);
             singleBlocks.push([a]);
@@ -1974,9 +1912,8 @@ function pairFirstOrder(arr, doShuffle){
         shuffleArray(pairBlocks);
         shuffleArray(singleBlocks);
     } else {
-        // pastikan pasangan juga terurut berdasarkan elemen pertama (numeric)
-        pairBlocks.sort((p1,p2) => Number(p1[0]) - Number(p2[0]));
-        singleBlocks.sort((s1,s2) => Number(s1[0]) - Number(s2[0]));
+        pairBlocks.sort((p,q) => Number(p[0]) - Number(q[0]));
+        singleBlocks.sort((p,q) => Number(p[0]) - Number(q[0]));
     }
 
     const out = [];
@@ -1985,27 +1922,15 @@ function pairFirstOrder(arr, doShuffle){
     return out;
 }
 
-// Backward-compatible helpers (dipakai CT/KUMAT)
-function zigZagPairs(arr){
-    return pairFirstOrder(arr, false);
-}
-function shufflePairsKeepZigZag(arr){
-    return pairFirstOrder(arr, true);
-}
-
 // =============================================
 // TAB 4: REKAP CT & KUMAT FUNCTIONS
-
 // =============================================
 let currentMode = null;
 
 function updateMode() {
     const ctChecked = document.getElementById('ModeCT').checked;
     const kumatChecked = document.getElementById('ModeKumat').checked;
-    
-    // Update placeholder berdasarkan mode yang dipilih
     const textarea = document.getElementById('inputCTKumat');
-    
     if (ctChecked) {
         currentMode = 'ct';
         textarea.placeholder = "Masukkan CT (2-7 digit):\n04\n46\n94\n91\n61";
@@ -2034,13 +1959,9 @@ function extractNumbers(raw, minLen, maxLen) {
 }
 
 function renderCTKumatTable(result) {
-    // apply ordering for each ranking set
-    // - jika Mode Acak aktif: benar-benar shuffle (acak)
-    // - jika tidak: gunakan pola bolak-balik (zig-zag pasangan)
     const _applyOrder = (arr) => {
         if (!arr || !arr.length) return [];
         const out = arr.slice();
-        // CT & KUMAT: selalu pola bolak-balik (zig-zag). Shuffle tidak digunakan di tab ini.
         return zigZagPairs(out);
     };
 
@@ -2064,10 +1985,7 @@ function renderCTKumatTable(result) {
 
     let html = '<table class="rekap-table"><colgroup><col style="width:20%"><col style="width:80%"></colgroup>';
     html += '<tbody>';
-
-    // siapkan teks untuk copy juga
     let copyText = '';
-
     for (let i = 0; i < rows.length; i++) {
         const r = rows[i];
         const nums = r.arr;
@@ -2084,7 +2002,6 @@ function renderCTKumatTable(result) {
         }
         html += `<div class="rekap-count">${escapeHtml(countText)}</div>`;
         html += '</td></tr>';
-
         copyText += `${r.label}\n`;
         copyText += (numsText ? numsText : '-') + '\n';
         copyText += countText + '\n\n';
@@ -2105,7 +2022,6 @@ function escapeHtml(str) {
 }
 
 function prosesRekapCTKumat() {
-    // Validasi: pastikan mode sudah dipilih
     if (currentMode === null) {
         setInfo('infoCTKumat', '❌ Pilih mode terlebih dahulu!', 'error');
         return;
@@ -2113,25 +2029,18 @@ function prosesRekapCTKumat() {
 
     const textarea = document.getElementById('inputCTKumat');
     const raw = (textarea.value || '');
-    // Jangan gagal hanya karena whitespace/IME; lanjutkan parsing angka
-// Ambil angka saja (apapun pemisahnya)
     const minLen = (currentMode === 'ct') ? 2 : 2;
     const maxLen = (currentMode === 'ct') ? 7 : 9;
-
     const lines = extractNumbers(raw, minLen, maxLen);
-
     if (lines.length === 0) {
         setInfo('infoCTKumat', 'Tidak ada angka yang terbaca. Pastikan data berisi digit (contoh: 04, 46, 91) lalu klik GENERATE lagi.', 'error');
         return;
     }
 
-    // Normalisasi tampilan input jadi per-baris
     textarea.value = lines.join('\n');
-
     let kumatSets;
 
     if (currentMode === 'ct') {
-        // Validasi CT mode (double safety)
         for (let i = 0; i < lines.length; i++) {
             if (!/^\d{2,7}$/.test(lines[i])) {
                 setInfo('infoCTKumat', 'Semua CT harus 2-7 digit angka!', 'error');
@@ -2140,7 +2049,6 @@ function prosesRekapCTKumat() {
         }
         kumatSets = processCTMode(lines);
     } else if (currentMode === 'kumat') {
-        // Validasi KUMAT mode (double safety)
         for (let i = 0; i < lines.length; i++) {
             if (!/^\d{2,9}$/.test(lines[i])) {
                 setInfo('infoCTKumat', 'KUMAT harus terdiri dari digit 0-9 (min 2 digit)!', 'error');
@@ -2195,13 +2103,11 @@ function hitungRanking(kumatSets) {
     
     for (let number of allNumbers) {
         let kenaCount = 0;
-        
         for (let permutations of kumatSets) {
             if (permutations.has(number)) {
                 kenaCount++;
             }
         }
-        
         if (kenaCount === 0 && !isTwin(number)) {
             results.lolosKumat.push(number);
         } else if (kenaCount === 1) {
@@ -2265,8 +2171,6 @@ function isTwin(number) {
 function tampilkanHasilCTKumat(result) {
     const wrap = document.getElementById('ctKumatOutput');
     if (!wrap) return;
-
-    // render tabel
     wrap.innerHTML = renderCTKumatTable(result);
 }
 
@@ -2281,8 +2185,6 @@ function copyOutputCTKumat() {
 function cleanAllCTKumat() {
     const textarea = document.getElementById('inputCTKumat');
     if (textarea) textarea.value = '';
-
-    // Reset radio buttons
     const ct = document.getElementById('ModeCT');
     const km = document.getElementById('ModeKumat');
     if (ct) ct.checked = false;
@@ -2305,15 +2207,14 @@ function cleanAllCTKumat() {
 let hasil4D = [];
 let hasil3D = [];
 
-// Fungsi parse input untuk generator
 function parseGeneratorInput(input) {
     if (!input || input.trim() === '') return [];
     
     const cleaned = input.trim()
-        .replace(/\s+/g, '') // Hapus semua spasi
-        .replace(/[^\d*]/g, '') // Hanya angka dan *
-        .replace(/\*+/g, '*') // Hapus * berulang
-        .replace(/^\*|\*$/g, ''); // Hapus * di awal/akhir
+        .replace(/\s+/g, '')
+        .replace(/[^\d*]/g, '')
+        .replace(/\*+/g, '*')
+        .replace(/^\*|\*$/g, '');
     
     if (!cleaned) return [];
     
@@ -2321,48 +2222,36 @@ function parseGeneratorInput(input) {
         .filter(num => num.length === 2 && /^\d{2}$/.test(num));
 }
 
-// Fungsi utama generator - DIPERBAIKI LOGIKA
 function generate4D3D() {
     try {
-        // Parse input
         const depanArray = parseGeneratorInput(document.getElementById('inputDepan').value);
         const tengahArray = parseGeneratorInput(document.getElementById('inputTengah').value);
         const belakangArray = parseGeneratorInput(document.getElementById('inputBelakang').value);
-        
         console.log("DEBUG - Input:");
         console.log("Depan:", depanArray);
         console.log("Tengah:", tengahArray);
         console.log("Belakang:", belakangArray);
-        
-        // Validasi input
         if (depanArray.length === 0) {
             setInfo('infoGenerator', 'Input 2D Depan tidak boleh kosong!', 'error');
             return;
         }
-        
         if (belakangArray.length === 0) {
             setInfo('infoGenerator', 'Input 2D Belakang tidak boleh kosong!', 'error');
             return;
         }
-        
-        // 1. Filter pertama: Depan cocok dengan Tengah (jika ada tengah)
+
         let validDepanTengahPairs = [];
-        
         if (tengahArray.length === 0) {
-            // Jika tengah kosong, semua depan valid (tanpa filter tengah)
             validDepanTengahPairs = depanArray.map(depan => ({ 
                 depan, 
                 tengah: null 
             }));
             document.getElementById('matchingResults').style.display = 'none';
         } else {
-            // LOGIKA FIXED: Depan cocok dengan Tengah jika digit akhir Depan = digit awal Tengah
             for (const depan of depanArray) {
-                const lastDigitDepan = depan[1]; // digit terakhir depan
-                
+                const lastDigitDepan = depan[1];
                 for (const tengah of tengahArray) {
-                    const firstDigitTengah = tengah[0]; // digit pertama tengah
-                    
+                    const firstDigitTengah = tengah[0];
                     if (lastDigitDepan === firstDigitTengah) {
                         validDepanTengahPairs.push({ 
                             depan, 
@@ -2371,14 +2260,10 @@ function generate4D3D() {
                     }
                 }
             }
-            
-            console.log("DEBUG - Valid Depan-Tengah Pairs:", validDepanTengahPairs);
-            
-            // Show matching results
+                console.log("DEBUG - Valid Depan-Tengah Pairs:", validDepanTengahPairs);
             if (validDepanTengahPairs.length > 0) {
                 const matchBadges = document.getElementById('matchBadges');
                 matchBadges.innerHTML = '';
-                
                 const displayPairs = validDepanTengahPairs.slice(0, 8);
                 displayPairs.forEach(pair => {
                     const badge = document.createElement('span');
@@ -2386,131 +2271,87 @@ function generate4D3D() {
                     badge.textContent = `${pair.depan}→${pair.tengah}`;
                     matchBadges.appendChild(badge);
                 });
-                
                 if (validDepanTengahPairs.length > 8) {
                     const moreBadge = document.createElement('span');
                     moreBadge.className = 'match-badge';
                     moreBadge.textContent = `+${validDepanTengahPairs.length - 8} more`;
                     matchBadges.appendChild(moreBadge);
                 }
-                
                 document.getElementById('matchingResults').style.display = 'block';
             } else {
                 document.getElementById('matchingResults').style.display = 'none';
             }
         }
-        
         if (validDepanTengahPairs.length === 0) {
             setInfo('infoGenerator', 'Tidak ada match antara Depan dan Tengah!', 'error');
-            
-            // Kosongkan output
+
             document.getElementById('outputGenerator').textContent = 'Tidak ada hasil yang dihasilkan (tidak ada match)';
             document.getElementById('totalGenerator').textContent = '0 kombinasi';
-            
-            // Auto-salin output (tanpa tombol SALIN)
             copyToClipboard(document.getElementById('outputGenerator').textContent);
-            
-            return;
+                return;
         }
-        
-        // 2. Generate 4D berdasarkan valid pairs
         hasil4D = [];
-        
         for (const pair of validDepanTengahPairs) {
             const { depan, tengah } = pair;
-            
-            // Jika ada tengah, filter belakang berdasarkan tengah
             if (tengah !== null) {
-                // LOGIKA TAMBAHAN: Belakang harus cocok dengan tengah (digit akhir tengah = digit awal belakang)
-                const lastDigitTengah = tengah[1]; // digit terakhir tengah
-                
+                const lastDigitTengah = tengah[1];
                 for (const belakang of belakangArray) {
-                    const firstDigitBelakang = belakang[0]; // digit pertama belakang
-                    
-                    // CEK INI: Apakah aturan ini yang benar?
-                    // Pilihan A: Hanya jika lastDigitTengah === firstDigitBelakang (double matching)
-                    // Pilihan B: Tidak perlu filter belakang (single matching saja)
-                    
-                    // Untuk contoh Anda: tengah="15" (last=5), belakang "50" dan "57" (first=5) cocok
+                    const firstDigitBelakang = belakang[0];
                     if (lastDigitTengah === firstDigitBelakang) {
                         hasil4D.push(depan + belakang);
                     }
                 }
             } else {
-                // Jika tidak ada tengah, semua belakang valid
                 for (const belakang of belakangArray) {
                     hasil4D.push(depan + belakang);
                 }
             }
         }
-        
         console.log("DEBUG - Hasil 4D:", hasil4D);
-        
-        // 3. Generate 3D: hapus digit pertama dari 4D, hanya unique values
         const semua3D = hasil4D.map(angka4D => angka4D.substring(1));
         const uniqueSet = new Set(semua3D);
         hasil3D = Array.from(uniqueSet).sort((a, b) => parseInt(a) - parseInt(b));
-        
         console.log("DEBUG - Hasil 3D:", hasil3D);
-        
-        // Urutan output: utamakan pasangan (reverse). Jika shuffle aktif, tetap random tapi pasangan selalu dulu.
         let output4DArray = pairFirstOrder(hasil4D, isShuffleMode());
         let output3DArray = pairFirstOrder(hasil3D, isShuffleMode());
-        
-        // Format output - SATU OUTPUT SAJA seperti BBFS dan Poltar
         let output = '';
         let totalKombinasi = 0;
-        
         if (hasil4D.length > 0) {
             output += `4D (${hasil4D.length} line):\n`;
             output += `${output4DArray.join('*')}*\n\n`;
             totalKombinasi += hasil4D.length;
         }
-        
         if (hasil3D.length > 0) {
             output += `3D (${hasil3D.length} line):\n`;
             output += `${output3DArray.join('*')}*\n`;
             totalKombinasi += hasil3D.length;
         }
-        
         if (output === '') {
             output = 'Tidak ada hasil yang dihasilkan';
         }
-        
-        // Update UI
         document.getElementById('outputGenerator').textContent = output;
         document.getElementById('totalGenerator').textContent = `${totalKombinasi} kombinasi`;
-        
-        // Simpan hasil untuk copy function
         window.generatorResults = {
             hasil4D: output4DArray,
             hasil3D: output3DArray,
             outputText: output
         };
-        // Auto-salin output (tanpa tombol SALIN)
         copyToClipboard(document.getElementById('outputGenerator').textContent);
-        
         setInfo('infoGenerator', `Berhasil generate ${hasil4D.length} 4D dan ${hasil3D.length} 3D!`, 'success');
         showToast('Generator 4D/3D berhasil dijalankan', 'done');
-        
     } catch (error) {
         console.error('Error in generate4D3D:', error);
         setInfo('infoGenerator', 'Terjadi error saat memproses data!', 'error');
     }
 }
 
-// Fungsi khusus untuk contoh yang diberikan (untuk testing)
 function testSpecificExample() {
-    // Set input sesuai contoh
     document.getElementById('inputDepan').value = "26*21*24*56*51*54*76*71*74*";
     document.getElementById('inputTengah').value = "15*";
     document.getElementById('inputBelakang').value = "57*75*50*05*74*47*01*10*70*07*";
-    
-    // Jalankan generator
     generate4D3D();
 }
 
-// COPY FUNCTION - SALIN SEMUA OUTPUT
 function copyGeneratorOutput() {
     const text = document.getElementById('outputGenerator').textContent;
     if (!text || text.includes('Tidak ada hasil') || text.includes('Hasil 4D dan 3D akan muncul')) {
@@ -2521,7 +2362,6 @@ function copyGeneratorOutput() {
     copyToClipboard(text);
 }
 
-// CLEAR FUNCTION
 function clearGenerator() {
     document.getElementById('inputDepan').value = '';
     document.getElementById('inputTengah').value = '';
@@ -2541,7 +2381,6 @@ function clearGenerator() {
     showToast('Generator berhasil direset', 'delete');
 }
 
-// LOAD EXAMPLE
 function loadExampleGenerator() {
     document.getElementById('inputDepan').value = contohGenerator.depan;
     document.getElementById('inputTengah').value = contohGenerator.tengah;
@@ -2556,11 +2395,9 @@ function loadExampleGenerator() {
 function setInfo(targetId, message, type){
     const el = $(targetId);
     if (!el) return;
-    // Hindari update DOM kalau pesannya sama (lebih ringan)
     if (el._lastMsg === message && el._lastType === type) return;
     el._lastMsg = message;
     el._lastType = type;
-
     el.textContent = message;
     el.className = 'info';
     if (type === 'error') el.classList.add('error');
@@ -2568,7 +2405,6 @@ function setInfo(targetId, message, type){
     else if (type === 'warning') el.classList.add('warning');
 }
 
-// Toast mengambang (khusus SALIN / HAPUS / SELESAI)
 function getOrCreateToastDiv(){
     let el = $('globalToast');
     if (!el){
@@ -2584,22 +2420,13 @@ function getOrCreateToastDiv(){
 function showToast(message, kind){
     const toast = getOrCreateToastDiv();
     toast.textContent = message;
-
-    // Reset class
     toast.className = 'toast';
-
-    // Warna sesuai permintaan:
-    // - hapus: merah
-    // - salin: hijau
-    // - tugas selesai: biru
     if (kind === 'copy') toast.classList.add('toast-copy');
     else if (kind === 'delete') toast.classList.add('toast-delete');
     else if (kind === 'done') toast.classList.add('toast-done');
     else if (kind === 'error') toast.classList.add('toast-delete');
     else if (kind === 'warning') toast.classList.add('toast-done');
-
     toast.classList.remove('hide');
-
     const duration = (kind === 'error') ? 4200 : (kind === 'warning') ? 3800 : 2400;
     if (toast._hideTimer) clearTimeout(toast._hideTimer);
     toast._hideTimer = setTimeout(() => toast.classList.add('hide'), duration);
@@ -2643,38 +2470,25 @@ function useFallbackCopy(text) {
 // INITIALIZATION
 // =============================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Load theme
     loadTheme();
-
-    // Theme toggle (floating button)
     const themeBtn = document.getElementById('themeButton');
     if (themeBtn){
         themeBtn.addEventListener('click', toggleTheme);
     }
 
-    
-    // Initialize BBFS digit checkboxes
     updateDigitCheckboxes(0);
-
-
-    // BBFS & POLTAR
     const rbBBFS2 = document.getElementById('ModeBBFS2');
     const rbPOLTAR2 = document.getElementById('ModePOLTAR2');
     if (rbBBFS2) rbBBFS2.addEventListener('change', updateBBFSPoltarMode);
     if (rbPOLTAR2) rbPOLTAR2.addEventListener('change', updateBBFSPoltarMode);
     updateBBFSPoltarMode();
-    
-    // Add event listeners for radio buttons
     document.getElementById('ModeCT').addEventListener('change', updateMode);
     document.getElementById('ModeKumat').addEventListener('change', updateMode);
-    
-    // Add event listener for BBFS input
     document.getElementById('inputAngka').addEventListener('input', function() {
         const digitCount = this.value.length;
         updateDigitCheckboxes(digitCount);
     });
 
-    // Tap angka CT/KUMAT untuk auto-copy (tanpa style tambahan)
     const ctkWrap = document.getElementById('ctKumatOutput');
     if (ctkWrap){
         ctkWrap.addEventListener('click', function(e){
@@ -2688,8 +2502,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Load contoh untuk generator
     loadExampleGenerator();
 
 });
