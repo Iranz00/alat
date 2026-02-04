@@ -1572,13 +1572,12 @@ function prosesData() {
     
     Object.keys(groups).forEach(group => {
         groups[group].sort((a, b) => b.value - a.value);
-    if (isShuffleMode()){
-        // Opsi B: tetap rank value, hanya acak urutan angka di dalam setiap baris
-        groups[group].forEach(g => shuffleArray(g.keys));
-    }
+        // Urutan angka di dalam setiap baris: utamakan pasangan (reverse). Jika shuffle aktif, tetap random tapi pasangan selalu dulu.
+        const sh = isShuffleMode();
+        groups[group].forEach(g => { g.keys = pairFirstOrder(g.keys, sh); });
     });
-    
-    generateMarkdown(groups);
+
+generateMarkdown(groups);
     // Auto-salin output (tanpa tombol SALIN)
     copyToClipboard(document.getElementById('markdownOutput').textContent);
     
@@ -1696,8 +1695,7 @@ function generatePermutasi() {
         });
         
         Object.keys(groupedResults).forEach(group => {
-            groupedResults[group] = Array.from(groupedResults[group]).sort();
-            if (isShuffleMode()) shuffleArray(groupedResults[group]);
+            groupedResults[group] = pairFirstOrder(Array.from(groupedResults[group]), isShuffleMode());
         });
         
         const output = formatGroupedOutput(groupedResults);
@@ -1864,7 +1862,9 @@ function generateKombinasi() {
     let output = '';
     let total = 0;
     
-    if (isShuffleMode()) { shuffleArray(results['4D']); shuffleArray(results['3D']); shuffleArray(results['2D']); }
+    results['4D'] = pairFirstOrder(results['4D'], isShuffleMode());
+    results['3D'] = pairFirstOrder(results['3D'], isShuffleMode());
+    results['2D'] = pairFirstOrder(results['2D'], isShuffleMode());
     if (results['4D'].length > 0) {
         output += `4D (${results['4D'].length} line):\n`;
         output += results['4D'].join('*') + '*\n\n';
@@ -1930,75 +1930,72 @@ function clearKombinasi() {
 }
 
 
-function zigZagPairs(arr){
-    // group ab <-> ba
-    const used = new Set();
-    const pairs = [];
-    for (let i=0;i<arr.length;i++){
-        const a = arr[i];
-        if (used.has(a)) continue;
-        const b = a[1] + a[0];
-        used.add(a);
-        used.add(b);
-        if (a !== b && arr.includes(b)){
-            pairs.push([a,b]);
-        } else {
-            pairs.push([a]);
-        }
+function reverseStr(s){
+    return String(s).split('').reverse().join('');
+}
 
-function shufflePairsKeepZigZag(arr){
-    // Acak urutan "pasangan" (ab & ba) tapi tetap tampil bolak-balik per pasangan: ab*ba*
-    // Jika ada angka tanpa pasangannya, akan tetap ikut (di akhir) dan bisa ikut diacak juga.
-    const set = new Set(arr);
+/**
+ * Pair-first ordering (utama pasangan ab<->ba). Berlaku untuk semua panjang digit (2D/3D/4D/...).
+ * - Jika shuffle OFF: pasangan dulu (diurutkan naik berdasarkan angka), lalu single diurutkan naik.
+ * - Jika shuffle ON: urutan blok pasangan diacak, blok single diacak, tapi pasangan tetap berdampingan dan tetap di depan.
+ */
+function pairFirstOrder(arr, doShuffle){
+    if (!Array.isArray(arr) || arr.length === 0) return [];
+    const src = arr.map(v => String(v));
+    const set = new Set(src);
     const used = new Set();
+
+    // Untuk deterministik saat shuffle OFF, kita mulai dari urutan numeric-ascending.
+    // (tetap aman untuk string digit panjang)
+    const base = src.slice().sort((a,b) => Number(a) - Number(b));
+
     const pairBlocks = [];
-    const singles = [];
+    const singleBlocks = [];
 
-    // bentuk blok pasangan dulu
-    for (let i = 0; i < arr.length; i++){
-        const a = arr[i];
+    for (let i = 0; i < base.length; i++){
+        const a = base[i];
         if (used.has(a)) continue;
-        const b = a[1] + a[0];
 
+        const b = reverseStr(a);
         if (a !== b && set.has(b) && !used.has(b)){
             used.add(a); used.add(b);
-            // urutan dalam pasangan: kecil dulu agar konsisten (contoh 04 lalu 40)
             const na = Number(a);
             const nb = Number(b);
             const first = (na <= nb) ? a : b;
             const second = (first === a) ? b : a;
-            pairBlocks.push([first, second]); // bolak-balik
+            pairBlocks.push([first, second]); // pastikan berdampingan
         } else {
             used.add(a);
-            singles.push([a]);
+            singleBlocks.push([a]);
         }
     }
 
-    // shuffle blok pasangan
-    shuffleArray(pairBlocks);
-    // optional: shuffle singles juga agar ikut acak, tapi tetap menjaga pasangan rapi
-    shuffleArray(singles);
+    if (doShuffle){
+        shuffleArray(pairBlocks);
+        shuffleArray(singleBlocks);
+    } else {
+        // pastikan pasangan juga terurut berdasarkan elemen pertama (numeric)
+        pairBlocks.sort((p1,p2) => Number(p1[0]) - Number(p2[0]));
+        singleBlocks.sort((s1,s2) => Number(s1[0]) - Number(s2[0]));
+    }
 
     const out = [];
     for (const blk of pairBlocks) out.push(...blk);
-    for (const s of singles) out.push(...s);
+    for (const blk of singleBlocks) out.push(...blk);
     return out;
 }
-    }
-    // zig-zag: take full pair, then split middle pairs
-    const out = [];
-    for (let i=0;i<pairs.length;i++){
-        if (pairs[i].length===2){
-            out.push(pairs[i][0], pairs[i][1]);
-        } else {
-            out.push(pairs[i][0]);
-        }
-    }
-    return out;
+
+// Backward-compatible helpers (dipakai CT/KUMAT)
+function zigZagPairs(arr){
+    return pairFirstOrder(arr, false);
+}
+function shufflePairsKeepZigZag(arr){
+    return pairFirstOrder(arr, true);
 }
 
 // =============================================
 // TAB 4: REKAP CT & KUMAT FUNCTIONS
+
 // =============================================
 let currentMode = null;
 
@@ -2456,14 +2453,9 @@ function generate4D3D() {
         
         console.log("DEBUG - Hasil 3D:", hasil3D);
         
-        // Apply shuffle jika mode shuffle aktif
-        let output4DArray = [...hasil4D];
-        let output3DArray = [...hasil3D];
-        
-        if (isShuffleMode()) {
-            shuffleArray(output4DArray);
-            shuffleArray(output3DArray);
-        }
+        // Urutan output: utamakan pasangan (reverse). Jika shuffle aktif, tetap random tapi pasangan selalu dulu.
+        let output4DArray = pairFirstOrder(hasil4D, isShuffleMode());
+        let output3DArray = pairFirstOrder(hasil3D, isShuffleMode());
         
         // Format output - SATU OUTPUT SAJA seperti BBFS dan Poltar
         let output = '';
