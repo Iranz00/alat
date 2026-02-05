@@ -1150,11 +1150,11 @@ SURAT:
             <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
             <div class="checkbox-group" id="modeCheckboxes">
                 <div class="checkbox-item">
-                    <input type="radio" id="ModeCT" value="CT" name="modeSelection">
+                    <input type="radio" id="ModeCT" value="CT" name="modeSelection" onchange="updateMode()">
                     <label for="ModeCT">MODE CT</label>
                 </div>
                 <div class="checkbox-item">
-                    <input type="radio" id="ModeKumat" value="Kumat" name="modeSelection">
+                    <input type="radio" id="ModeKumat" value="Kumat" name="modeSelection" onchange="updateMode()">
                     <label for="ModeKumat">MODE KUMAT</label>
                 </div>
             </div>
@@ -1958,6 +1958,52 @@ function extractNumbers(raw, minLen, maxLen) {
     return out;
 }
 
+/**
+ * Zig-Zag order untuk output CT/KUMAT:
+ * - Urutkan numeric dahulu
+ * - Ambil dari depan lalu belakang secara bergantian
+ * Contoh: [00,01,02,03,04,05] -> [00,05,01,04,02,03]
+ */
+function zigZagPairs(arr){
+    // Output dipasangkan: AB bersebelahan dengan BA (jika ada).
+    if (!Array.isArray(arr) || arr.length === 0) return [];
+
+    const src = arr.map(v => String(v).padStart(2,'0'));
+    const set = new Set(src);
+    const used = new Set();
+    const base = src.slice().sort((a,b) => Number(a) - Number(b));
+
+    const pairBlocks = [];
+    const singleBlocks = [];
+
+    const rev2 = (s) => (String(s).length === 2 ? (s[1] + s[0]) : String(s).split('').reverse().join(''));
+
+    for (const a of base){
+        if (used.has(a)) continue;
+        const b = rev2(a);
+
+        if (b && b !== a && set.has(b) && !used.has(b)){
+            used.add(a); used.add(b);
+            // pastikan urutan di dalam pasangan konsisten (angka kecil dulu)
+            const first = (Number(a) <= Number(b)) ? a : b;
+            const second = (first === a) ? b : a;
+            pairBlocks.push([first, second]);
+        } else {
+            used.add(a);
+            singleBlocks.push([a]);
+        }
+    }
+
+    // urutkan pasangan berdasarkan angka pertama
+    pairBlocks.sort((p,q) => Number(p[0]) - Number(q[0]));
+    singleBlocks.sort((p,q) => Number(p[0]) - Number(q[0]));
+
+    const out = [];
+    for (const blk of pairBlocks) out.push(...blk);
+    for (const blk of singleBlocks) out.push(...blk);
+    return out;
+}
+
 function renderCTKumatTable(result) {
     const _applyOrder = (arr) => {
         if (!arr || !arr.length) return [];
@@ -2482,8 +2528,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rbBBFS2) rbBBFS2.addEventListener('change', updateBBFSPoltarMode);
     if (rbPOLTAR2) rbPOLTAR2.addEventListener('change', updateBBFSPoltarMode);
     updateBBFSPoltarMode();
-    document.getElementById('ModeCT').addEventListener('change', updateMode);
-    document.getElementById('ModeKumat').addEventListener('change', updateMode);
+    // CT & KUMAT: safe listeners + sync mode
+    const rbCT = document.getElementById('ModeCT');
+    const rbKumat = document.getElementById('ModeKumat');
+    if (rbCT) rbCT.addEventListener('change', updateMode);
+    if (rbKumat) rbKumat.addEventListener('change', updateMode);
+    if (typeof updateMode === 'function') updateMode();
     document.getElementById('inputAngka').addEventListener('input', function() {
         const digitCount = this.value.length;
         updateDigitCheckboxes(digitCount);
