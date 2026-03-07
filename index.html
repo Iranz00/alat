@@ -919,6 +919,121 @@ body.dark-theme .matching-results h4 {
 body.dark-theme .match-badge {
     background: #4caf50;
 }
+
+/* ===== GUNUNGAN & RUMUS TAB ===== */
+/* Mode selector pill - matches rekap data theme */
+.gg-mode-panel {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    border: 1.5px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+.gg-mode {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 0 auto;
+}
+.gg-mode input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.gg-mode span {
+    display: inline-block;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 6px;
+    background: transparent;
+    color: #718096;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid transparent;
+    width: 100%;
+    text-align: center;
+}
+.gg-mode input[type="radio"]:checked + span {
+    background: white;
+    color: #667eea;
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+    font-weight: 700;
+}
+.gg-mode span:hover {
+    background: rgba(102,126,234,0.07);
+    color: #4a5568;
+}
+/* Output pre area */
+.gg-pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    letter-spacing: 0.5px;
+}
+.gg-pre .gg-hl {
+    color: #fbbf24;
+    font-weight: 800;
+}
+/* Keypad */
+.gg-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.gg-keypad button {
+    padding: 14px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e0);
+    color: #2d3748;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+.gg-keypad button:hover { transform: translateY(-1px); box-shadow: 0 5px 10px rgba(0,0,0,0.12); }
+.gg-keypad button:active { transform: translateY(1px); }
+.gg-del-btn {
+    background: linear-gradient(135deg, #f44336, #e53935) !important;
+    color: white !important;
+    box-shadow: 0 3px 8px rgba(244,67,54,0.3) !important;
+}
+.gg-clear-btn {
+    background: linear-gradient(135deg, #f44336, #e53935) !important;
+    color: white !important;
+    grid-column: span 3;
+    padding: 14px 0 !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 3px 8px rgba(244,67,54,0.3) !important;
+    border: none !important;
+}
+.gg-keypad.gg-hide-btns .gg-num-btn:not(.gg-clear-btn) { display: none; }
+.gg-keypad.gg-hide-btns { grid-template-columns: 1fr; }
+.gg-keypad.gg-hide-btns .gg-clear-btn { grid-column: span 1; }
+/* Dark theme overrides */
+body.dark-theme .gg-mode-panel {
+    background: #4a5568;
+    border-color: #718096;
+}
+body.dark-theme .gg-mode span { color: #a0aec0; }
+body.dark-theme .gg-mode input[type="radio"]:checked + span {
+    background: #2d3748;
+    color: #667eea;
+    border-color: #667eea;
+}
+body.dark-theme .gg-keypad button {
+    background: linear-gradient(135deg, #4a5568, #3d4a5c);
+    color: #e2e8f0;
+}
 </style>
 </head>
 <body>
@@ -944,6 +1059,10 @@ body.dark-theme .match-badge {
             <button class="tab-btn" onclick="switchTab(this,'tab5')">
                 <span>🔄</span>
                 <span>GENERATOR 4D/3D</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(this,'tab6')">
+                <span>⛰️</span>
+                <span>GUNUNGAN & RUMUS</span>
             </button>
         </div>
 
@@ -1031,27 +1150,13 @@ SURAT:
         <div id="tab2" class="tab-content">
             <div class="input-section">
 
-                <div class="digit-selection">
-                    <div class="checkbox-group" id="bbfsPoltarModeGroup">
-                        <div class="checkbox-item">
-                            <input type="radio" id="ModeBBFS2" value="BBFS" name="bbfsPoltarMode" checked>
-                            <label for="ModeBBFS2">MODE BBFS</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="radio" id="ModePOLTAR2" value="POLTAR" name="bbfsPoltarMode">
-                            <label for="ModePOLTAR2">MODE POLTAR</label>
-                        </div>
-                    </div>
+                <div class="gg-mode-panel" role="radiogroup" style="margin-bottom:12px;">
+                    <label class="gg-mode"><input type="radio" id="ModeBBFS2" value="BBFS" name="bbfsPoltarMode" checked><span>MODE BBFS</span></label>
+                    <label class="gg-mode"><input type="radio" id="ModePOLTAR2" value="POLTAR" name="bbfsPoltarMode"><span>MODE POLTAR</span></label>
                 </div>
 
                 <div id="bbfsSectionWrap">
-                    <div class="input-group">
-                        <div class="input-box">
-                            <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-7 digit" maxlength="7">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px;"></div>
+                    <input type="text" id="inputAngka" class="bbfs-input" placeholder="Masukkan angka 2-7 digit" maxlength="7" style="display:block; width:100%; margin-bottom:12px;">
 
                     <div class="digit-selection">
                         <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
@@ -1086,13 +1191,7 @@ SURAT:
                 </div>
 
                 <div id="poltarSectionWrap" style="display:none;">
-                    <div class="input-group">
-                        <div class="input-box">
-                            <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px;"></div>
+                    <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)" style="display:block; width:100%; margin-bottom:12px;">
 
                     <div class="digit-selection">
                         <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
@@ -1146,18 +1245,9 @@ SURAT:
             <textarea id="inputCTKumat" class="rekap-textarea" placeholder="Pilih mode terlebih dahulu, lalu masukkan data"></textarea>
         </div>
         <div style="margin-top: 20px;"></div>
-        <div class="digit-selection">
-            <h3>📊 PILIH MODE YANG AKAN DI-REKAP</h3>
-            <div class="checkbox-group" id="modeCheckboxes">
-                <div class="checkbox-item">
-                    <input type="radio" id="ModeCT" value="CT" name="modeSelection" onchange="updateMode()">
-                    <label for="ModeCT">MODE CT</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="radio" id="ModeKumat" value="Kumat" name="modeSelection" onchange="updateMode()">
-                    <label for="ModeKumat">MODE KUMAT</label>
-                </div>
-            </div>
+        <div class="gg-mode-panel" role="radiogroup" style="margin-bottom:12px;">
+            <label class="gg-mode"><input type="radio" id="ModeCT" value="CT" name="modeSelection" onchange="updateMode()" checked><span>MODE CT</span></label>
+            <label class="gg-mode"><input type="radio" id="ModeKumat" value="Kumat" name="modeSelection" onchange="updateMode()"><span>MODE KUMAT</span></label>
         </div>
         <div class="button-group">
             <button class="btn-submit" onclick="prosesRekapCTKumat()">
@@ -1249,6 +1339,51 @@ SURAT:
     </div>
 </div>
 
+<!-- TAB 6: GUNUNGAN & RUMUS -->
+<div id="tab6" class="tab-content">
+  <div class="input-section">
+
+    <!-- Input -->
+    <input id="ggAngka" type="text" inputmode="numeric" autocomplete="off" maxlength="2"
+           placeholder="Masukkan Kepala &amp; Ekor" value="" readonly
+           class="bbfs-input" style="text-align:center; display:block; width:100%; margin-bottom:12px; font-size:1.4rem; font-weight:700; letter-spacing:4px;">
+
+    <!-- Mode selector -->
+    <div class="gg-mode-panel" role="radiogroup" style="margin-bottom:12px;">
+      <label class="gg-mode"><input type="radio" name="ggMode" value="gunungan" checked><span>GUNUNG</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="edi"><span>EDII</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="saidi"><span>SAIDI</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="siwar"><span>SIWAR</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="toket"><span>TOKET</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="rijal"><span>RIJAL</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="pawet"><span>PAWET</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="dawer"><span>DAWER</span></label>
+      <label class="gg-mode"><input type="radio" name="ggMode" value="sotek"><span>SOTEK</span></label>
+    </div>
+
+    <!-- Output -->
+    <div class="markdown-output gg-pre" id="ggOut" style="font-size:1.4rem; line-height:1.6; min-height:80px; margin-bottom:12px;">// Hasil akan muncul di sini...</div>
+
+    <!-- Keypad -->
+    <div class="gg-keypad" id="ggKeypad">
+      <button class="gg-num-btn" onclick="ggAppend('1')">1</button>
+      <button class="gg-num-btn" onclick="ggAppend('2')">2</button>
+      <button class="gg-num-btn" onclick="ggAppend('3')">3</button>
+      <button class="gg-num-btn" onclick="ggAppend('4')">4</button>
+      <button class="gg-num-btn" onclick="ggAppend('5')">5</button>
+      <button class="gg-num-btn" onclick="ggAppend('6')">6</button>
+      <button class="gg-num-btn" onclick="ggAppend('7')">7</button>
+      <button class="gg-num-btn" onclick="ggAppend('8')">8</button>
+      <button class="gg-num-btn" onclick="ggAppend('9')">9</button>
+      <button class="gg-num-btn" onclick="ggClearInput()">C</button>
+      <button class="gg-num-btn" onclick="ggAppend('0')">0</button>
+      <button class="gg-num-btn gg-del-btn" onclick="ggDeleteLast()">⌫</button>
+      <button class="gg-clear-btn" onclick="ggClearAll()">HAPUS</button>
+    </div>
+
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -1303,7 +1438,7 @@ function switchTab(btnEl, tabName) {
         const wrap = document.getElementById('shuffleWrap');
         const cb = document.getElementById('shuffleMode');
         if (!wrap || !cb) return;
-        if (tabName === 'tab4') {
+        if (tabName === 'tab4' || tabName === 'tab6') {
             cb.checked = false;
             wrap.style.display = 'none';
         } else {
@@ -1732,23 +1867,25 @@ function updateDigitCheckboxes(digitCount) {
     selectedDigits = [];
     
     if (digitCount >= 2 && digitCount <= 6) {
-        for (let i = 2; i <= digitCount; i++) {
+        const maxDigit = Math.min(digitCount, 4);
+        for (let i = maxDigit; i >= 2; i--) {
             const checkboxItem = document.createElement('div');
             checkboxItem.className = 'checkbox-item';
-                const checkbox = document.createElement('input');
+            const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `digit${i}`;
             checkbox.value = i;
-            checkbox.checked = (i <= 4);
+            checkbox.checked = true;
             checkbox.addEventListener('change', handleDigitSelection);
-                const label = document.createElement('label');
+            const label = document.createElement('label');
             label.htmlFor = `digit${i}`;
             label.textContent = `${i}D`;
-                checkboxItem.appendChild(checkbox);
+            checkboxItem.appendChild(checkbox);
             checkboxItem.appendChild(label);
             checkboxContainer.appendChild(checkboxItem);
-            if (i <= 4) selectedDigits.push(i);
+            selectedDigits.push(i);
         }
+        selectedDigits.sort((a, b) => b - a);
     }
 }
 
@@ -2555,6 +2692,247 @@ document.addEventListener('DOMContentLoaded', function() {
     loadExampleGenerator();
 
 });
+
+// =============================================
+// GUNUNGAN & RUMUS — LOGIC
+// =============================================
+(function() {
+    function ggMod10(n) { return ((n % 10) + 10) % 10; }
+    function ggSeqFrom(start, len) {
+        let s = '';
+        for (let i = 0; i < len; i++) s += String(ggMod10(start + i));
+        return s;
+    }
+    function ggColorize(s) {
+        return String(s).replace(/\d/g, m => `<span class="gg-hl">${m}</span>`);
+    }
+    function ggCleanMax2(raw) {
+        return (raw || '').replace(/\D/g, '').slice(0, 2);
+    }
+    const GG_ML = {'0':'1','1':'0','2':'5','3':'8','4':'7','5':'2','6':'9','7':'4','8':'3','9':'6'};
+
+    // --- Gunungan ---
+    function ggRingFrom(d) {
+        let s = '';
+        for (let i = 0; i < 10; i++) s += String(ggMod10(d + i));
+        return s;
+    }
+    function ggTakeRing(ring, idx, len) {
+        let out = '';
+        for (let i = 0; i < len; i++) out += ring[(idx + i) % 10];
+        return out;
+    }
+    function ggRestFromB(b) {
+        const ring = ggRingFrom(ggMod10(b - 1));
+        let idx = 0; const lines = [];
+        for (let len = 9; len >= 1; len--) { lines.push(ggTakeRing(ring, idx, len)); idx = (idx + len) % 10; }
+        return lines;
+    }
+    function ggBuildGunungan(c) {
+        if (!c || c.length < 2) return '';
+        const a = Number(c[0]), b = Number(c[1]);
+        const firstLine = String(a) + String(b) + ggSeqFrom(b + 1, 8);
+        return [firstLine, ...ggRestFromB(b)].join('\n');
+    }
+    function ggToFW(s) {
+        return String(s).replace(/[0-9]/g, d => String.fromCharCode(0xFF10 + Number(d)));
+    }
+
+    // --- EDI ---
+    function ggBlock3x3(d) {
+        return [ggSeqFrom(d,3), ''+ggMod10(d+5)+ggMod10(d+4)+ggMod10(d+3), ''+ggMod10(d+6)+ggMod10(d+7)+ggMod10(d+8)];
+    }
+    function ggSplitMid6(six) {
+        return `${six.slice(0,2)} <span class="gg-hl">${six[2]}_${six[3]}</span> ${six.slice(4,6)}`;
+    }
+    function ggBuildEDI(c) {
+        if (!c || c.length !== 2) return 'Mode EDI butuh Kepala & Ekor';
+        const a = Number(c[0]), b = Number(c[1]);
+        const L = ggBlock3x3(a), R = ggBlock3x3(b);
+        const lines = [];
+        for (let i = 0; i < 3; i++) lines.push(ggSplitMid6(L[i] + R[i]));
+        return lines.join('\n');
+    }
+
+    // --- SAIDI ---
+    function ggBuildSAIDI(c) {
+        if (!c || c.length !== 1) return 'Mode SAIDI hanya butuh Kepala';
+        const d = Number(c);
+        const rows = [], triplets = [];
+        for (let r = 0; r < 4; r++) {
+            const c0 = ggMod10(d+r), c1 = ggMod10(d+r+4), c2 = ggMod10(d+r+8);
+            if (r===1||r===2) { rows.push(`|<span class="gg-hl">${c0}</span>|<span class="gg-hl">${c1}</span>|<span class="gg-hl">${c2}</span>|`); triplets.push([c0,c1,c2]); }
+            else rows.push(`|${c0}|<span class="gg-hl">${c1}</span>|${c2}|`);
+        }
+        let gen = '';
+        for (const [a,b,cc] of triplets) gen += `${a}${b}*${b}${a}*${cc}${b}*${b}${cc}*`;
+        rows.push(`<span style="color:#ef4444;font-weight:800;">${gen}</span>`);
+        return rows.join('\n');
+    }
+
+    // --- SIWAR ---
+    function ggBuildSIWAR(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const start = Number(GG_ML[d] ?? d);
+        const base = ggSeqFrom(start, 10);
+        const offsets = [1,2,5,6,7];
+        let picked = '';
+        for (const o of offsets) picked += base[o % 10];
+        const p1 = picked.slice(0,3), p2 = picked.slice(3);
+        return `${base} // ${ggColorize(p1)}+${ggColorize(p2)} AM`;
+    }
+
+    // --- TOKET ---
+    function ggBuildTOKET(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const start = Number(GG_ML[d] ?? d);
+        const base = ggSeqFrom(start, 10);
+        let picked = '';
+        for (const o of [3,6]) picked += base[o % 10];
+        return `${base} // ${ggColorize(picked)} AM`;
+    }
+
+    // --- DAWER ---
+    function ggBuildDAWER(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const base = ggSeqFrom(Number(d), 10);
+        let picked = '';
+        for (const o of [0,5,8]) picked += base[o % 10];
+        return `${base} // ${ggColorize(picked)} KUMAT`;
+    }
+
+    // --- KUMAT1 ---
+    function ggBuildKUMAT1(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const base = ggSeqFrom(Number(d), 10);
+        let picked = '';
+        for (const o of [0,5,7]) picked += base[o % 10];
+        return `${base} // ${ggColorize(picked)} KUMAT`;
+    }
+
+    // --- RIJAL ---
+    function ggBuildRIJAL(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const base = ggSeqFrom(Number(d), 10);
+        let picked = '';
+        for (const o of [2,4,6,8]) picked += base[o];
+        return `${base} // ${ggColorize(picked)} AM`;
+    }
+
+    // --- PAWET ---
+    function ggBuildPAWET(raw) {
+        const d = raw.replace(/\D/g,'').slice(0,1); if (!d) return '';
+        const start = Number(GG_ML[d] ?? d);
+        const base = ggSeqFrom(start, 10);
+        let picked = '';
+        for (const o of [0,1,2,3,4,9]) picked += base[o];
+        return `${base} // ${ggColorize(picked)} AM`;
+    }
+
+    // --- SOTEK ---
+    function ggBuildSOTEK(raw) {
+        if (!raw || raw.length !== 2) return null;
+        const a = Number(raw[0]), b = Number(raw[1]);
+        const left = String(ggMod10(a-2)) + String(ggMod10(a-1));
+        const right = String(ggMod10(b+1)) + String(ggMod10(b+2)) + String(ggMod10(b+3));
+        return { left, mid: raw, right };
+    }
+
+    function ggEmptyMsg(lbl) {
+        return `<span style="color:#a0aec0;font-size:0.95rem;">Masukkan ${lbl}</span>`;
+    }
+
+    // DOM refs
+    const ggInput = document.getElementById('ggAngka');
+    const ggOut   = document.getElementById('ggOut');
+    const ggRadios = Array.from(document.querySelectorAll('input[name="ggMode"]'));
+    const ggKeypad = document.getElementById('ggKeypad');
+
+    function ggCurrentMode() { return ggRadios.find(r => r.checked)?.value || 'gunungan'; }
+
+    function ggIsSingleDigit(m) {
+        return ['saidi','siwar','toket','dawer','rijal','pawet'].includes(m);
+    }
+
+    function ggHasOutput() {
+        const c = ggOut.innerHTML;
+        return c && c !== ' ' && c !== '' && !c.includes('butuh') && !c.includes('hanya') && !c.includes('Masukkan');
+    }
+
+    function ggUpdateKeypad() {
+        if (ggHasOutput()) ggKeypad.classList.add('gg-hide-btns');
+        else ggKeypad.classList.remove('gg-hide-btns');
+    }
+
+    function ggRender() {
+        const mode = ggCurrentMode();
+        const single1 = ['siwar','toket','dawer','saidi','rijal','pawet'];
+        if (single1.includes(mode)) {
+            const cleaned = ggInput.value.replace(/\D/g,'').slice(0,1);
+            if (ggInput.value !== cleaned) ggInput.value = cleaned;
+            ggInput.maxLength = 1;
+            if (mode==='siwar')  { ggInput.placeholder='Masukkan Ekor'; ggOut.innerHTML = cleaned ? ggBuildSIWAR(cleaned)   : ggEmptyMsg('Ekor'); }
+            else if (mode==='toket')  { ggInput.placeholder='Masukkan Ekor'; ggOut.innerHTML = cleaned ? ggBuildTOKET(cleaned) : ggEmptyMsg('Ekor'); }
+            else if (mode==='dawer')  { ggInput.placeholder='Masukkan Kepala'; ggOut.innerHTML = cleaned ? ggBuildDAWER(cleaned) : ggEmptyMsg('Kepala'); }
+            else if (mode==='rijal')  { ggInput.placeholder='Masukkan Kepala'; ggOut.innerHTML = cleaned ? ggBuildRIJAL(cleaned) : ggEmptyMsg('Kepala'); }
+            else if (mode==='pawet')  { ggInput.placeholder='Masukkan Kepala'; ggOut.innerHTML = cleaned ? ggBuildPAWET(cleaned) : ggEmptyMsg('Kepala'); }
+            else if (mode==='saidi')  { ggInput.placeholder='Masukkan Kepala'; ggOut.innerHTML = cleaned ? ggBuildSAIDI(cleaned) : ggEmptyMsg('Kepala'); }
+            ggUpdateKeypad(); return;
+        }
+        const cleaned = ggCleanMax2(ggInput.value);
+        if (ggInput.value !== cleaned) ggInput.value = cleaned;
+        ggInput.maxLength = 2;
+        ggInput.placeholder = 'Masukkan Kepala & Ekor';
+        if (mode === 'gunungan') {
+            if (cleaned.length < 2) { ggOut.innerHTML = ggEmptyMsg('Kepala &amp; Ekor'); }
+            else {
+                const rawLines = ggBuildGunungan(cleaned).split('\n');
+                const htmlLines = rawLines.map((line, idx) => {
+                    const fw = ggToFW(line);
+                    if (idx >= 3 && idx <= 6) {
+                        const chars = [...fw];
+                        const red = chars.slice(0,5).join('');
+                        const white = chars.slice(5).join('');
+                        return white ? `<span style="color:#ef4444;">${red}</span>${white}` : `<span style="color:#ef4444;">${red}</span>`;
+                    }
+                    return fw;
+                });
+                ggOut.innerHTML = htmlLines.join('\n');
+            }
+        } else if (mode === 'edi') {
+            ggOut.innerHTML = cleaned.length === 2 ? ggBuildEDI(cleaned) : ggEmptyMsg('Kepala &amp; Ekor');
+        } else if (mode === 'sotek') {
+            if (cleaned.length === 2) {
+                const res = ggBuildSOTEK(cleaned);
+                let seen = new Set(), combined = '';
+                for (const ch of res.left + res.right) { if (!seen.has(ch)) { seen.add(ch); combined += ch; } }
+                ggOut.innerHTML = `<span style="color:#ef4444;font-weight:800;">${res.left}</span> ${res.mid} <span style="color:#ef4444;font-weight:800;">${res.right}</span> // <span class="gg-hl">${combined}</span> AM`;
+            } else {
+                ggOut.innerHTML = ggEmptyMsg('Kepala &amp; Ekor');
+            }
+        }
+        ggUpdateKeypad();
+    }
+
+    window.ggAppend = function(num) {
+        const mode = ggCurrentMode();
+        if (ggIsSingleDigit(mode)) { ggInput.value = num; }
+        else { if (ggInput.value.length < 2) ggInput.value += num; }
+        ggRender();
+    };
+    window.ggClearInput = function() { ggInput.value = ''; ggRender(); };
+    window.ggDeleteLast = function() {
+        if (ggIsSingleDigit(ggCurrentMode())) ggInput.value = '';
+        else ggInput.value = ggInput.value.slice(0,-1);
+        ggRender();
+    };
+    window.ggClearAll = function() { ggInput.value = ''; ggRender(); };
+
+    ggInput.value = '';
+    ggRender();
+    ggInput.addEventListener('input', ggRender);
+    ggRadios.forEach(r => r.addEventListener('change', ggRender));
+})();
 </script>
 </body>
 </html>
