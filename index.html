@@ -1672,8 +1672,8 @@ function prosesData() {
         groups[group].forEach(g => { g.keys = pairFirstOrder(g.keys, sh); });
     });
 
-generateMarkdown(groups);
-    copyToClipboard(document.getElementById('markdownOutput').textContent);
+const mainOutput = generateMarkdown(groups);
+    copyToClipboard(mainOutput);
     
     if (invalidLines.length > 0 && validLines.length > 0) {
         setInfo('info', `Data berhasil diproses! ${allValidPatterns.length} pattern valid, ${invalidLines.length} tidak valid.`, 'warning');
@@ -1723,8 +1723,12 @@ function generateMarkdown(groups) {
         const num = String(i).padStart(2, '0');
         if (!present2D.has(num)) missing2D.push(num);
     }
+
+    // mainOutput = yang akan disalin (tanpa sisa)
+    const mainOutput = output;
+
     if (missing2D.length > 0) {
-        output += `══════════════\n`;
+        output += `\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n`;
         output += `2D Sisa (${missing2D.length} line):\n`;
         output += missing2D.join('*') + '\n';
     }
@@ -1740,11 +1744,16 @@ function generateMarkdown(groups) {
     
     document.getElementById('outputTotal').textContent = `Total: ${totalOutputValue.toLocaleString()}`;
     markdownOutput.textContent = output || '// Tidak ada data yang diproses';
+    return mainOutput;
 }
 
 function copyMarkdown() {
     const markdownOutput = document.getElementById('markdownOutput');
-    copyToClipboard(markdownOutput.textContent);
+    const fullText = markdownOutput.textContent;
+    // Potong sebelum bagian "2D Sisa" agar tidak ikut tersalin
+    const sisaIndex = fullText.indexOf('══════════════');
+    const copyText = sisaIndex !== -1 ? fullText.slice(0, sisaIndex) : fullText;
+    copyToClipboard(copyText);
     showToast('Output berhasil disalin!', 'copy');
 }
 
