@@ -1708,6 +1708,27 @@ function generateMarkdown(groups) {
         }
     });
     
+    // Collect all 2D numbers that ARE present
+    const present2D = new Set();
+    if (groups['2DIGIT']) {
+        groups['2DIGIT'].forEach(entry => {
+            entry.keys.forEach(key => {
+                if (/^\d{2}$/.test(key)) present2D.add(key);
+            });
+        });
+    }
+    // Find missing 2D numbers (00-99)
+    const missing2D = [];
+    for (let i = 0; i <= 99; i++) {
+        const num = String(i).padStart(2, '0');
+        if (!present2D.has(num)) missing2D.push(num);
+    }
+    if (missing2D.length > 0) {
+        output += `══════════════\n`;
+        output += `2D Sisa (${missing2D.length} line):\n`;
+        output += missing2D.join('*') + '\n';
+    }
+
     if (lineCount4D > 0 || lineCount3D > 0 || lineCount2D > 0) {
         outputBreakdown.style.display = 'block';
         document.getElementById('output4D').textContent = lineCount4D + ' Line';
