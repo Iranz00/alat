@@ -1191,7 +1191,7 @@ SURAT:
                 </div>
 
                 <div id="poltarSectionWrap" style="display:none;">
-                    <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma (contoh: 123,678,901,234)" style="display:block; width:100%; margin-bottom:12px;">
+                    <input type="text" id="inputKelompok" class="kombinasi-input" placeholder="Masukkan angka dipisahkan koma/bintang/underscore/dash (contoh: 123,678,901,234 atau 123*678_901-234)" style="display:block; width:100%; margin-bottom:12px;">
 
                     <div class="digit-selection">
                         <h3>📊 PILIH DIGIT YANG AKAN DI-GENERATE</h3>
@@ -1224,7 +1224,7 @@ SURAT:
                     </div>
 
                     <div class="info" id="infoKombinasi">
-                        💡 Masukkan kelompok angka dipisahkan koma. Program akan generate kombinasi 4D, 3D, dan 2D otomatis.
+                        💡 Masukkan kelompok angka dipisahkan koma, bintang (*), underscore (_), atau dash (-). Program akan generate kombinasi 4D, 3D, dan 2D otomatis.
                     </div>
 
                     <div class="output-section">
@@ -1949,7 +1949,10 @@ function generateKombinasi() {
         return;
     }
     
-    const groups = input.split(',').map(g => g.trim()).filter(g => g);
+    const groups = input
+        .split(/[,*_\-]+/)
+        .map(g => g.trim())
+        .filter(g => g);
     const results = {
         '4D': [],
         '3D': [], 
@@ -2028,7 +2031,7 @@ function clearKombinasi() {
     document.querySelectorAll('#kombinasiCheckboxes input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = true;
     });
-    setInfo('infoKombinasi', '💡 Masukkan kelompok angka dipisahkan koma', 'default');
+    setInfo('infoKombinasi', '💡 Masukkan kelompok angka dipisahkan koma, bintang (*), underscore (_), atau dash (-)', 'default');
     showToast('Data berhasil dihapus!', 'delete');
 }
 
@@ -2100,12 +2103,12 @@ function updateMode() {
     const textarea = document.getElementById('inputCTKumat');
     if (ctChecked) {
         currentMode = 'ct';
-        textarea.placeholder = "Masukkan CT (2-7 digit):\n04\n46\n94\n91\n61";
-        setInfo('infoCTKumat', '💡 Mode CT aktif - Masukkan data CT', 'default');
+        textarea.placeholder = "Masukkan data CT (jumlah bebas, minimal 2 digit per data):\n04\n46\n94\n91\n61";
+        setInfo('infoCTKumat', '💡 Mode CT aktif - Jumlah data bebas, bisa 100 CT atau lebih. Tiap data minimal 2 digit.', 'default');
     } else if (kumatChecked) {
         currentMode = 'kumat';
-        textarea.placeholder = "Masukkan data KUMAT:\n12356789\n01235789\n01235678";
-        setInfo('infoCTKumat', '💡 Mode KUMAT aktif - Masukkan data KUMAT', 'default');
+        textarea.placeholder = "Masukkan data KUMAT (jumlah bebas):\n12356789\n01235789\n01235678";
+        setInfo('infoCTKumat', '💡 Mode KUMAT aktif - Jumlah data bebas, bisa banyak data sekaligus.', 'default');
     } else {
         currentMode = null;
         textarea.placeholder = "Pilih mode terlebih dahulu, lalu masukkan data...";
@@ -2113,13 +2116,14 @@ function updateMode() {
     }
 }
 
-function extractNumbers(raw, minLen, maxLen) {
+function extractNumbers(raw, minLen, maxLen = Infinity) {
     const matches = raw.match(/\d+/g) || [];
     const out = [];
     for (let i = 0; i < matches.length; i++) {
         const s = String(matches[i]).trim();
         if (!s) continue;
-        if (s.length < minLen || s.length > maxLen) continue;
+        if (s.length < minLen) continue;
+        if (Number.isFinite(maxLen) && s.length > maxLen) continue;
         out.push(s);
     }
     return out;
@@ -2174,27 +2178,25 @@ function zigZagPairs(arr){
 function renderCTKumatTable(result) {
     const _applyOrder = (arr) => {
         if (!arr || !arr.length) return [];
-        const out = arr.slice();
-        return zigZagPairs(out);
+        return zigZagPairs(arr.slice());
     };
 
-    result.lolosKumat = _applyOrder(result.lolosKumat || []);
-    result.kena1x     = _applyOrder(result.kena1x || []);
-    result.kena2x     = _applyOrder(result.kena2x || []);
-    result.kena3x     = _applyOrder(result.kena3x || []);
-    result.kena4x     = _applyOrder(result.kena4x || []);
-    result.kena5x     = _applyOrder(result.kena5x || []);
-    result.kena6x     = _applyOrder(result.kena6x || []);
-
     const rows = [
-        { rank: 1, label: 'Rangking 1', arr: result.lolosKumat || [] },
-        { rank: 2, label: 'Rangking 2', arr: result.kena1x || [] },
-        { rank: 3, label: 'Rangking 3', arr: result.kena2x || [] },
-        { rank: 4, label: 'Rangking 4', arr: result.kena3x || [] },
-        { rank: 5, label: 'Rangking 5', arr: result.kena4x || [] },
-        { rank: 6, label: 'Rangking 6', arr: result.kena5x || [] },
-        { rank: 7, label: 'Rangking 7', arr: result.kena6x || [] },
+        { rank: 1, label: 'Rangking 1', arr: _applyOrder(result.lolosKumat || []) }
     ];
+
+    const hitEntries = Object.keys(result)
+        .filter(key => /^kena\d+x$/.test(key))
+        .map(key => ({ key, hit: parseInt(key.match(/\d+/)[0], 10) }))
+        .sort((a, b) => a.hit - b.hit);
+
+    hitEntries.forEach((entry, idx) => {
+        rows.push({
+            rank: idx + 2,
+            label: `Rangking ${idx + 2} (${entry.hit}x)`,
+            arr: _applyOrder(result[entry.key] || [])
+        });
+    });
 
     let html = '<table class="rekap-table"><colgroup><col style="width:20%"><col style="width:80%"></colgroup>';
     html += '<tbody>';
@@ -2209,9 +2211,7 @@ function renderCTKumatTable(result) {
         html += `<td class="rekap-label rank-${r.rank}">${r.label}</td>`;
         html += '<td class="rekap-values">';
         if (numsText) {
-            html += `<span class="nums" data-copy="${numsText.replace("'","\\'")}">${escapeHtml(numsText)}</span>`;
-        } else {
-            html += '';
+            html += `<span class="nums" data-copy="${escapeHtml(numsText)}">${escapeHtml(numsText)}</span>`;
         }
         html += `<div class="rekap-count">${escapeHtml(countText)}</div>`;
         html += '</td></tr>';
@@ -2243,8 +2243,7 @@ function prosesRekapCTKumat() {
     const textarea = document.getElementById('inputCTKumat');
     const raw = (textarea.value || '');
     const minLen = (currentMode === 'ct') ? 2 : 2;
-    const maxLen = (currentMode === 'ct') ? 7 : 9;
-    const lines = extractNumbers(raw, minLen, maxLen);
+    const lines = extractNumbers(raw, minLen);
     if (lines.length === 0) {
         setInfo('infoCTKumat', 'Tidak ada angka yang terbaca. Pastikan data berisi digit (contoh: 04, 46, 91) lalu klik GENERATE lagi.', 'error');
         return;
@@ -2255,16 +2254,16 @@ function prosesRekapCTKumat() {
 
     if (currentMode === 'ct') {
         for (let i = 0; i < lines.length; i++) {
-            if (!/^\d{2,7}$/.test(lines[i])) {
-                setInfo('infoCTKumat', 'Semua CT harus 2-7 digit angka!', 'error');
+            if (!/^\d{2,}$/.test(lines[i])) {
+                setInfo('infoCTKumat', 'Semua CT harus berupa angka dengan minimal 2 digit!', 'error');
                 return;
             }
         }
         kumatSets = processCTMode(lines);
     } else if (currentMode === 'kumat') {
         for (let i = 0; i < lines.length; i++) {
-            if (!/^\d{2,9}$/.test(lines[i])) {
-                setInfo('infoCTKumat', 'KUMAT harus terdiri dari digit 0-9 (min 2 digit)!', 'error');
+            if (!/^\d{2,}$/.test(lines[i])) {
+                setInfo('infoCTKumat', 'KUMAT harus berupa angka dengan minimal 2 digit!', 'error');
                 return;
             }
         }
@@ -2273,7 +2272,7 @@ function prosesRekapCTKumat() {
 
     const result = hitungRanking(kumatSets);
     tampilkanHasilCTKumat(result);
-    setInfo('infoCTKumat', 'Rekap berhasil diproses!', 'success');
+    setInfo('infoCTKumat', `Rekap berhasil diproses! Total data masuk: ${lines.length}`, 'success');
     showToast('Tugas selesai!', 'done');
 }
 
@@ -2306,14 +2305,8 @@ function hitungRanking(kumatSets) {
     const allNumbers = generateAllNumbers();
     const results = {
         lolosKumat: [],
-        kena1x: [],
-        kena2x: [],
-        kena3x: [],
-        kena4x: [],
-        kena5x: [],
-        kena6x: [],
     };
-    
+
     for (let number of allNumbers) {
         let kenaCount = 0;
         for (let permutations of kumatSets) {
@@ -2321,23 +2314,19 @@ function hitungRanking(kumatSets) {
                 kenaCount++;
             }
         }
+
         if (kenaCount === 0 && !isTwin(number)) {
             results.lolosKumat.push(number);
-        } else if (kenaCount === 1) {
-            results.kena1x.push(number);
-        } else if (kenaCount === 2) {
-            results.kena2x.push(number);
-        } else if (kenaCount === 3) {
-            results.kena3x.push(number);
-        } else if (kenaCount === 4) {
-            results.kena4x.push(number);
-        } else if (kenaCount === 5) {
-            results.kena5x.push(number);
-        } else if (kenaCount === 6) {
-            results.kena6x.push(number);
+            continue;
+        }
+
+        if (kenaCount > 0) {
+            const key = `kena${kenaCount}x`;
+            if (!results[key]) results[key] = [];
+            results[key].push(number);
         }
     }
-    
+
     return results;
 }
 
